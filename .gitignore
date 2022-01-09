@@ -160,3 +160,8 @@ bin/
 
 # Simulation GUI and other tools window save file
 *-window.json
+
+# User-Specific files
+.idea
+.vscode
+
