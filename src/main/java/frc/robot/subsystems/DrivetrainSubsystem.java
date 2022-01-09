@@ -4,12 +4,12 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
-import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import frc.robot.Constants.DrivetrainConstants;
 
@@ -23,9 +23,8 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     private final WPI_TalonFX rightFollower =
             new WPI_TalonFX(DrivetrainConstants.RIGHT_FOLLOWER_CHANNEL);
 
-    private final SpeedControllerGroup leftSide = new SpeedControllerGroup(leftLeader, leftFollower);
-    private final SpeedControllerGroup rightSide =
-            new SpeedControllerGroup(rightLeader, rightFollower);
+    private final MotorControllerGroup leftSide = new MotorControllerGroup(leftLeader, leftFollower);
+    private final MotorControllerGroup rightSide = new MotorControllerGroup(rightLeader, rightFollower);
 
     private final DifferentialDrive differentialDrive = new DifferentialDrive(leftSide, rightSide);
 
