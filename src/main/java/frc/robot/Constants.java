@@ -49,4 +49,15 @@ public final class Constants {
 
 
     }
+
+    public static final class TurretConstants {
+
+        public static final int TURRET_CHANNEL = 5;
+
+        //PID Constants
+        public static final double P = 0;
+        public static final double I = 0;
+        public static final double D = 0;
+
+    }
 }
