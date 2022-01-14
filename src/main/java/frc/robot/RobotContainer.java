@@ -37,7 +37,8 @@ public class RobotContainer {
         new TurretSubsystem(
                 Constants.TurretConstants.P,
                 Constants.TurretConstants.I,
-                Constants.TurretConstants.D
+                Constants.TurretConstants.D,
+                Constants.TurretConstants.F
     );
 
     /*
@@ -58,11 +59,11 @@ public class RobotContainer {
 
         //TODO 
         new JoystickButton(driverXboxController, 2)
-        .whenPressed(new InstantCommand(()-> turretSubsystem.turretManual(0.25), turretSubsystem))
+        .whenPressed(new InstantCommand(()-> turretSubsystem.turretManual(0.11), turretSubsystem))
         .whenReleased(new InstantCommand(()-> turretSubsystem.turretManual(0), turretSubsystem));
 
         new JoystickButton(driverXboxController, 3)
-        .whenPressed(new InstantCommand(()-> turretSubsystem.turretManual(-0.25), turretSubsystem))
+        .whenPressed(new InstantCommand(()-> turretSubsystem.turretManual(-0.11), turretSubsystem))
         .whenReleased(new InstantCommand(()-> turretSubsystem.turretManual(0), turretSubsystem));
 }
 
