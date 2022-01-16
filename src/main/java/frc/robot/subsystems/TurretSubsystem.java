@@ -50,7 +50,6 @@ public class TurretSubsystem extends PIDSubsystem {
 
   /**
     * Configures Turret PIDF
-    *
     * @param motorController The motor controller to configure
     * @param P proportional value
     * @param I integral value
@@ -70,19 +69,22 @@ public class TurretSubsystem extends PIDSubsystem {
   }
 
   /**
-   * set turret speed 
+   * Set turret motor speed 
    * @param speed set motor output [-1,1]
    */
   public void turretManual(double speed) {
     turretMotor.set(speed);
   }
   
+  /**
+   * Move turret towards vision target
+   */
   public void turretVision(){
-    turretPID(degreesToTicks(LimeLightSubsystem.degreesAskew()));
+    relativeTurretPID(degreesToTicks(LimeLightSubsystem.degreesAskew()));
   }
 
   /**
-   * convert from ticks to degrees
+   * Convert from ticks to degrees
    * @param ticks current encoder tick value
    * @return current degree amount
    */
@@ -90,16 +92,29 @@ public class TurretSubsystem extends PIDSubsystem {
     return ticks * 3.6;
   }
 
+  /**
+   * Convert from degrees to ticks
+   * @param degrees current degree amount
+   * @return current encoder tick value
+   */
   public int degreesToTicks (double degrees){
     double ticks = degrees/3.6;
     return (int)Math.round(ticks);
   }
 
+  /**
+   * Move turret to setpoint
+   * @param setpoint encoder tick value for turret to move to
+   */
   public void turretPID(double setpoint) {
     turretMotor.set(ControlMode.Position, setpoint);
   }
 
 
+  /**
+   * Move turret relatively by setpoint
+   * @param setpoint encoder tick value to move turret by
+   */
   public void relativeTurretPID(double setpoint) {
     turretPID(turretMotor.getClosedLoopTarget() + setpoint);
   }

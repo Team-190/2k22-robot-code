@@ -27,12 +27,11 @@ public class RobotContainer {
     /*
     * Subsystems
     */
-    public final DrivetrainSubsystem drivetrainSubsystem = null;
-//     public final DrivetrainSubsystem drivetrainSubsystem =
-//             new DrivetrainSubsystem(
-//                     Constants.DrivetrainConstants.P,
-//                     Constants.DrivetrainConstants.I,
-//                     Constants.DrivetrainConstants.D);
+    public final DrivetrainSubsystem drivetrainSubsystem =
+            new DrivetrainSubsystem(
+                    Constants.DrivetrainConstants.P,
+                    Constants.DrivetrainConstants.I,
+                    Constants.DrivetrainConstants.D);
 
     public final TurretSubsystem turretSubsystem = 
         new TurretSubsystem(
