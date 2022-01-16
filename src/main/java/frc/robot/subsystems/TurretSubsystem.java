@@ -5,7 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import frc.robot.Constants;
 import frc.robot.Constants.TurretConstants;
+import frc.robot.subsystems.LimeLightSubsystem;
 
 public class TurretSubsystem extends PIDSubsystem {
 
@@ -27,18 +28,23 @@ public class TurretSubsystem extends PIDSubsystem {
       super(
           // The PIDController used by the subsystem
           new PIDController(P, I, D));
+          
           configPIDF(
                   turretMotor,
                   TurretConstants.P,
                   TurretConstants.I,
                   TurretConstants.D,
                   TurretConstants.F);
-          turretMotor.configAllowableClosedloopError(0, 100);
-          turretMotor.configClosedLoopPeakOutput(0, 1.0);
+          turretMotor.configAllowableClosedloopError(0, 0.5);
+          turretMotor.configClosedLoopPeakOutput(0, 0.15);
+          turretMotor.configSelectedFeedbackSensor(
+            FeedbackDevice.QuadEncoder, TurretConstants.PID_LOOPTYPE, TurretConstants.TIMEOUT_MS);
+          turretMotor.setInverted(true);
+          turretMotor.setSensorPhase(true);
 
       
       tab.addNumber("Turret Encoder Position", () -> turretMotor.getSelectedSensorPosition());
-      tab.addNumber("Turret Encoder Setpoint", () -> turretMotor.getClosedLoopTarget());
+      //tab.addNumber("Turret Encoder Setpoint", () -> turretMotor.getClosedLoopTarget());
       tab.addNumber("Turret Encoder Error", () -> turretMotor.getClosedLoopError());
   }
 
@@ -53,9 +59,9 @@ public class TurretSubsystem extends PIDSubsystem {
     */
     public void configPIDF(WPI_TalonSRX motorController, double P, double I, double D, double F) {
       motorController.config_kP(TurretConstants.SLOT_ID, P);
-      motorController.config_kP(TurretConstants.SLOT_ID, I);
-      motorController.config_kP(TurretConstants.SLOT_ID, D);
-      motorController.config_kP(TurretConstants.SLOT_ID, F);
+      motorController.config_kI(TurretConstants.SLOT_ID, I);
+      motorController.config_kD(TurretConstants.SLOT_ID, D);
+      //motorController.config_kF(TurretConstants.SLOT_ID, F);
   }
 
   @Override
@@ -70,10 +76,32 @@ public class TurretSubsystem extends PIDSubsystem {
   public void turretManual(double speed) {
     turretMotor.set(speed);
   }
+  
+  public void turretVision(){
+    turretPID(degreesToTicks(LimeLightSubsystem.degreesAskew()));
+  }
 
+  /**
+   * convert from ticks to degrees
+   * @param ticks current encoder tick value
+   * @return current degree amount
+   */
+  public double ticksToDegrees (int ticks) {
+    return ticks * 3.6;
+  }
+
+  public int degreesToTicks (double degrees){
+    double ticks = degrees/3.6;
+    return (int)Math.round(ticks);
+  }
 
   public void turretPID(double setpoint) {
-    turretMotor.set(ControlMode.MotionMagic, setpoint);
+    turretMotor.set(ControlMode.Position, setpoint);
+  }
+
+
+  public void relativeTurretPID(double setpoint) {
+    turretPID(turretMotor.getClosedLoopTarget() + setpoint);
   }
 
   @Override
@@ -81,6 +109,12 @@ public class TurretSubsystem extends PIDSubsystem {
     // Return the process variable measurement here
     return 0;
   }
+
+
+  public void resetEncoder() {
+    turretMotor.setSelectedSensorPosition(0);
+  }
+
 
   @Override
   public void periodic() {

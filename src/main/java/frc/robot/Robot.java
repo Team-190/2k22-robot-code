@@ -97,16 +97,16 @@ public class Robot extends TimedRobot {
         }
 
         // Check the selected driver control method at TeleopInit once
-        if (driveMethodChooser.getSelected() == DRIVE_STYLE.ARCADE) {
-            robotContainer.drivetrainSubsystem.setDefaultCommand(
-                    new DefaultArcadeDriveCommand(robotContainer));
-        } else if (driveMethodChooser.getSelected() == DRIVE_STYLE.TANK) {
-            robotContainer.drivetrainSubsystem.setDefaultCommand(
-                    new DefaultTankDriveCommand(robotContainer));
-        } else {
-            robotContainer.drivetrainSubsystem.setDefaultCommand(
-                    new DefaultCurvatureDriveCommand(robotContainer));
-        }
+        // if (driveMethodChooser.getSelected() == DRIVE_STYLE.ARCADE) {
+        //     robotContainer.drivetrainSubsystem.setDefaultCommand(
+        //             new DefaultArcadeDriveCommand(robotContainer));
+        // } else if (driveMethodChooser.getSelected() == DRIVE_STYLE.TANK) {
+        //     robotContainer.drivetrainSubsystem.setDefaultCommand(
+        //             new DefaultTankDriveCommand(robotContainer));
+        // } else {
+        //     robotContainer.drivetrainSubsystem.setDefaultCommand(
+        //             new DefaultCurvatureDriveCommand(robotContainer));
+        // }
     }
 
     /** This function is called periodically during operator control. */

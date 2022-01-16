@@ -27,11 +27,12 @@ public class RobotContainer {
     /*
     * Subsystems
     */
-    public final DrivetrainSubsystem drivetrainSubsystem =
-            new DrivetrainSubsystem(
-                    Constants.DrivetrainConstants.P,
-                    Constants.DrivetrainConstants.I,
-                    Constants.DrivetrainConstants.D);
+    public final DrivetrainSubsystem drivetrainSubsystem = null;
+//     public final DrivetrainSubsystem drivetrainSubsystem =
+//             new DrivetrainSubsystem(
+//                     Constants.DrivetrainConstants.P,
+//                     Constants.DrivetrainConstants.I,
+//                     Constants.DrivetrainConstants.D);
 
     public final TurretSubsystem turretSubsystem = 
         new TurretSubsystem(
@@ -58,13 +59,25 @@ public class RobotContainer {
     public RobotContainer() {
 
         //TODO 
+        new JoystickButton(driverXboxController, 5)
+        .whenPressed(new InstantCommand(()-> turretSubsystem.turretPID(-25), turretSubsystem))
+        .whenReleased(new InstantCommand(()-> turretSubsystem.turretManual(0), turretSubsystem));
+
+        new JoystickButton(driverXboxController, 6)
+        .whenPressed(new InstantCommand(()-> turretSubsystem.turretPID(25), turretSubsystem))
+        .whenReleased(new InstantCommand(()-> turretSubsystem.turretManual(0), turretSubsystem));
+
         new JoystickButton(driverXboxController, 2)
-        .whenPressed(new InstantCommand(()-> turretSubsystem.turretManual(0.11), turretSubsystem))
+        .whenPressed(new InstantCommand(()-> turretSubsystem.turretManual(.11), turretSubsystem))
         .whenReleased(new InstantCommand(()-> turretSubsystem.turretManual(0), turretSubsystem));
 
         new JoystickButton(driverXboxController, 3)
-        .whenPressed(new InstantCommand(()-> turretSubsystem.turretManual(-0.11), turretSubsystem))
+        .whenPressed(new InstantCommand(()-> turretSubsystem.turretManual(-.11), turretSubsystem))
         .whenReleased(new InstantCommand(()-> turretSubsystem.turretManual(0), turretSubsystem));
+
+        new JoystickButton(driverXboxController, 4)
+                .whenPressed(new InstantCommand(() -> turretSubsystem.resetEncoder(), turretSubsystem));
+
 }
 
 
@@ -79,7 +92,7 @@ public class RobotContainer {
 
     public void setDefaultCommands() {
         // Default drive command
-        drivetrainSubsystem.setDefaultCommand(new DefaultArcadeDriveCommand(this));
+        // drivetrainSubsystem.setDefaultCommand(new DefaultArcadeDriveCommand(this));
     }
 
     public void periodic() {}
