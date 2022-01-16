@@ -12,9 +12,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LimeLightSubsystem extends SubsystemBase {
 
+  /**
+   * Limelight documentation website:
+   * https://docs.limelightvision.io/en/latest/networktables_api.html
+   */
+
   NetworkTable table;
-  public NetworkTableEntry tv;
-  public NetworkTableEntry tx;
+  public NetworkTableEntry tv; // Whether the limelight has any valid targets (0 or 1)
+  public NetworkTableEntry tx; // Horizontal Offset From Crosshair To Target (LL2: -29.8 to 29.8 degrees)
   NetworkTableEntry ty;
   NetworkTableEntry ta;
   NetworkTableEntry ledMode;
@@ -46,18 +51,32 @@ public class LimeLightSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("LimelightArea", area);
   }
 
+  /**
+   * Returns if limelight target is found
+   * @return true if target found else false
+   */
   public boolean targetFound() {
     return v == 1.0;
-}
+  }
 
+  /**
+   * Degrees the limlight is off from the target
+   * @return number of degrees the limlight is off from the target
+   */
   public static double degreesAskew(){
       return x;
   }
 
+  /**
+   * Turns the light on
+   */
   public void lightOn() {
     ledMode.setNumber(3);
   }
 
+  /**
+   * Turns the light off
+   */
   public void lightOff() {
     ledMode.setNumber(1);
   }

@@ -44,7 +44,6 @@ public class TurretSubsystem extends PIDSubsystem {
 
       
       tab.addNumber("Turret Encoder Position", () -> turretMotor.getSelectedSensorPosition());
-      //tab.addNumber("Turret Encoder Setpoint", () -> turretMotor.getClosedLoopTarget());
       tab.addNumber("Turret Encoder Error", () -> turretMotor.getClosedLoopError());
   }
 
@@ -116,7 +115,7 @@ public class TurretSubsystem extends PIDSubsystem {
    * @param setpoint encoder tick value to move turret by
    */
   public void relativeTurretPID(double setpoint) {
-    turretPID(turretMotor.getClosedLoopTarget() + setpoint);
+    turretPID(turretMotor.getClosedLoopError() + turretMotor.getSelectedSensorPosition() + setpoint);
   }
 
   @Override
@@ -126,6 +125,9 @@ public class TurretSubsystem extends PIDSubsystem {
   }
 
 
+  /**
+   * Reset the encoder position
+   */
   public void resetEncoder() {
     turretMotor.setSelectedSensorPosition(0);
   }
