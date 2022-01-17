@@ -16,6 +16,7 @@ import frc.robot.Constants.DrivetrainConstants.DRIVE_STYLE;
 import frc.robot.commands.drivetrain.DefaultArcadeDriveCommand;
 import frc.robot.commands.drivetrain.DefaultCurvatureDriveCommand;
 import frc.robot.commands.drivetrain.DefaultTankDriveCommand;
+import frc.robot.subsystems.TurretSubsystem;
 
 /**
 * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -43,6 +44,8 @@ public class Robot extends TimedRobot {
         driveMethodChooser.addOption("Curvature", DRIVE_STYLE.MCFLY);
         driveMethodChooser.setDefaultOption("Arcade", DRIVE_STYLE.ARCADE);
         SmartDashboard.putData("Drive Method", driveMethodChooser);
+        robotContainer.turretSubsystem.resetEncoder();
+        robotContainer.setDefaultCommands();
     }
 
     /**

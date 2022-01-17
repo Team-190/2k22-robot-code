@@ -7,14 +7,14 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.drivetrain.DefaultArcadeDriveCommand;
+import frc.robot.commands.VisionCommand;
 import frc.robot.input.AttackThree;
 import frc.robot.input.XboxOneController;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.LimeLightSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 
 /**
@@ -40,6 +40,9 @@ public class RobotContainer {
                 Constants.TurretConstants.D,
                 Constants.TurretConstants.F
     );
+
+    public final LimeLightSubsystem limeLightSubsystem = 
+        new LimeLightSubsystem();
 
     /*
     * Input
@@ -77,6 +80,10 @@ public class RobotContainer {
         new JoystickButton(driverXboxController, 4)
                 .whenPressed(new InstantCommand(() -> turretSubsystem.resetEncoder(), turretSubsystem));
 
+        new JoystickButton(driverXboxController, 1)
+                .whenPressed(new VisionCommand(this));
+
+
 }
 
 
@@ -92,6 +99,7 @@ public class RobotContainer {
     public void setDefaultCommands() {
         // Default drive command
         // drivetrainSubsystem.setDefaultCommand(new DefaultArcadeDriveCommand(this));
+        turretSubsystem.setDefaultCommand(new VisionCommand(this));
     }
 
     public void periodic() {}

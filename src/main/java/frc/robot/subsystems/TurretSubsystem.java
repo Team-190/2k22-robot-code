@@ -45,6 +45,8 @@ public class TurretSubsystem extends PIDSubsystem {
       
       tab.addNumber("Turret Encoder Position", () -> turretMotor.getSelectedSensorPosition());
       tab.addNumber("Turret Encoder Error", () -> turretMotor.getClosedLoopError());
+      tab.addNumber("LimelightAngleTicks", () -> degreesToTicks(LimeLightSubsystem.degreesAskew()));
+      tab.addNumber("LimelightAngleDegrees", () -> LimeLightSubsystem.degreesAskew());
   }
 
   /**
@@ -82,6 +84,10 @@ public class TurretSubsystem extends PIDSubsystem {
     relativeTurretPID(degreesToTicks(LimeLightSubsystem.degreesAskew()));
   }
 
+  public boolean isMotionComplete(){
+    return (Math.abs(turretMotor.getSelectedSensorPosition()-turretMotor.getClosedLoopTarget())<=2);
+  }
+
   /**
    * Convert from ticks to degrees
    * @param ticks current encoder tick value
@@ -115,6 +121,7 @@ public class TurretSubsystem extends PIDSubsystem {
    * @param setpoint encoder tick value to move turret by
    */
   public void relativeTurretPID(double setpoint) {
+    // turretMotor.getClosedLoopTarget()
     turretPID(turretMotor.getClosedLoopError() + turretMotor.getSelectedSensorPosition() + setpoint);
   }
 
