@@ -21,32 +21,36 @@ public class TurretSubsystem extends PIDSubsystem {
   WPI_TalonSRX turretMotor = new WPI_TalonSRX(Constants.TurretConstants.TURRET_CHANNEL);
   ShuffleboardTab tab = Shuffleboard.getTab("Turret");
 
+  LimeLightSubsystem limeLightSubsystem = null;
+
 
 
   /** Creates a new TurretSubsystem. */
-  public TurretSubsystem(double P, double I, double D, double F) {
+  public TurretSubsystem(double P, double I, double D, double F, LimeLightSubsystem limeLightSubsystem) {
       super(
           // The PIDController used by the subsystem
           new PIDController(P, I, D));
+
+      this.limeLightSubsystem = limeLightSubsystem;
           
-          configPIDF(
-                  turretMotor,
-                  TurretConstants.P,
-                  TurretConstants.I,
-                  TurretConstants.D,
-                  TurretConstants.F);
-          turretMotor.configAllowableClosedloopError(0, 0.5);
-          turretMotor.configClosedLoopPeakOutput(0, 0.15);
-          turretMotor.configSelectedFeedbackSensor(
-            FeedbackDevice.QuadEncoder, TurretConstants.PID_LOOPTYPE, TurretConstants.TIMEOUT_MS);
-          turretMotor.setInverted(true);
-          turretMotor.setSensorPhase(true);
+      configPIDF(
+              turretMotor,
+              TurretConstants.P,
+              TurretConstants.I,
+              TurretConstants.D,
+              TurretConstants.F);
+      turretMotor.configAllowableClosedloopError(0, 0.5);
+      turretMotor.configClosedLoopPeakOutput(0, 0.15);
+      turretMotor.configSelectedFeedbackSensor(
+        FeedbackDevice.QuadEncoder, TurretConstants.PID_LOOPTYPE, TurretConstants.TIMEOUT_MS);
+      turretMotor.setInverted(true);
+      turretMotor.setSensorPhase(true);
 
       
       tab.addNumber("Turret Encoder Position", () -> turretMotor.getSelectedSensorPosition());
       tab.addNumber("Turret Encoder Error", () -> turretMotor.getClosedLoopError());
-      tab.addNumber("LimelightAngleTicks", () -> degreesToTicks(LimeLightSubsystem.degreesAskew()));
-      tab.addNumber("LimelightAngleDegrees", () -> LimeLightSubsystem.degreesAskew());
+      tab.addNumber("LimelightAngleTicks", () -> degreesToTicks(limeLightSubsystem.degreesAskew()));
+      tab.addNumber("LimelightAngleDegrees", () -> limeLightSubsystem.degreesAskew());
   }
 
   /**
@@ -81,7 +85,7 @@ public class TurretSubsystem extends PIDSubsystem {
    * Move turret towards vision target
    */
   public void turretVision(){
-    relativeTurretPID(degreesToTicks(LimeLightSubsystem.degreesAskew()));
+    relativeTurretPID(degreesToTicks(limeLightSubsystem.degreesAskew()));
   }
 
   public boolean isMotionComplete(){

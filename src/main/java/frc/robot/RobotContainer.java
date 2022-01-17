@@ -27,22 +27,23 @@ public class RobotContainer {
     /*
     * Subsystems
     */
+
     public final DrivetrainSubsystem drivetrainSubsystem =
             new DrivetrainSubsystem(
                     Constants.DrivetrainConstants.P,
                     Constants.DrivetrainConstants.I,
                     Constants.DrivetrainConstants.D);
 
+    public final LimeLightSubsystem limeLightSubsystem =
+            new LimeLightSubsystem();
+
     public final TurretSubsystem turretSubsystem = 
         new TurretSubsystem(
                 Constants.TurretConstants.P,
                 Constants.TurretConstants.I,
                 Constants.TurretConstants.D,
-                Constants.TurretConstants.F
-    );
-
-    public final LimeLightSubsystem limeLightSubsystem = 
-        new LimeLightSubsystem();
+                Constants.TurretConstants.F,
+                limeLightSubsystem);
 
     /*
     * Input
