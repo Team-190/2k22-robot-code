@@ -5,40 +5,49 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.TurretSubsystem;
+import frc.robot.subsystems.LimeLightSubsystem;
 
 public class VisionCommand extends CommandBase {
   private final TurretSubsystem turretSubsystem;
+  private final LimeLightSubsystem limeLightSubsystem;
+  private final RobotContainer robotContainer;
   /** Creates a new VisionCommand. */
   public VisionCommand(RobotContainer robotContainer) {
     // Use addRequirements() here to declare subsystem dependencies.
+    this.robotContainer = robotContainer;
     this.turretSubsystem = robotContainer.turretSubsystem;
+    this.limeLightSubsystem = robotContainer.limeLightSubsystem;
     addRequirements(turretSubsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    
+  //  if (limeLightSubsystem.targetFound()) turretSubsystem.turretVision();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    turretSubsystem.turretVision();
+     if (turretSubsystem.isMotionComplete() && !limeLightSubsystem.targetFound()) {
+       turretSubsystem.scanForTarget();
+     } else turretSubsystem.turretVision();
+    //turretSubsystem.turretVision();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-
+    turretSubsystem.scanForTarget();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    //return false;
-    return turretSubsystem.isMotionComplete();
+    return false;
+//    return turretSubsystem.isMotionComplete() || !limeLightSubsystem.targetFound();
   }
 }

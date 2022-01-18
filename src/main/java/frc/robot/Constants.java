@@ -58,7 +58,7 @@ public final class Constants {
         public static final int SLOT_ID = 0;
         public static final int PID_LOOPTYPE = 0;
         public static final int TIMEOUT_MS = 20;
-        public static final double P = 40;
+        public static final double P = 20;
         public static final double I = 0;
         public static final double D = 0.5;
         public static final double F = 0;

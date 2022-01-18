@@ -89,7 +89,7 @@ public class TurretSubsystem extends PIDSubsystem {
   }
 
   public boolean isMotionComplete(){
-    return (Math.abs(turretMotor.getSelectedSensorPosition()-turretMotor.getClosedLoopTarget())<=2);
+    return (Math.abs(turretMotor.getSelectedSensorPosition()-turretMotor.getClosedLoopTarget())<=1);
   }
 
   /**
@@ -127,6 +127,12 @@ public class TurretSubsystem extends PIDSubsystem {
   public void relativeTurretPID(double setpoint) {
     // turretMotor.getClosedLoopTarget()
     turretPID(turretMotor.getClosedLoopError() + turretMotor.getSelectedSensorPosition() + setpoint);
+  }
+
+  public void scanForTarget() {
+    //while (!limeLightSubsystem.targetFound()) {
+      relativeTurretPID(-5);
+    //}
   }
 
   @Override
