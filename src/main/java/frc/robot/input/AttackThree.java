@@ -28,21 +28,106 @@ public class AttackThree extends Joystick {
     */
     public AttackThree(int channel) {
         super(channel);
+    }
 
-        buttons = new JoystickButton[totalButtons];
+    public JoystickButton triggerButton = new JoystickButton(this, 1);
+    public JoystickButton bottomFaceButton = new JoystickButton(this, 2);
+    public JoystickButton middleFaceButton = new JoystickButton(this, 3);
+    public JoystickButton leftFaceButton = new JoystickButton(this, 4);
+    public JoystickButton rightFaceButton = new JoystickButton(this, 5);
+    public JoystickButton topLeftButton = new JoystickButton(this, 6);
+    public JoystickButton bottomLeftButton = new JoystickButton(this, 7);
+    public JoystickButton middleLeftButton = new JoystickButton(this, 8);
+    public JoystickButton middleRightButton = new JoystickButton(this, 9);
+    public JoystickButton bottomRightButton = new JoystickButton(this, 10);
+    public JoystickButton topRightButton = new JoystickButton(this, 11);
 
-        // Maps each button key to a location in the buttons array
-        for (int i = 0; i < totalButtons; i++) buttons[i] = new JoystickButton(this, i + 1);
+    /**
+     * See if trigger button is pressed
+     * @return true if pressed else false
+     */
+    public boolean getTriggerButton() {
+        return triggerButton.get();
     }
 
     /**
-    * Gets the specified button on this controller
-    *
-    * @param number the number of the button on the Joystick
-    * @return the Button corresponding the the number, starting at 1
-    */
-    public JoystickButton getButton(int number) {
-        return buttons[number - 1];
+     * See if bottom face button is pressed
+     * @return true if pressed else false
+     */
+    public boolean getBottomFaceButton() {
+        return bottomFaceButton.get();
+    }
+
+    /**
+     * See if middle face button is pressed
+     * @return true if pressed else false
+     */
+    public boolean getMiddleFaceButton() {
+        return middleFaceButton.get();
+    }
+
+    /**
+     * See if left face button is pressed
+     * @return true if pressed else false
+     */
+    public boolean getLeftFaceButton() {
+        return leftFaceButton.get();
+    }
+
+    /**
+     * See if right face button is pressed
+     * @return true if pressed else false
+     */
+    public boolean getRightFaceButton() {
+        return rightFaceButton.get();
+    }
+
+    /**
+     * See if top left button is pressed
+     * @return true if pressed else false
+     */
+    public boolean getTopLeftButton() {
+        return topLeftButton.get();
+    }
+
+    /**
+     * See if bottom left button is pressed
+     * @return true if pressed else false
+     */
+    public boolean getBottomLeftButton() {
+        return bottomLeftButton.get();
+    }
+
+    /**
+     * See if middle left button is pressed
+     * @return true if pressed else false
+     */
+    public boolean getMiddleLeftButton() {
+        return middleLeftButton.get();
+    }
+
+    /**
+     * See if middle right button is pressed
+     * @return true if pressed else false
+     */
+    public boolean getMiddleRightButton() {
+        return middleRightButton.get();
+    }
+
+    /**
+     * See if bottom right button is pressed
+     * @return true if pressed else false
+     */
+    public boolean getBottomRightButton() {
+        return bottomRightButton.get();
+    }
+
+    /**
+     * See if top right button is pressed
+     * @return true if pressed else false
+     */
+    public boolean getTopRightButton() {
+        return topRightButton.get();
     }
 
     /**

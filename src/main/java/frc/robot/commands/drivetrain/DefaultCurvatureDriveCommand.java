@@ -37,7 +37,7 @@ public class DefaultCurvatureDriveCommand extends CommandBase {
         throttleLeftValue = leftStick.getY();
         rotationRightValue = rightStick.getX();
 
-        squareQuickTurn = rightStick.getButton(3).get();
+        squareQuickTurn = rightStick.getMiddleFaceButton();
         drivetrainSubsystem.curvatureDrive(throttleLeftValue, rotationRightValue, squareQuickTurn);
     }
 
