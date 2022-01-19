@@ -43,7 +43,7 @@ public class LimeLightSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     x = -1*tx.getDouble(0);
-    v = tv.getDouble(3);
+    v = tv.getDouble(0);
 
     // post to smart dashboard periodically
     SmartDashboard.putNumber("LimelightX", x);

@@ -85,9 +85,13 @@ public class TurretSubsystem extends PIDSubsystem {
    * Move turret towards vision target
    */
   public void turretVision(){
+    // Takes in degrees off from target, converts it into ticks, move turret by those ticks
     relativeTurretPID(degreesToTicks(limeLightSubsystem.degreesAskew()));
   }
 
+  /**
+   * Checks if the PID motion is complete
+   */
   public boolean isMotionComplete(){
     return (Math.abs(turretMotor.getSelectedSensorPosition()-turretMotor.getClosedLoopTarget())<=1);
   }
@@ -129,16 +133,10 @@ public class TurretSubsystem extends PIDSubsystem {
     turretPID(turretMotor.getClosedLoopError() + turretMotor.getSelectedSensorPosition() + setpoint);
   }
 
-  public void scanForTarget() {
-    //while (!limeLightSubsystem.targetFound()) {
-      relativeTurretPID(-5);
-    //}
-  }
-
   @Override
   public double getMeasurement() {
     // Return the process variable measurement here
-    return 0;
+    return turretMotor.getSelectedSensorPosition();
   }
 
 

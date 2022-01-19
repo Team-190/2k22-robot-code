@@ -44,6 +44,7 @@ public class Robot extends TimedRobot {
         driveMethodChooser.addOption("Curvature", DRIVE_STYLE.MCFLY);
         driveMethodChooser.setDefaultOption("Arcade", DRIVE_STYLE.ARCADE);
         SmartDashboard.putData("Drive Method", driveMethodChooser);
+        
         robotContainer.turretSubsystem.resetEncoder();
         robotContainer.setDefaultCommands();
     }
