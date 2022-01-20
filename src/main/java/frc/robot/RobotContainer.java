@@ -8,10 +8,12 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.drivetrain.DefaultArcadeDriveCommand;
 import frc.robot.input.AttackThree;
 import frc.robot.input.XboxOneController;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
 /**
 * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -29,6 +31,13 @@ public class RobotContainer {
                     Constants.DrivetrainConstants.I,
                     Constants.DrivetrainConstants.D);
 
+        public final ShooterSubsystem shooterSubsystem = 
+                new ShooterSubsystem(
+                Constants.ShooterConstants.P,
+                Constants.ShooterConstants.I,
+                Constants.ShooterConstants.D, 
+                Constants.ShooterConstants.F);
+
     /*
     * Input
     */
@@ -44,6 +53,12 @@ public class RobotContainer {
     * We use this to configure commands from buttons and default commands
     */
     public RobotContainer() {
+        
+        driverXboxController.aButton.whenPressed(new InstantCommand(() -> shooterSubsystem.shooterManual(0.5), shooterSubsystem))
+                .whenReleased(new InstantCommand(() -> shooterSubsystem.shooterManual(0), shooterSubsystem));
+
+        driverXboxController.bButton.whenPressed(new InstantCommand(() -> shooterSubsystem.shooterPID(0), shooterSubsystem));
+
     }
 
     /**

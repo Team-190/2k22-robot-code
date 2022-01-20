@@ -49,4 +49,25 @@ public final class Constants {
 
 
     }
+
+    /**
+     * Constants for the shooterSubsystem
+     */
+    public static final class ShooterConstants {
+
+        // CAN Ids
+        public static final int SHOOTER_CHANNEL = 1;
+
+        // PID Constants
+        public static final int SLOT_ID = 0;
+        public static final int PID_LOOPTYPE = 0;
+        public static final int TIMEOUT_MS = 20;
+        public static final double P = 0;
+        public static final double I = 0;
+        public static final double D = 0;
+        public static final double F = 0;
+        public static final double TICKS_PER_ROTATION = 0;
+        public static final double MAX_SPEED_RPM = 0;
+
+    }
 }
