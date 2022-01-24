@@ -16,6 +16,7 @@ import frc.robot.Constants.DrivetrainConstants.DRIVE_STYLE;
 import frc.robot.commands.drivetrain.DefaultArcadeDriveCommand;
 import frc.robot.commands.drivetrain.DefaultCurvatureDriveCommand;
 import frc.robot.commands.drivetrain.DefaultTankDriveCommand;
+import frc.robot.commands.shooter.ShootCommand;
 
 /**
 * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -31,7 +32,7 @@ public class Robot extends TimedRobot {
 
     /**
     * This function is run when the robot is first started up and should be used for any
-    * initialization code.
+    * initialization code.git
     */
     @Override
     public void robotInit() {
@@ -107,6 +108,8 @@ public class Robot extends TimedRobot {
             robotContainer.drivetrainSubsystem.setDefaultCommand(
                     new DefaultCurvatureDriveCommand(robotContainer));
         }
+
+        robotContainer.shooterSubsystem.setDefaultCommand(new ShootCommand(robotContainer));
     }
 
     /** This function is called periodically during operator control. */

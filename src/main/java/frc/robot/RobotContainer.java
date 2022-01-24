@@ -7,9 +7,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.commands.drivetrain.DefaultArcadeDriveCommand;
 import frc.robot.input.AttackThree;
 import frc.robot.input.XboxOneController;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -22,6 +22,11 @@ import frc.robot.subsystems.ShooterSubsystem;
 * subsystems, commands, and button mappings) should be declared here.
 */
 public class RobotContainer {
+
+    // Choosers
+    public final SendableChooser<Integer> bottomRPMChooser = new SendableChooser<>();
+    public final SendableChooser<Integer> topRPMChooser = new SendableChooser<>();
+
     /*
     * Subsystems
     */
@@ -32,11 +37,7 @@ public class RobotContainer {
                     Constants.DrivetrainConstants.D);
 
         public final ShooterSubsystem shooterSubsystem = 
-                new ShooterSubsystem(
-                Constants.ShooterConstants.P,
-                Constants.ShooterConstants.I,
-                Constants.ShooterConstants.D, 
-                Constants.ShooterConstants.F);
+                new ShooterSubsystem();
 
     /*
     * Input
@@ -53,11 +54,15 @@ public class RobotContainer {
     * We use this to configure commands from buttons and default commands
     */
     public RobotContainer() {
-        
-        driverXboxController.aButton.whenPressed(new InstantCommand(() -> shooterSubsystem.shooterManual(0.5), shooterSubsystem))
-                .whenReleased(new InstantCommand(() -> shooterSubsystem.shooterManual(0), shooterSubsystem));
 
-        driverXboxController.bButton.whenPressed(new InstantCommand(() -> shooterSubsystem.shooterPID(0), shooterSubsystem));
+        // Bottom RPM Chooser
+        for (int i = 500; i < 6001; i += 250) {
+            bottomRPMChooser.addOption(""+i+ " RPM", i);
+            topRPMChooser.addOption(""+i+" RPM", i);
+        }
+
+        SmartDashboard.putData("Bottom Wheel RPM", bottomRPMChooser);
+        SmartDashboard.putData("Top Wheel RPM", topRPMChooser);
 
     }
 
@@ -70,10 +75,8 @@ public class RobotContainer {
         return null;
     }
 
-    public void setDefaultCommands() {
-        // Default drive command
-        drivetrainSubsystem.setDefaultCommand(new DefaultArcadeDriveCommand(this));
+    public void periodic() {
+        SmartDashboard.putNumber("Top Wheel RPM Readout", shooterSubsystem.getTopVelocity());
+        SmartDashboard.putNumber("Bottom Wheel RPM Readout", shooterSubsystem.getBottomVelocity());
     }
-
-    public void periodic() {}
 }
