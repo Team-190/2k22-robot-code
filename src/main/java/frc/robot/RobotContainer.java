@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.drivetrain.DefaultArcadeDriveCommand;
 import frc.robot.input.AttackThree;
 import frc.robot.input.XboxOneController;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 /**
@@ -28,6 +29,8 @@ public class RobotContainer {
                     Constants.DrivetrainConstants.P,
                     Constants.DrivetrainConstants.I,
                     Constants.DrivetrainConstants.D);
+
+    public final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
 
     /*
     * Input
