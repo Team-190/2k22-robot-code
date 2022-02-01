@@ -1,15 +1,18 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.wpilibj.SPI;
+
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import frc.robot.Constants.DrivetrainConstants;
 
@@ -54,6 +57,11 @@ public class DrivetrainSubsystem extends PIDSubsystem {
         leftFollower.follow(leftLeader);
         rightFollower.follow(rightLeader);
 
+        leftLeader.setInverted(TalonFXInvertType.CounterClockwise);
+        leftFollower.setInverted(TalonFXInvertType.FollowMaster);
+        rightLeader.setInverted(TalonFXInvertType.Clockwise);
+        rightFollower.setInverted(TalonFXInvertType.FollowMaster);
+
         // Configure the PID feedback and constants
         leftLeader.configSelectedFeedbackSensor(
                 FeedbackDevice.IntegratedSensor,
@@ -91,6 +99,9 @@ public class DrivetrainSubsystem extends PIDSubsystem {
 
     @Override
     public void periodic() {
+        // SmartDashboard.putNumber("Left Drive Encoder", leftLeader.getSelectedSensorPosition());
+        // SmartDashboard.putNumber("Right Drive Encoder", rightLeader.getSelectedSensorPosition());
+        
     }
 
     /**
@@ -142,6 +153,17 @@ public class DrivetrainSubsystem extends PIDSubsystem {
         differentialDrive.curvatureDrive(throttle, radius, quickTurn);
     }
 
+    /**
+   * Controls the left and right sides of the drive directly with voltages.
+   *
+   * @param leftVolts the commanded left output
+   * @param rightVolts the commanded right output
+   */
+  public void tankDriveVolts(double leftVolts, double rightVolts) {
+    leftLeader.setVoltage(leftVolts);
+    rightLeader.setVoltage(rightVolts);
+  }
+
     // PID methods
 
     @Override
@@ -151,6 +173,7 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     protected double getMeasurement() {
         return 0;
     }
+
 
     /**
     * Get the position of the robot relative to the starting position

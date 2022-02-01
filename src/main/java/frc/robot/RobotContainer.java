@@ -8,9 +8,12 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.drivetrain.DefaultArcadeDriveCommand;
 import frc.robot.input.AttackThree;
 import frc.robot.input.XboxOneController;
+import frc.robot.subsystems.CollectorSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 /**
@@ -28,6 +31,7 @@ public class RobotContainer {
                     Constants.DrivetrainConstants.P,
                     Constants.DrivetrainConstants.I,
                     Constants.DrivetrainConstants.D);
+    public final CollectorSubsystem collectorSubsystem = new CollectorSubsystem();
 
     /*
     * Input
@@ -44,6 +48,9 @@ public class RobotContainer {
     * We use this to configure commands from buttons and default commands
     */
     public RobotContainer() {
+
+        leftStick.triggerButton.whenHeld(new RunCommand(()-> collectorSubsystem.intake(), collectorSubsystem));
+
     }
 
     /**
