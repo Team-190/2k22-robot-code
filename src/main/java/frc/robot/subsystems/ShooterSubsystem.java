@@ -17,7 +17,6 @@ import frc.robot.Constants.ShooterConstants;
 public class ShooterSubsystem extends SubsystemBase {
   
   public WPI_TalonFX bottomShooterMotor = new WPI_TalonFX(ShooterConstants.BOTTOM_SHOOTER_CHANNEL);
-  public WPI_TalonFX topShooterMotor = new WPI_TalonFX(ShooterConstants.TOP_SHOOTER_CHANNEL);
 
 
   /** Creates a new ShooterSubsystem. */
@@ -25,21 +24,17 @@ public class ShooterSubsystem extends SubsystemBase {
 
     configFeedbackSensors();
     configPIDF(bottomShooterMotor, ShooterConstants.BOTTOM_P, ShooterConstants.BOTTOM_I, ShooterConstants.BOTTOM_D, ShooterConstants.BOTTOM_F);
-    configPIDF(topShooterMotor, ShooterConstants.TOP_P, ShooterConstants.TOP_I, ShooterConstants.TOP_D, ShooterConstants.TOP_F);
 
     bottomShooterMotor.configClosedLoopPeakOutput(0, 1);
-    topShooterMotor.configClosedLoopPeakOutput(0, 1);
 
     bottomShooterMotor.setNeutralMode(NeutralMode.Coast);
-    topShooterMotor.setNeutralMode(NeutralMode.Coast);
 
-    bottomShooterMotor.setInverted(true);
+    bottomShooterMotor.setInverted(false);
 
   }
   
   private void configFeedbackSensors() {
     bottomShooterMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, ShooterConstants.PID_LOOPTYPE, ShooterConstants.TIMEOUT_MS);
-    topShooterMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, ShooterConstants.PID_LOOPTYPE, ShooterConstants.TIMEOUT_MS);
   }
 
   public void configPIDF(WPI_TalonFX motorController, double P, double I, double D, double F) {
@@ -69,25 +64,6 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   /**
-   * Sets the speed of shooter
-   * @param speed percent output [-1, 1]
-   */
-  public void topShooterManual(double speed) {
-    topShooterMotor.set(speed);
-  }
-
-  /**
-   * Sets rotations per minute
-   * @param rpm input of rotations per minute
-   */
-  public void topShooterPID(double rpm) {
-
-    rpm = MathUtil.clamp(rpm, 0, ShooterConstants.MAX_SPEED_RPM);
-
-    topShooterMotor.set(ControlMode.Velocity, rpmToTicksPer100ms(rpm));
-  }
-
-  /**
    * Converts rotations per minute to ticks per 100ms
    * Multiplies rotations per minute by ticks per rotation
    * Divides by 600 to convert from minute to millisecond
@@ -106,16 +82,6 @@ public class ShooterSubsystem extends SubsystemBase {
    */
   public boolean bottomAtTargetRPM(double targetRPM) {
     return Math.abs(targetRPM - convertCPDToRPM(bottomShooterMotor.getSelectedSensorVelocity()))
-            < Constants.ShooterConstants.RPM_THRESHOLD;
-  }
-  /**
-   * Check if the Shooter is at the correct Rotations per minute (rpm)
-   *
-   * @param targetRPM The target rpm
-   * @return true if the Shooter is at the specified rpm, false otherwise
-   */
-  public boolean topAtTargetRPM(double targetRPM) {
-    return Math.abs(targetRPM - convertCPDToRPM(topShooterMotor.getSelectedSensorVelocity()))
             < Constants.ShooterConstants.RPM_THRESHOLD;
   }
 
@@ -147,14 +113,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void stop() {
       bottomShooterMotor.set(0);
-      topShooterMotor.set(0);
   }
 
   public double getBottomVelocity() {
     return convertCPDToRPM(bottomShooterMotor.getSelectedSensorVelocity());
   }
 
-  public double getTopVelocity() {
-    return convertCPDToRPM(topShooterMotor.getSelectedSensorVelocity());
-  }
 }

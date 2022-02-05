@@ -17,19 +17,15 @@ public class ShootCommand extends SequentialCommandGroup {
     public ShootCommand(RobotContainer robotContainer) {
         this.shooterSubsystem = robotContainer.shooterSubsystem;
         this.bottomRPM = robotContainer.bottomRPMChooser.getSelected();
-        this.topRPM = robotContainer.topRPMChooser.getSelected();
 
         SmartDashboard.putNumber("Target Bottom RPM", bottomRPM);
         SmartDashboard.putNumber("Target Top RPM", topRPM);
 
-
-        shooterSubsystem.topShooterMotor.config_kF(0, (1023 * 0.15 / shooterSubsystem.rpmToTicksPer100ms(topRPM)));
         shooterSubsystem.bottomShooterMotor.config_kF(0, (1023 * 0.15 / shooterSubsystem.rpmToTicksPer100ms(bottomRPM)));
 
         addCommands(
                 new ParallelCommandGroup(
-                    new RampBottomShooterCommand(robotContainer, bottomRPM),
-                    new RampTopShooterCommand(robotContainer, topRPM)),
+                    new RampBottomShooterCommand(robotContainer, bottomRPM)),
                 new RunShooterCommand(shooterSubsystem, bottomRPM, topRPM));
     }
 

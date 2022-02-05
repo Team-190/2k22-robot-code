@@ -56,7 +56,7 @@ public class RobotContainer {
     public RobotContainer() {
 
         // Bottom RPM Chooser
-        for (int i = 500; i < 6001; i += 250) {
+        for (int i = 4000; i < 6001; i += 125) {
             bottomRPMChooser.addOption(""+i+ " RPM", i);
             topRPMChooser.addOption(""+i+" RPM", i);
         }
@@ -76,7 +76,6 @@ public class RobotContainer {
     }
 
     public void periodic() {
-        SmartDashboard.putNumber("Top Wheel RPM Readout", shooterSubsystem.getTopVelocity());
         SmartDashboard.putNumber("Bottom Wheel RPM Readout", shooterSubsystem.getBottomVelocity());
     }
 }

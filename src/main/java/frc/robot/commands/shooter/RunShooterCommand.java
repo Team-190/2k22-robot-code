@@ -20,7 +20,6 @@ public class RunShooterCommand extends CommandBase {
     @Override
     public void execute() {
         shooterSubsystem.bottomshooterPID(bottomRPM);
-        shooterSubsystem.topShooterPID(topRPM);
     }
 
     /**
