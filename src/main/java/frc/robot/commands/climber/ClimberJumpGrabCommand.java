@@ -9,6 +9,7 @@ public class ClimberJumpGrabCommand extends Command {
 
     ClimberSubsystem climberSubsystem = null;
     Timer timer;
+    Double delay = 0.0;
 
     public ClimberJumpGrabCommand(RobotContainer robotContainer) {
         // the requires(Subsystem) method must be called for each subsystem used by the command
@@ -23,6 +24,7 @@ public class ClimberJumpGrabCommand extends Command {
      */
     @Override
     protected void initialize() {
+        delay = climberSubsystem.getDelay();
         timer.reset();
     }
 
@@ -39,8 +41,10 @@ public class ClimberJumpGrabCommand extends Command {
         climberSubsystem.jumperActuate();
 
         timer.start();
-        if (timer.hasElapsed(0.28))
+        if (timer.hasElapsed(delay)) {
             climberSubsystem.clamperToggle();
+        }
+        timer.stop();
 
     }
 

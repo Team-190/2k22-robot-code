@@ -1,21 +1,13 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
-import edu.wpi.first.wpilibj2.command.PIDSubsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
-import frc.robot.Constants.DrivetrainConstants;
 
 public class ClimberSubsystem extends SubsystemBase {
 
@@ -25,11 +17,22 @@ public class ClimberSubsystem extends SubsystemBase {
     Solenoid pivot = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.PIVOT_ID);
     Solenoid extender = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.EXTENDER_ID);
 
+    DigitalInput jumperLimitSwitch = new DigitalInput(0); // Limit switch is pressed when in neutral state,
+                                                                 // not pressed when "jumping"
+
     WPI_TalonFX climber_motor = new WPI_TalonFX(ClimberConstants.CLIMBER_MOTOR_CHANNEL);
+
+    // Choosers
+    private final SendableChooser<Double> delayTimeChooser = new SendableChooser<>();
 
     public ClimberSubsystem() {
 
-        
+        for (double i = 0.01; i < 0.5; i+=0.01) {
+            delayTimeChooser.addOption(i+" Seconds", i);
+        }
+
+        SmartDashboard.putData(delayTimeChooser);
+
     }
 
     /**
@@ -91,8 +94,13 @@ public class ClimberSubsystem extends SubsystemBase {
         return climber_motor.isRevLimitSwitchClosed() == 1;
     }
 
+    public Double getDelay() {
+        return delayTimeChooser.getSelected();
+    }
+
     @Override
     public void periodic() {
+        SmartDashboard.putBoolean("Jumper Limit Switch", jumperLimitSwitch.get());
     }
 
 
