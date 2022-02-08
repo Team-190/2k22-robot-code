@@ -2,6 +2,8 @@ package frc.robot;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 
 public final class Constants {
 
@@ -54,6 +56,10 @@ public final class Constants {
         public static final double TRACKWIDTH_METERS = 0.781987; // horizontal distance between wheels
         public static final double COUNTS_PER_MOTOR_REVOLUTION = 2048;
         public static final double WHEEL_DIAMETER_METERS = 0.1524;
+        public static final double AUTO_P = 3.3514; // Calculated by SysID
+
+        // 18 to 52 gear reduction 
+        //TODO edit gear ratios
         public static final double WHEEL_REVOLUTIONS_PER_MOTOR_REVOLUTIONS =
                 (18.0 / 52.0) * (10.0 / 42.0);
         public static final double METERS_PER_COUNT =
@@ -68,18 +74,32 @@ public final class Constants {
         public static final double RAMSETE_ZETA = 0.7; // Was .9
 
         // Max Speed Constants
-        public static final int MAX_SPEED_METERS_PER_SECOND = 0;
+        public static final double MAX_SPEED_METERS_PER_SECOND = 2.7432; // Max speed set as 9 ft/s
         public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 2;
+        public final static int MAX_VOLTAGE = 11;
 
+        // Constants calculated by System Identification software
         public static final double S_VOLTS = 0.74452; 
         public static final double V_VOLT_SECONDS_PER_METER = 2.8033;
         public static final double A_VOLT_SECONDS_SQUARED_PER_METER = 0.72842;
+
         public static final SimpleMotorFeedforward DRIVE_FEED_FORWARD =
                 new SimpleMotorFeedforward(
                         DrivetrainConstants.S_VOLTS,
                         DrivetrainConstants.V_VOLT_SECONDS_PER_METER,
                         DrivetrainConstants.A_VOLT_SECONDS_SQUARED_PER_METER);
 
+                        
+        // Create a voltage constraint to ensure we don't accelerate too fast
+        public final static DifferentialDriveVoltageConstraint AUTO_VOLTAGE_CONSTRAINT = new DifferentialDriveVoltageConstraint(
+            DrivetrainConstants.DRIVE_FEED_FORWARD, DrivetrainConstants.DRIVE_KINEMATICS, DrivetrainConstants.MAX_VOLTAGE);
+
+        public static final TrajectoryConfig TRAJECTORY_CONFIG = 
+            new TrajectoryConfig(
+                DrivetrainConstants.MAX_SPEED_METERS_PER_SECOND,
+                DrivetrainConstants.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
+                
+    
 
     }
     /** Constants for the Collector */

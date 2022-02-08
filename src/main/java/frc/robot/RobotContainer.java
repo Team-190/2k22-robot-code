@@ -10,6 +10,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import frc.robot.commands.auto.simpleTest.testAuto;
 import frc.robot.commands.drivetrain.DefaultArcadeDriveCommand;
 import frc.robot.input.AttackThree;
 import frc.robot.input.XboxOneController;
@@ -50,6 +51,7 @@ public class RobotContainer {
     public RobotContainer() {
 
         leftStick.triggerButton.whenHeld(new RunCommand(()-> collectorSubsystem.intake(), collectorSubsystem));
+        rightStick.triggerButton.whenPressed(new InstantCommand(()-> drivetrainSubsystem.resetAll(), drivetrainSubsystem));
 
     }
 
@@ -59,7 +61,8 @@ public class RobotContainer {
     * @return the command to run in autonomous
     */
     public Command getAutonomousCommand() {
-        return null;
+        //return null;
+        return new testAuto(this);
     }
 
     public void setDefaultCommands() {

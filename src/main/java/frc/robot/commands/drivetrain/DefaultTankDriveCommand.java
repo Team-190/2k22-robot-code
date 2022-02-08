@@ -37,7 +37,7 @@ public class DefaultTankDriveCommand extends CommandBase {
         throttleLeftValue = rightStick.getY();
         rotationRightValue = leftStick.getY();
 
-        drivetrainSubsystem.westCoastDrive(throttleLeftValue, rotationRightValue, false);
+        drivetrainSubsystem.westCoastDrive(throttleLeftValue, rotationRightValue, true);
     }
 
     /** At the end, stop the drivetrain. */
