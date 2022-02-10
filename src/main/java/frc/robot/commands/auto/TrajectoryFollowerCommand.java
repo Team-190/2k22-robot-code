@@ -21,16 +21,17 @@ public class TrajectoryFollowerCommand extends RamseteCommand {
    */
   public TrajectoryFollowerCommand(RobotContainer robotContainer, Trajectory trajectory) {
     
+    /*
     super(trajectory,
         robotContainer.drivetrainSubsystem::getPose,
         new RamseteController(DrivetrainConstants.RAMSETE_B, DrivetrainConstants.RAMSETE_ZETA),
         DrivetrainConstants.DRIVE_KINEMATICS,
         robotContainer.drivetrainSubsystem::tankDriveVolts,
         robotContainer.drivetrainSubsystem
-    );
+    );*/
     
     
-    /*
+    
     super(
         trajectory, 
         robotContainer.drivetrainSubsystem::getPose,
@@ -43,7 +44,7 @@ public class TrajectoryFollowerCommand extends RamseteCommand {
         // RamseteCommand passes volts to the callback
         robotContainer.drivetrainSubsystem::tankDriveVolts,
         robotContainer.drivetrainSubsystem
-    );*/
+    );
     
     this.drivetrainSubsystem = robotContainer.drivetrainSubsystem;
     addRequirements(drivetrainSubsystem);

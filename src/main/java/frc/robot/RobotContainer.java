@@ -52,6 +52,7 @@ public class RobotContainer {
 
         leftStick.triggerButton.whenHeld(new RunCommand(()-> collectorSubsystem.intake(), collectorSubsystem));
         rightStick.triggerButton.whenPressed(new InstantCommand(()-> drivetrainSubsystem.resetAll(), drivetrainSubsystem));
+        drivetrainSubsystem.gyro.calibrate();
 
     }
 

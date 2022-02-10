@@ -11,11 +11,11 @@ import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.commands.auto.Trajectories;
 
 public class testTrajectory extends Trajectories{
-    private static final Pose2d POINT1 = new Pose2d(2, 0, new Rotation2d(Units.degreesToRadians(0)));
+    private static final Pose2d POINT1 = new Pose2d(2, 0, new Rotation2d(Units.degreesToRadians(180)));
     public static final Trajectory START = TrajectoryGenerator.generateTrajectory(
         List.of(
-            new Pose2d(0.000, 0.000, new Rotation2d(Units.degreesToRadians(0))),
+            new Pose2d(0.000, 0.000, new Rotation2d(Units.degreesToRadians(180))),
             POINT1
         ),
-        FORWARD_CONFIG);
+        BACKWARD_CONFIG);
 }

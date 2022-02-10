@@ -93,11 +93,6 @@ public final class Constants {
         // Create a voltage constraint to ensure we don't accelerate too fast
         public final static DifferentialDriveVoltageConstraint AUTO_VOLTAGE_CONSTRAINT = new DifferentialDriveVoltageConstraint(
             DrivetrainConstants.DRIVE_FEED_FORWARD, DrivetrainConstants.DRIVE_KINEMATICS, DrivetrainConstants.MAX_VOLTAGE);
-
-        public static final TrajectoryConfig TRAJECTORY_CONFIG = 
-            new TrajectoryConfig(
-                DrivetrainConstants.MAX_SPEED_METERS_PER_SECOND,
-                DrivetrainConstants.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
                 
     
 

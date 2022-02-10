@@ -20,9 +20,13 @@ public abstract class Trajectories {
    * @return a new trajectory config
    */
   private static TrajectoryConfig createTrajectoryConfig(boolean reversed) {
-    DrivetrainConstants.TRAJECTORY_CONFIG.setKinematics(DrivetrainConstants.DRIVE_KINEMATICS);
-    DrivetrainConstants.TRAJECTORY_CONFIG.addConstraint(DrivetrainConstants.AUTO_VOLTAGE_CONSTRAINT);
-    DrivetrainConstants.TRAJECTORY_CONFIG.setReversed(reversed);
-    return DrivetrainConstants.TRAJECTORY_CONFIG;
+    TrajectoryConfig CONFIG = new TrajectoryConfig(
+                DrivetrainConstants.MAX_SPEED_METERS_PER_SECOND,
+                DrivetrainConstants.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED
+    );
+    CONFIG.setKinematics(DrivetrainConstants.DRIVE_KINEMATICS);
+    CONFIG.addConstraint(DrivetrainConstants.AUTO_VOLTAGE_CONSTRAINT);
+    CONFIG.setReversed(reversed);
+    return CONFIG;
   }
 }

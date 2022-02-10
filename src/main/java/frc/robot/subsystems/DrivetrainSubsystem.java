@@ -37,7 +37,7 @@ public class DrivetrainSubsystem extends PIDSubsystem {
 
     // Objects for PID tracking
     // private final AHRS navx = new AHRS(SPI.Port.kMXP);
-    private final ADXRS450_Gyro gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
+    public final ADXRS450_Gyro gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
     private final DifferentialDriveOdometry odometry =
             new DifferentialDriveOdometry(Rotation2d.fromDegrees(0));
 
@@ -62,19 +62,13 @@ public class DrivetrainSubsystem extends PIDSubsystem {
         leftFollower.follow(leftLeader);
         rightFollower.follow(rightLeader);
 
-        leftLeader.setInverted(TalonFXInvertType.CounterClockwise);
-        leftFollower.setInverted(TalonFXInvertType.FollowMaster);
-        rightLeader.setInverted(TalonFXInvertType.Clockwise);
-        rightFollower.setInverted(TalonFXInvertType.FollowMaster);
+        invertDrivetrain(false);
 
         // invertDrivetrain(true);
         
 
         // Set Break Mode
-        leftLeader.setNeutralMode(NeutralMode.Brake);
-        rightLeader.setNeutralMode(NeutralMode.Brake);
-        leftFollower.setNeutralMode(NeutralMode.Brake);
-        rightFollower.setNeutralMode(NeutralMode.Brake);
+        setBreakMode();
 
         // Configure the PID feedback and constants
         leftLeader.configSelectedFeedbackSensor(
@@ -101,7 +95,7 @@ public class DrivetrainSubsystem extends PIDSubsystem {
 
         // Wait for Gyro init before finishing DriveSubsystem init
         try {
-            Thread.sleep(3000);
+            Thread.sleep(5000);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -115,10 +109,12 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     public void periodic() {
         
         SmartDashboard.putNumber("Left Drive Encoder", leftLeader.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Right Drive Encoder", rightLeader.getSelectedSensorPosition());
         SmartDashboard.putNumber("Get left wheel speed", leftLeader.getSelectedSensorVelocity());
         SmartDashboard.putNumber("Get right wheel speed", rightLeader.getSelectedSensorVelocity());
         SmartDashboard.putNumber("gyro raw yaw", gyro.getAngle());
         SmartDashboard.putNumber("gyro yaw", getYawDegrees());
+        
         
 
         // Update the Odometry
@@ -130,6 +126,7 @@ public class DrivetrainSubsystem extends PIDSubsystem {
         
         
     }
+
 
     /**
      * Gets distance in meters
@@ -160,10 +157,30 @@ public class DrivetrainSubsystem extends PIDSubsystem {
      * @return yaw in degrees
      */
     public double getYawDegrees() { // -180 to 180 degrees
-        double angle = gyro.getAngle()*6 % 360;
-        if (angle <= 180)
+        double angle = (gyro.getAngle()*7.5) % 360;
+        if (angle <= 180.0)
             return angle;
         return angle - 360;
+    }
+
+    /**
+     * Sets drive motors to brake
+     */
+    public void setBreakMode() {
+        leftLeader.setNeutralMode(NeutralMode.Brake);
+        rightLeader.setNeutralMode(NeutralMode.Brake);
+        leftFollower.setNeutralMode(NeutralMode.Brake);
+        rightFollower.setNeutralMode(NeutralMode.Brake);
+    }
+
+    /**
+     * Sets drive motors to coast
+     */
+    public void setCoastMode() {
+        leftLeader.setNeutralMode(NeutralMode.Coast);
+        rightLeader.setNeutralMode(NeutralMode.Coast);
+        leftFollower.setNeutralMode(NeutralMode.Coast);
+        rightFollower.setNeutralMode(NeutralMode.Coast);
     }
 
     /**
@@ -276,8 +293,8 @@ public class DrivetrainSubsystem extends PIDSubsystem {
      * @param rightVolts the commanded right output
      */
     public void tankDriveVolts(double leftVolts, double rightVolts) {
-        leftLeader.setVoltage(-leftVolts);
-        rightLeader.setVoltage(-rightVolts);
+        leftLeader.setVoltage(leftVolts);
+        rightLeader.setVoltage(rightVolts);
         differentialDrive.feed();
     }
 
