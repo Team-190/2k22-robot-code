@@ -14,8 +14,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.DrivetrainConstants.DRIVE_STYLE;
 import frc.robot.commands.drivetrain.DefaultArcadeDriveCommand;
-import frc.robot.commands.drivetrain.DefaultCurvatureDriveCommand;
-import frc.robot.commands.drivetrain.DefaultTankDriveCommand;
 
 /**
 * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -96,17 +94,17 @@ public class Robot extends TimedRobot {
             defaultAutonomousCommand.cancel();
         }
 
-        // Check the selected driver control method at TeleopInit once
-        if (driveMethodChooser.getSelected() == DRIVE_STYLE.ARCADE) {
-            robotContainer.drivetrainSubsystem.setDefaultCommand(
-                    new DefaultArcadeDriveCommand(robotContainer));
-        } else if (driveMethodChooser.getSelected() == DRIVE_STYLE.TANK) {
-            robotContainer.drivetrainSubsystem.setDefaultCommand(
-                    new DefaultTankDriveCommand(robotContainer));
-        } else {
-            robotContainer.drivetrainSubsystem.setDefaultCommand(
-                    new DefaultCurvatureDriveCommand(robotContainer));
-        }
+//        // Check the selected driver control method at TeleopInit once
+//        if (driveMethodChooser.getSelected() == DRIVE_STYLE.ARCADE) {
+//            robotContainer.drivetrainSubsystem.setDefaultCommand(
+//                    new DefaultArcadeDriveCommand(robotContainer));
+//        } else if (driveMethodChooser.getSelected() == DRIVE_STYLE.TANK) {
+//            robotContainer.drivetrainSubsystem.setDefaultCommand(
+//                    new DefaultTankDriveCommand(robotContainer));
+//        } else {
+//            robotContainer.drivetrainSubsystem.setDefaultCommand(
+//                    new DefaultCurvatureDriveCommand(robotContainer));
+//        }
     }
 
     /** This function is called periodically during operator control. */

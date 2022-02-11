@@ -6,18 +6,18 @@ import frc.robot.input.AttackThree;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class DefaultArcadeDriveCommand extends CommandBase {
-    private final DrivetrainSubsystem drivetrainSubsystem;
+    //private final DrivetrainSubsystem drivetrainSubsystem;
 
-    private final AttackThree leftStick;
-    private final AttackThree rightStick;
+    //private final AttackThree leftStick;
+    //private final AttackThree rightStick;
 
     public DefaultArcadeDriveCommand(RobotContainer robotContainer) {
-        this.leftStick = robotContainer.leftStick;
-        this.rightStick = robotContainer.rightStick;
+        //this.leftStick = robotContainer.leftStick;
+        //this.rightStick = robotContainer.rightStick;
 
-        this.drivetrainSubsystem = robotContainer.drivetrainSubsystem;
+        //this.drivetrainSubsystem = robotContainer.drivetrainSubsystem;
 
-        addRequirements(drivetrainSubsystem);
+        //addRequirements(drivetrainSubsystem);
     }
 
     @Override
@@ -33,15 +33,15 @@ public class DefaultArcadeDriveCommand extends CommandBase {
         double throttleLeftValue;
         double rotationRightValue;
 
-        throttleLeftValue = leftStick.getY();
-        rotationRightValue = rightStick.getX();
+        //throttleLeftValue = leftStick.getY();
+        //rotationRightValue = rightStick.getX();
 
-        drivetrainSubsystem.arcadeDrive(throttleLeftValue, rotationRightValue, true);
+        //drivetrainSubsystem.arcadeDrive(throttleLeftValue, rotationRightValue, true);
     }
 
     /** At the end, stop the drivetrain. */
     @Override
     public void end(boolean interrupted) {
-        drivetrainSubsystem.arcadeDrive(0.0, 0.0, false);
+        //drivetrainSubsystem.arcadeDrive(0.0, 0.0, false);
     }
 }

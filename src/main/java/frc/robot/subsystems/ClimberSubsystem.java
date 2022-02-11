@@ -11,13 +11,13 @@ import frc.robot.Constants.ClimberConstants;
 
 public class ClimberSubsystem extends SubsystemBase {
 
-    Solenoid jumper = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.JUMPER_ID);
-    Solenoid release_jumper = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.RELEASE_JUMPER_ID);
-    Solenoid clamper = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.CLAMPER_ID);
-    Solenoid pivot = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.PIVOT_ID);
-    Solenoid extender = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.EXTENDER_ID);
+    Solenoid jumper = new Solenoid(PneumaticsModuleType.CTREPCM, ClimberConstants.JUMPER_ID);
+    Solenoid release_jumper = new Solenoid(PneumaticsModuleType.CTREPCM, ClimberConstants.RELEASE_JUMPER_ID);
+    Solenoid clamper = new Solenoid(PneumaticsModuleType.CTREPCM, ClimberConstants.CLAMPER_ID);
+    Solenoid pivot = new Solenoid(PneumaticsModuleType.CTREPCM, ClimberConstants.PIVOT_ID);
+    Solenoid extender = new Solenoid(PneumaticsModuleType.CTREPCM, ClimberConstants.EXTENDER_ID);
 
-    DigitalInput jumperLimitSwitch = new DigitalInput(0); // Limit switch is pressed when in neutral state,
+    public DigitalInput jumperLimitSwitch = new DigitalInput(0); // Limit switch is pressed when in neutral state,
                                                                  // not pressed when "jumping"
 
     WPI_TalonFX climber_motor = new WPI_TalonFX(ClimberConstants.CLIMBER_MOTOR_CHANNEL);
