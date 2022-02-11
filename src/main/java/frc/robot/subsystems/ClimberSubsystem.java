@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
+import frc.robot.commands.climber.ClimberJumpGrabCommand;
 
 public class ClimberSubsystem extends SubsystemBase {
 
@@ -32,7 +33,6 @@ public class ClimberSubsystem extends SubsystemBase {
         }
 
         SmartDashboard.putData(delayTimeChooser);
-
     }
 
     /**
@@ -54,6 +54,14 @@ public class ClimberSubsystem extends SubsystemBase {
      */
     public void clamperToggle() {
         clamper.toggle();
+    }
+
+    public void clamperClose() {
+        clamper.set(true);
+    }
+
+    public void clamperOpen() {
+        clamper.set(false);
     }
 
     /**

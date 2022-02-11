@@ -71,5 +71,8 @@ public class RobotContainer {
     }
 
     public void periodic() {
+        if (!climberSubsystem.jumperLimitSwitch.get()) {
+            new ClimberJumpGrabCommand(this).schedule();
+        }
     }
 }

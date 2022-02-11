@@ -36,8 +36,9 @@ public class ClimberJumpGrabCommand extends CommandBase {
     @Override
     public void execute() {
         if (!climberSubsystem.jumperLimitSwitch.get()) {
+            System.out.println("In if statement");
             Timer.delay(delay);
-            climberSubsystem.clamperToggle();
+            climberSubsystem.clamperClose();
         }
     }
 
