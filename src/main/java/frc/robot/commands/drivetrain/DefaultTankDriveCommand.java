@@ -3,6 +3,7 @@ package frc.robot.commands.drivetrain;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.input.AttackThree;
+import frc.robot.input.AttackThree.AttackThreeAxis;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 /** Default Drive Command */
@@ -32,12 +33,12 @@ public class DefaultTankDriveCommand extends CommandBase {
     public void execute() {
 
         double throttleLeftValue = 0.0;
-        double rotationRightValue = 0.0;
+        double throttleRightValue = 0.0;
 
-        throttleLeftValue = rightStick.getY();
-        rotationRightValue = leftStick.getY();
+        throttleLeftValue = leftStick.getAxis(AttackThreeAxis.Y);
+        throttleRightValue = rightStick.getAxis(AttackThreeAxis.Y);
 
-        drivetrainSubsystem.westCoastDrive(throttleLeftValue, rotationRightValue, true);
+        drivetrainSubsystem.westCoastDrive(throttleLeftValue, throttleRightValue, true);
     }
 
     /** At the end, stop the drivetrain. */

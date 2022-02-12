@@ -3,6 +3,7 @@ package frc.robot.commands.drivetrain;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.input.AttackThree;
+import frc.robot.input.AttackThree.AttackThreeAxis;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class DefaultArcadeDriveCommand extends CommandBase {
@@ -33,8 +34,8 @@ public class DefaultArcadeDriveCommand extends CommandBase {
         double throttleLeftValue;
         double rotationRightValue;
 
-        throttleLeftValue = leftStick.getY();
-        rotationRightValue = rightStick.getX();
+        throttleLeftValue = leftStick.getAxis(AttackThreeAxis.Y);
+        rotationRightValue = rightStick.getAxis(AttackThreeAxis.X);
 
         drivetrainSubsystem.arcadeDrive(throttleLeftValue, rotationRightValue, true);
     }

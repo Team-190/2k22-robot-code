@@ -33,13 +33,14 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     private final MotorControllerGroup leftSide = new MotorControllerGroup(leftLeader, leftFollower);
     private final MotorControllerGroup rightSide = new MotorControllerGroup(rightLeader, rightFollower);
 
-    private final DifferentialDrive differentialDrive = new DifferentialDrive(leftSide, rightSide);
+    public final DifferentialDrive differentialDrive = new DifferentialDrive(leftSide, rightSide);
 
     // Objects for PID tracking
     // private final AHRS navx = new AHRS(SPI.Port.kMXP);
     public final ADXRS450_Gyro gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
     private final DifferentialDriveOdometry odometry =
             new DifferentialDriveOdometry(Rotation2d.fromDegrees(0));
+    private double angleOffset = 0;
 
     /**
     * Construct an instance of the Drivetrain
@@ -63,6 +64,7 @@ public class DrivetrainSubsystem extends PIDSubsystem {
         rightFollower.follow(rightLeader);
 
         invertDrivetrain(false);
+
 
         // invertDrivetrain(true);
         
@@ -114,6 +116,8 @@ public class DrivetrainSubsystem extends PIDSubsystem {
         SmartDashboard.putNumber("Get right wheel speed", rightLeader.getSelectedSensorVelocity());
         SmartDashboard.putNumber("gyro raw yaw", gyro.getAngle());
         SmartDashboard.putNumber("gyro yaw", getYawDegrees());
+        SmartDashboard.putNumber("Meters Left Side Traveled", getDistanceMeters(leftLeader));
+        SmartDashboard.putNumber("Meters Right Side Traveled", getDistanceMeters(rightLeader));
         
         
 
@@ -134,7 +138,7 @@ public class DrivetrainSubsystem extends PIDSubsystem {
      * @return the distance in meters
      */
     public double getDistanceMeters(TalonFX talon) {
-        return -talon.getSelectedSensorPosition() * DrivetrainConstants.METERS_PER_COUNT;
+        return talon.getSelectedSensorPosition() * DrivetrainConstants.METERS_PER_COUNT;
     }
 
     /**
@@ -144,8 +148,8 @@ public class DrivetrainSubsystem extends PIDSubsystem {
      */
     public DifferentialDriveWheelSpeeds getWheelSpeeds() {
         return new DifferentialDriveWheelSpeeds(
-            -leftLeader.getSelectedSensorVelocity() * DrivetrainConstants.METERS_PER_COUNT * 10,
-            -rightLeader.getSelectedSensorVelocity() * DrivetrainConstants.METERS_PER_COUNT * 10
+            leftLeader.getSelectedSensorVelocity() * DrivetrainConstants.METERS_PER_COUNT * 10,
+            rightLeader.getSelectedSensorVelocity() * DrivetrainConstants.METERS_PER_COUNT * 10
         );
     }
 
@@ -157,7 +161,7 @@ public class DrivetrainSubsystem extends PIDSubsystem {
      * @return yaw in degrees
      */
     public double getYawDegrees() { // -180 to 180 degrees
-        double angle = (gyro.getAngle()*7.5) % 360;
+        double angle = ((gyro.getAngle()*7.5) + angleOffset) % 360;
         if (angle <= 180.0)
             return angle;
         return angle - 360;
@@ -211,12 +215,16 @@ public class DrivetrainSubsystem extends PIDSubsystem {
         rightLeader.setSelectedSensorPosition(0);
     }
 
+
     /**
-     * Resets the Yaw position of the gyro
+     * Resets the Yaw position of the gyro and sets an offset
+     * @param forwards True if robot is going forwards, false if backwards
      */
-    public void resetGyro() {
+    public void resetGyro(boolean forwards) {
         gyro.reset();
+        angleOffset = forwards ? 0 : 180; // No offset if true, 180 offset if false
     }
+
 
     /**
      * Resets odometry to specified pose
@@ -232,7 +240,7 @@ public class DrivetrainSubsystem extends PIDSubsystem {
      * Resets gyro, Encoders, odometry
      */
     public void resetAll() {
-        resetGyro();
+        resetGyro(true);
         resetOdometry(new Pose2d(0, 0, Rotation2d.fromDegrees(getYawDegrees())));
     }
 
@@ -294,7 +302,9 @@ public class DrivetrainSubsystem extends PIDSubsystem {
      */
     public void tankDriveVolts(double leftVolts, double rightVolts) {
         leftLeader.setVoltage(leftVolts);
+        leftFollower.setVoltage(leftVolts);
         rightLeader.setVoltage(rightVolts);
+        rightFollower.setVoltage(rightVolts);
         differentialDrive.feed();
     }
 

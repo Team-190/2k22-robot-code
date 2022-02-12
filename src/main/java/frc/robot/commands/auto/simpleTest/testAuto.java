@@ -18,5 +18,6 @@ public class testAuto extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
     new TrajectoryFollowerCommand(robotContainer, testTrajectory.START));
+    //new TestVoltCommand(robotContainer).withTimeout(2));
   }
 }
