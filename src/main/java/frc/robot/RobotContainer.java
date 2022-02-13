@@ -10,7 +10,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.VisionCommand;
+import frc.robot.commands.Turret.VisionCommand;
 import frc.robot.input.AttackThree;
 import frc.robot.input.XboxOneController;
 import frc.robot.subsystems.DrivetrainSubsystem;

@@ -63,5 +63,11 @@ public final class Constants {
         public static final double D = 0.5;
         public static final double F = 0;
 
+        // Turret Lead/Lag Constants TODO: Find these
+        public static final double BALL_VELOCITY_PROPORTIONAL = 1;
+        public static final double BALL_VELOCITY_OFFSET = 1;
+        public static final double HOOD_ANGLE_PROPORTIONAL = 1;
+        public static final double HOOD_ANGLE_OFFSET = 1;
+
     }
 }

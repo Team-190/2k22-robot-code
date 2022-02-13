@@ -70,6 +70,14 @@ public class LimeLightSubsystem extends SubsystemBase {
   }
 
   /**
+   * Gets the distance to target TODO: do this
+   * @return distance to target (meters)
+   */
+  public double getDistanceToTarget() {
+    return 1;
+  }
+
+  /**
    * Turns the light on
    */
   public void lightOn() {

@@ -25,6 +25,7 @@ public class TurretSubsystem extends PIDSubsystem {
 
 
 
+
   /** Creates a new TurretSubsystem. */
   public TurretSubsystem(double P, double I, double D, double F, LimeLightSubsystem limeLightSubsystem) {
       super(
@@ -101,7 +102,7 @@ public class TurretSubsystem extends PIDSubsystem {
    * @param ticks current encoder tick value
    * @return current degree amount
    */
-  public double ticksToDegrees (int ticks) {
+  public double ticksToDegrees (double ticks) {
     return ticks * 3.6;
   }
 
@@ -110,9 +111,17 @@ public class TurretSubsystem extends PIDSubsystem {
    * @param degrees current degree amount
    * @return current encoder tick value
    */
-  public int degreesToTicks (double degrees){
+  public double degreesToTicks (double degrees){
     double ticks = degrees/3.6;
-    return (int)Math.round(ticks);
+    return ticks;
+  }
+
+  /**
+   * Get the angle of the Turret (Positive is counter Clockwise, 0 is front of robot)
+   * @return the angle of the turret in degrees
+   */
+  public double getTurretAngle() {
+    return ticksToDegrees(turretMotor.getSelectedSensorPosition());
   }
 
   /**

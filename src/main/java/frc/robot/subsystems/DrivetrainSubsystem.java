@@ -142,6 +142,15 @@ public class DrivetrainSubsystem extends PIDSubsystem {
         differentialDrive.curvatureDrive(throttle, radius, quickTurn);
     }
 
+    /**
+     * Gets the magnitude of the velocity of the robot
+     * TODO: Find this!
+     * @return the magnitude of the drivetrain
+     */
+    public double magnitudeVelocity() {
+        return 1;
+    }
+
     // PID methods
 
     @Override
