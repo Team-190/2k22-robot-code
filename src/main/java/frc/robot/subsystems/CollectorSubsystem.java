@@ -31,7 +31,7 @@ public class CollectorSubsystem extends SubsystemBase {
 
     /** Set the Collector Motor to intake into the Chaos Revolver */
     public void intake() {
-        collectorMotor.set(1);
+        collectorMotor.set(0.5);
     }
 
     /** Set the Collector Motor to expunge, so that we can unjam from the roller bar */

@@ -97,7 +97,7 @@ public class DrivetrainSubsystem extends PIDSubsystem {
 
         // Wait for Gyro init before finishing DriveSubsystem init
         try {
-            Thread.sleep(5000);
+            Thread.sleep(2000);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -193,14 +193,14 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     public void invertDrivetrain(boolean reversed) {
         if (reversed) {
             leftLeader.setInverted(TalonFXInvertType.Clockwise);
-            leftFollower.setInverted(TalonFXInvertType.FollowMaster);
+            leftFollower.setInverted(TalonFXInvertType.Clockwise);
             rightLeader.setInverted(TalonFXInvertType.CounterClockwise);
-            rightFollower.setInverted(TalonFXInvertType.FollowMaster);
+            rightFollower.setInverted(TalonFXInvertType.CounterClockwise);
         } else {
             leftLeader.setInverted(TalonFXInvertType.CounterClockwise);
-            leftFollower.setInverted(TalonFXInvertType.FollowMaster);
+            leftFollower.setInverted(TalonFXInvertType.CounterClockwise);
             rightLeader.setInverted(TalonFXInvertType.Clockwise);
-            rightFollower.setInverted(TalonFXInvertType.FollowMaster);
+            rightFollower.setInverted(TalonFXInvertType.Clockwise);
         }
 
         
