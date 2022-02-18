@@ -17,6 +17,7 @@ public class TargetLeadLagCommand extends CommandBase {
   DrivetrainSubsystem drivetrainSubsystem = null;
   TurretSubsystem turretSubsystem = null;
   LimeLightSubsystem limeLightSubsystem = null;
+  // ShooterSubsystem shooterSubsystem = null;
 
   double distance_target = 0;
   double magnitudeVelocity = 0;
@@ -32,6 +33,7 @@ public class TargetLeadLagCommand extends CommandBase {
     this.drivetrainSubsystem = robotContainer.drivetrainSubsystem;
     this.turretSubsystem = robotContainer.turretSubsystem;
     this.limeLightSubsystem = robotContainer.limeLightSubsystem;
+    // this.shooterSubsystem = robotContainer.shooterSubsystem;
     
   }
 
@@ -42,6 +44,12 @@ public class TargetLeadLagCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    double ballVelocityProportional = 1; // shooterSubsystem.getBallVelocityProportional();
+    double ballVelocityOffset = 1; // shooterSubsystem.getBallVelocityOffset();
+    double hoodAngleProportional = 1; // shooterSubsystem.getHoodAngleProportional();
+    double hoodAngleOffset = 1; // shooterSubsystem.getHoodAngleOffset();
+
+    
     distance_target = limeLightSubsystem.getDistanceToTarget();
     magnitudeVelocity = drivetrainSubsystem.magnitudeVelocity();
     angleToTarget = limeLightSubsystem.degreesAskew() + turretSubsystem.getTurretAngle();
@@ -50,8 +58,8 @@ public class TargetLeadLagCommand extends CommandBase {
                               (
                                 (magnitudeVelocity * distance_target) / 
                                   (
-                                    ((TurretConstants.BALL_VELOCITY_PROPORTIONAL * distance_target) + TurretConstants.BALL_VELOCITY_OFFSET) *
-                                    Math.cos(Math.toRadians(((TurretConstants.HOOD_ANGLE_PROPORTIONAL * distance_target) + TurretConstants.HOOD_ANGLE_OFFSET)))
+                                    ((ballVelocityProportional * distance_target) + ballVelocityOffset) *
+                                    Math.cos(Math.toRadians(((hoodAngleProportional * distance_target) + hoodAngleOffset)))
                                   )
                               );
     magnitudeDistanceToLeadLagTarget = Math.sqrt(Math.pow(xDistanceToLeadLagTarget, 2) + Math.pow(yDistanceToLeadLagTarget, 2));
@@ -84,6 +92,6 @@ public class TargetLeadLagCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return !limeLightSubsystem.targetFound() || turretSubsystem.turretUnwrap();
   }
 }

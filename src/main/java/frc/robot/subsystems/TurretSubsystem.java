@@ -23,6 +23,10 @@ public class TurretSubsystem extends PIDSubsystem {
 
   LimeLightSubsystem limeLightSubsystem = null;
 
+  double lastSeen = 0;
+  double TURRET_MAXIMUM_LIMIT = 1000000; // TODO: Find this
+  double TURRET_MINIMUM_LIMIT = -1000000; // TODO: Find this
+
 
 
 
@@ -80,6 +84,21 @@ public class TurretSubsystem extends PIDSubsystem {
    */
   public void turretManual(double speed) {
     turretMotor.set(speed);
+  }
+
+  /**
+   * Unwraps the turret if it gets past it's maximum or minimum limit
+   * @return True if the turret gets past the upper or lower limit else False
+   */
+  public boolean turretUnwrap() {
+    if (turretMotor.getSelectedSensorPosition() >= TURRET_MAXIMUM_LIMIT) {
+      relativeTurretPID(degreesToTicks(-360));
+      return true;
+    } else if (turretMotor.getSelectedSensorPosition() <= TURRET_MINIMUM_LIMIT) {
+      relativeTurretPID(degreesToTicks(360));
+      return true;
+    }
+    return false;
   }
   
   /**

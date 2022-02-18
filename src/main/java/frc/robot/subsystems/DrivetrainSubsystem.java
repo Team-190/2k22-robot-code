@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import frc.robot.Constants.DrivetrainConstants;
 
@@ -144,11 +145,22 @@ public class DrivetrainSubsystem extends PIDSubsystem {
 
     /**
      * Gets the magnitude of the velocity of the robot
-     * TODO: Find this!
      * @return the magnitude of the drivetrain
      */
     public double magnitudeVelocity() {
-        return 1;
+        double leftSpeeds = leftLeader.getSelectedSensorVelocity() * DrivetrainConstants.METERS_PER_COUNT * 10;
+        double rightSpeeds = rightLeader.getSelectedSensorVelocity() * DrivetrainConstants.METERS_PER_COUNT * 10;
+
+        // Distance from the left wheel to the center of the instantanious turn
+        double lengthToVirtualCenter = (leftSpeeds * DrivetrainConstants.TRACKWIDTH_METERS) / (rightSpeeds - leftSpeeds);
+
+        // The robot's angular velocity
+        double angularVelocity = leftSpeeds/lengthToVirtualCenter;
+
+        // The instantanious velocity of the shooter
+        double magnitudeVelocity = angularVelocity * (lengthToVirtualCenter + (DrivetrainConstants.TRACKWIDTH_METERS/2));
+
+        return magnitudeVelocity;
     }
 
     // PID methods
