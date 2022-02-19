@@ -79,6 +79,9 @@ public final class Constants {
         public static final double D = 0.5;
         public static final double F = 0;
 
+        public static final double TURRET_STEP_SIZE = 1;
+
+
 
     }
 }

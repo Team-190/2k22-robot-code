@@ -26,6 +26,8 @@ public class TurretSubsystem extends PIDSubsystem {
   double lastSeen = 0;
   double TURRET_MAXIMUM_LIMIT = 1000000; // TODO: Find this
   double TURRET_MINIMUM_LIMIT = -1000000; // TODO: Find this
+  int turnToDirection = 1;
+  int defaultDirection = 1;
 
 
 
@@ -113,7 +115,7 @@ public class TurretSubsystem extends PIDSubsystem {
    * Checks if the PID motion is complete
    */
   public boolean isMotionComplete(){
-    return (Math.abs(turretMotor.getSelectedSensorPosition()-turretMotor.getClosedLoopTarget())<=1);
+    return (Math.abs(turretMotor.getSelectedSensorPosition()-turretMotor.getClosedLoopTarget())<=1); // TODO: set tolerance
   }
 
   /**
@@ -148,6 +150,14 @@ public class TurretSubsystem extends PIDSubsystem {
    * @param setpoint encoder tick value for turret to move to
    */
   public void turretPID(double setpoint) {
+    double offset = 0;
+    if (turretMotor.getClosedLoopTarget() > TURRET_MAXIMUM_LIMIT) {
+      offset = setpoint - TURRET_MAXIMUM_LIMIT;
+      setpoint = TURRET_MINIMUM_LIMIT + offset;
+    } else if (turretMotor.getClosedLoopTarget() > TURRET_MINIMUM_LIMIT) {
+      offset = setpoint + TURRET_MINIMUM_LIMIT;
+      setpoint = TURRET_MAXIMUM_LIMIT + offset;
+    }
     turretMotor.set(ControlMode.Position, setpoint);
   }
 
@@ -165,6 +175,29 @@ public class TurretSubsystem extends PIDSubsystem {
   public double getMeasurement() {
     // Return the process variable measurement here
     return turretMotor.getSelectedSensorPosition();
+  }
+
+  /**
+   * Sets the direction for the turret to search in (default direction)
+   */
+  public void setDirection() {
+    this.turnToDirection = this.defaultDirection;
+  }
+
+  /**
+   * Sets the direction for the turret to search in
+   * @param direction the direction input for the turret to search to [-1 or 1]
+   */
+  public void setDirection(int direction) {
+    this.turnToDirection = direction;
+  }
+
+  /**
+   * Gets the direction of the turret to search in
+   * @return the direction for the robot to search in [-1 or 1]
+   */
+  public int getDirection() {
+    return this.turnToDirection;
   }
 
 

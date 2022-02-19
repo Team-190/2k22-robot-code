@@ -17,6 +17,7 @@ public class TargetLeadLagCommand extends CommandBase {
   DrivetrainSubsystem drivetrainSubsystem = null;
   TurretSubsystem turretSubsystem = null;
   LimeLightSubsystem limeLightSubsystem = null;
+  double[] lastSeen = {0,0};
   // ShooterSubsystem shooterSubsystem = null;
 
   double distance_target = 0;
@@ -48,6 +49,14 @@ public class TargetLeadLagCommand extends CommandBase {
     double ballVelocityOffset = 1; // shooterSubsystem.getBallVelocityOffset();
     double hoodAngleProportional = 1; // shooterSubsystem.getHoodAngleProportional();
     double hoodAngleOffset = 1; // shooterSubsystem.getHoodAngleOffset();
+
+    lastSeen[1] = lastSeen[0];
+    lastSeen[0] = limeLightSubsystem.degreesAskew();
+
+    // Gives us the direction to turn the turret towards based on the last sighting of the target
+    int setDirection = (int)(lastSeen[0] - lastSeen[1]);
+    if (setDirection == 0) turretSubsystem.setDirection();
+    else turretSubsystem.setDirection(setDirection / Math.abs(setDirection)); // TODO: HEY DEVIDE BY ZERO MUCH???
 
     
     distance_target = limeLightSubsystem.getDistanceToTarget();
@@ -82,6 +91,8 @@ public class TargetLeadLagCommand extends CommandBase {
                                 )
                               )
                             );
+
+    
 
   }
 
