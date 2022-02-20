@@ -21,6 +21,12 @@ public final class Constants {
         public static final int BUTTON_BOX_RIGHT_CHANNEL = 5;
     }
 
+    public static final class CollectorConstants {
+        //CAN Ids
+        public static final int UPPERBALLPATH_CHANNEL = 5;
+        public static final int COLLECTOR_CHANNEL = 6;
+    }
+
     /**
      * Constants for the drivetrainSubsystem
      */
