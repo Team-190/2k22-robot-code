@@ -138,6 +138,12 @@ public class AttackThree extends Joystick {
     */
     public double getAxis(AttackThreeAxis axis) {
         double val = getRawAxis(axis.key);
+
+        // Attack 3 Y axis forwards is negative so negate in code
+        if (axis == AttackThreeAxis.Y) {
+            val *= -1;
+        }
+        
         if (Math.abs(val) <= deadband) {
             val = 0.0;
         }
