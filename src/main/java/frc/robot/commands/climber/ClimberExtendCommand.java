@@ -69,6 +69,7 @@ public class ClimberExtendCommand extends Command {
     @Override
     protected void end() {
         climberSubsystem.extendClimber(0);
+        climberSubsystem.setStage(3);
     }
 
     /**

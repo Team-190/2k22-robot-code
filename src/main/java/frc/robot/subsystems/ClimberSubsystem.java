@@ -1,14 +1,16 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
-import frc.robot.commands.climber.ClimberJumpGrabCommand;
 
 public class ClimberSubsystem extends SubsystemBase {
 
@@ -17,9 +19,12 @@ public class ClimberSubsystem extends SubsystemBase {
     Solenoid clamper = new Solenoid(PneumaticsModuleType.CTREPCM, ClimberConstants.CLAMPER_ID);
     Solenoid pivot = new Solenoid(PneumaticsModuleType.CTREPCM, ClimberConstants.PIVOT_ID);
     Solenoid extender = new Solenoid(PneumaticsModuleType.CTREPCM, ClimberConstants.EXTENDER_ID);
+    int jumpStage = 0;
 
     public DigitalInput jumperLimitSwitch = new DigitalInput(0); // Limit switch is pressed when in neutral state,
                                                                  // not pressed when "jumping"
+
+    public AnalogInput distanceSensor = new AnalogInput(0); // Ultrasonic Sensor
 
     WPI_TalonFX climber_motor = new WPI_TalonFX(ClimberConstants.CLIMBER_MOTOR_CHANNEL);
 
@@ -36,10 +41,11 @@ public class ClimberSubsystem extends SubsystemBase {
     }
 
     /**
-     * Turns the jumper solenoid on
+     * Turns the jumper solenoid on or off
+     * @param on state of the solenoid
      */
-    public void jumperActuate() {
-        jumper.set(true);
+    public void jumperActuate(boolean on) {
+        jumper.set(on);
     }
 
     /**
@@ -104,6 +110,34 @@ public class ClimberSubsystem extends SubsystemBase {
 
     public Double getDelay() {
         return delayTimeChooser.getSelected();
+    }
+
+    /**
+     * gets current climbing stage
+     * @return an integer representing the current climbing stage
+     */
+    public int getStage(){
+        return jumpStage;
+    }
+
+    /**
+     * sets climbing stage to stage
+     * @param stage the stage we're setting to
+     */
+    public void setStage(int stage){
+        jumpStage = stage;
+    }
+
+    /**
+     * Gets the distance of the robot from the ground
+     * @return The distance of the robot from the ground (in inches)
+     */
+    public double getDistance() {
+        double rawValue = distanceSensor.getValue();
+        // voltage_scale_factor allows us to compensate for differences in supply voltage.
+        double voltage_scale_factor = 5/RobotController.getVoltage5V();
+        double currentDistanceInches = rawValue * voltage_scale_factor * 0.0492;
+        return currentDistanceInches;
     }
 
     @Override

@@ -11,6 +11,7 @@ public class ClimberJumpGrabCommand extends CommandBase {
     ClimberSubsystem climberSubsystem = null;
     Timer timer;
     Double delay = 0.0;
+    Boolean finished = false;
 
     public ClimberJumpGrabCommand(RobotContainer robotContainer) {
         // the requires(Subsystem) method must be called for each subsystem used by the command
@@ -24,6 +25,7 @@ public class ClimberJumpGrabCommand extends CommandBase {
      */
     @Override
     public void initialize() {
+        climberSubsystem.releaseJumperActuate();
         this.delay = climberSubsystem.getDelay();
     }
 
@@ -39,13 +41,15 @@ public class ClimberJumpGrabCommand extends CommandBase {
             System.out.println("In if statement");
             Timer.delay(delay);
             climberSubsystem.clamperClose();
+            climberSubsystem.jumperActuate(false);
+            finished = true;
         }
     }
 
     @Override
     public boolean isFinished() {
         // TODO: Make this return true when this Command no longer needs to run execute()
-        return true;
+        return finished;
     }
 
     /**
@@ -55,6 +59,6 @@ public class ClimberJumpGrabCommand extends CommandBase {
      * command.
      */
     protected void end() {
-
+        climberSubsystem.setStage(2);
     }
 }
