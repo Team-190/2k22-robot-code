@@ -33,10 +33,10 @@ public final class Constants {
         }
 
         // CAN Ids
-        public static final int LEFT_LEADER_CHANNEL = 1;
-        public static final int LEFT_FOLLOWER_CHANNEL = 2;
-        public static final int RIGHT_LEADER_CHANNEL = 3;
-        public static final int RIGHT_FOLLOWER_CHANNEL = 4;
+        public static final int LEFT_LEADER_CHANNEL = 0;
+        public static final int LEFT_FOLLOWER_CHANNEL = 1;
+        public static final int RIGHT_LEADER_CHANNEL = 2;
+        public static final int RIGHT_FOLLOWER_CHANNEL = 3;
 
         // PID Constants (Not Auto Constants)
         public static final int SLOT_ID = 0;
