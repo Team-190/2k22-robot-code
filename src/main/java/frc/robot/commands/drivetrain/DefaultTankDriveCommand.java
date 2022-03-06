@@ -1,8 +1,10 @@
 package frc.robot.commands.drivetrain;
 
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.input.AttackThree;
+import frc.robot.input.XboxOneController;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 /** Default Drive Command */
@@ -11,10 +13,12 @@ public class DefaultTankDriveCommand extends CommandBase {
 
     private final AttackThree leftStick;
     private final AttackThree rightStick;
+    private final XboxOneController controller;
 
     public DefaultTankDriveCommand(RobotContainer robotContainer) {
         this.leftStick = robotContainer.leftStick;
         this.rightStick = robotContainer.rightStick;
+        this.controller = robotContainer.driverXboxController;
 
         this.drivetrainSubsystem = robotContainer.drivetrainSubsystem;
 
@@ -34,8 +38,11 @@ public class DefaultTankDriveCommand extends CommandBase {
         double throttleLeftValue = 0.0;
         double rotationRightValue = 0.0;
 
-        throttleLeftValue = rightStick.getY();
-        rotationRightValue = leftStick.getY();
+        // throttleLeftValue = rightStick.getY();
+        // rotationRightValue = leftStick.getY();
+
+        throttleLeftValue = controller.getLeftStickY();
+        rotationRightValue = controller.getRightStickY();
 
         drivetrainSubsystem.westCoastDrive(throttleLeftValue, rotationRightValue, false);
     }

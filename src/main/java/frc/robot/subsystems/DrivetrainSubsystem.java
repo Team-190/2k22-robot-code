@@ -1,12 +1,14 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
@@ -54,6 +56,11 @@ public class DrivetrainSubsystem extends PIDSubsystem {
         leftFollower.follow(leftLeader);
         rightFollower.follow(rightLeader);
 
+        leftLeader.setInverted(InvertType.InvertMotorOutput);
+        leftFollower.setInverted(InvertType.FollowMaster);
+        rightLeader.setInverted(InvertType.None);
+        rightFollower.setInverted(InvertType.FollowMaster);
+
         // Configure the PID feedback and constants
         leftLeader.configSelectedFeedbackSensor(
                 FeedbackDevice.IntegratedSensor,
@@ -91,6 +98,11 @@ public class DrivetrainSubsystem extends PIDSubsystem {
 
     @Override
     public void periodic() {
+        SmartDashboard.putNumber("Left Encoder Position", leftLeader.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Right Encoder Position", rightLeader.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Left Motor Velocity", leftLeader.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("Right Motor Velocity", rightLeader.getSelectedSensorVelocity());
+
     }
 
     /**
