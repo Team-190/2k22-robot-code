@@ -54,7 +54,7 @@ public class XboxOneController extends Joystick {
     * @return the value of the axis
     */
     public double getLeftStickY() {
-        return this.getRawAxis(1);
+        return -this.getRawAxis(1);
     }
 
     /**
@@ -90,7 +90,7 @@ public class XboxOneController extends Joystick {
     * @return the value of the axis
     */
     public double getRightStickY() {
-        return this.getRawAxis(5);
+        return -this.getRawAxis(5);
     }
 
     /**

@@ -9,13 +9,10 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.auto.simpleTest.testAuto;
-import frc.robot.commands.collector.ToggleCollectCommand;
 import frc.robot.commands.drivetrain.DefaultArcadeDriveCommand;
 import frc.robot.input.AttackThree;
 import frc.robot.input.XboxOneController;
-import frc.robot.subsystems.CollectorSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 /**
@@ -33,7 +30,6 @@ public class RobotContainer {
                     Constants.DrivetrainConstants.P,
                     Constants.DrivetrainConstants.I,
                     Constants.DrivetrainConstants.D);
-    public final CollectorSubsystem collectorSubsystem = new CollectorSubsystem();
 
     /*
     * Input
@@ -51,8 +47,7 @@ public class RobotContainer {
     */
     public RobotContainer() {
 
-        leftStick.triggerButton.whenPressed(new ToggleCollectCommand(this));
-        rightStick.triggerButton.whenPressed(new InstantCommand(()-> drivetrainSubsystem.resetAll(), drivetrainSubsystem));
+        driverXboxController.aButton.whenPressed(new InstantCommand(()-> drivetrainSubsystem.resetAll(), drivetrainSubsystem));
         leftStick.middleFaceButton.whenPressed(new InstantCommand(()-> drivetrainSubsystem.resetGyro(false), drivetrainSubsystem));
         drivetrainSubsystem.gyro.calibrate();
 

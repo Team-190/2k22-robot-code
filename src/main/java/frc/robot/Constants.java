@@ -38,10 +38,10 @@ public final class Constants {
         }
 
         // CAN Ids
-        public static final int LEFT_LEADER_CHANNEL = 13;
-        public static final int LEFT_FOLLOWER_CHANNEL = 12;
-        public static final int RIGHT_LEADER_CHANNEL = 9;
-        public static final int RIGHT_FOLLOWER_CHANNEL = 10;
+        public static final int LEFT_LEADER_CHANNEL = 0;
+        public static final int LEFT_FOLLOWER_CHANNEL = 1;
+        public static final int RIGHT_LEADER_CHANNEL = 2;
+        public static final int RIGHT_FOLLOWER_CHANNEL = 3;
 
         // PID Constants (Not Auto Constants)
         public static final int SLOT_ID = 0;
@@ -53,15 +53,13 @@ public final class Constants {
         public static final double F = 0;
 
         // Encoder and PID Constants (For Auto)
-        public static final double TRACKWIDTH_METERS = 0.781987; // horizontal distance between wheels
+        public static final double TRACKWIDTH_METERS = 0.7144; // horizontal distance between wheels
         public static final double COUNTS_PER_MOTOR_REVOLUTION = 2048;
-        public static final double WHEEL_DIAMETER_METERS = 0.1524;
-        public static final double AUTO_P = 3.3514; // Calculated by SysID
+        public static final double WHEEL_DIAMETER_METERS = 0.1016; // 4 inch diameter in meters
+        public static final double AUTO_P = 2.5764; // Calculated by SysID
 
-        // 18 to 52 gear reduction 
-        //TODO edit gear ratios
-        public static final double WHEEL_REVOLUTIONS_PER_MOTOR_REVOLUTIONS =
-                (18.0 / 52.0) * (10.0 / 42.0);
+        // (14/58) ratio to (20/28) on the drivetrain gearbox
+        public static final double WHEEL_REVOLUTIONS_PER_MOTOR_REVOLUTIONS = 0.172; // (0.172)
         public static final double METERS_PER_COUNT =
                 (1 / COUNTS_PER_MOTOR_REVOLUTION)
                         * // MOTOR ROTATIONS per count
@@ -71,7 +69,7 @@ public final class Constants {
         public static final DifferentialDriveKinematics DRIVE_KINEMATICS =
                 new DifferentialDriveKinematics(TRACKWIDTH_METERS);
         public static final double RAMSETE_B = 2; 
-        public static final double RAMSETE_ZETA = 0.7; // Was .9
+        public static final double RAMSETE_ZETA = 0.7;
 
         // Max Speed Constants
         public static final double MAX_SPEED_METERS_PER_SECOND = 2.7432; // Max speed set as 9 ft/s
@@ -79,9 +77,9 @@ public final class Constants {
         public final static int MAX_VOLTAGE = 11;
 
         // Constants calculated by System Identification software
-        public static final double S_VOLTS = 0.74452; 
-        public static final double V_VOLT_SECONDS_PER_METER = 2.8033;
-        public static final double A_VOLT_SECONDS_SQUARED_PER_METER = 0.72842;
+        public static final double S_VOLTS = 0.583; 
+        public static final double V_VOLT_SECONDS_PER_METER = 1.9376;
+        public static final double A_VOLT_SECONDS_SQUARED_PER_METER = 0.13026;
 
         public static final SimpleMotorFeedforward DRIVE_FEED_FORWARD =
                 new SimpleMotorFeedforward(
@@ -97,14 +95,5 @@ public final class Constants {
     
 
     }
-    /** Constants for the Collector */
-    public static final class CollectorConstants {
 
-        // Motor CAN Id
-        public static final int COLLECTOR_MOTOR_CHANNEL = 1;
-
-        // Solenoid Ports
-        public static final int COLLECTOR_SOLENOID_PORT_IN = 2;
-        public static final int COLLECTOR_SOLENOID_PORT_OUT = 3;
-    }
 }

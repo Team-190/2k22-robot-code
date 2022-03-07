@@ -1,11 +1,10 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -63,14 +62,15 @@ public class DrivetrainSubsystem extends PIDSubsystem {
         leftFollower.follow(leftLeader);
         rightFollower.follow(rightLeader);
 
-        invertDrivetrain(false);
-
-
-        // invertDrivetrain(true);
-        
+        // Configure invert type on the motors
+        leftLeader.setInverted(InvertType.InvertMotorOutput);
+        leftFollower.setInverted(InvertType.FollowMaster);
+        rightLeader.setInverted(InvertType.None);
+        rightFollower.setInverted(InvertType.FollowMaster);
 
         // Set Break Mode
         setBreakMode();
+        // setCoastMode();
 
         // Configure the PID feedback and constants
         leftLeader.configSelectedFeedbackSensor(
@@ -111,7 +111,10 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     public void periodic() {
         
         SmartDashboard.putNumber("Left Drive Encoder", leftLeader.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Left Follower Drive Encoder", leftFollower.getSelectedSensorPosition());
         SmartDashboard.putNumber("Right Drive Encoder", rightLeader.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Right Follower Drive Encoder", rightFollower.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Difference Meters", Math.abs(getDistanceMeters(leftLeader)-getDistanceMeters(rightLeader)));
         SmartDashboard.putNumber("Get left wheel speed", leftLeader.getSelectedSensorVelocity());
         SmartDashboard.putNumber("Get right wheel speed", rightLeader.getSelectedSensorVelocity());
         SmartDashboard.putNumber("gyro raw yaw", gyro.getAngle());
@@ -130,7 +133,6 @@ public class DrivetrainSubsystem extends PIDSubsystem {
         
         
     }
-
 
     /**
      * Gets distance in meters
@@ -158,10 +160,10 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     /**
      * Gets the chassis's yaw (orientation of the robot)
      *
-     * @return yaw in degrees
+     * @return yaw in degrees (-180 to 180 degrees)
      */
-    public double getYawDegrees() { // -180 to 180 degrees
-        double angle = ((gyro.getAngle()*7.5) + angleOffset) % 360;
+    public double getYawDegrees() {
+        double angle = ((gyro.getAngle()) + angleOffset) % 360;
         if (angle <= 180.0)
             return angle;
         return angle - 360;
@@ -188,31 +190,13 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     }
 
     /**
-     * Invert Drivetrain motors
-     */
-    public void invertDrivetrain(boolean reversed) {
-        if (reversed) {
-            leftLeader.setInverted(TalonFXInvertType.Clockwise);
-            leftFollower.setInverted(TalonFXInvertType.Clockwise);
-            rightLeader.setInverted(TalonFXInvertType.CounterClockwise);
-            rightFollower.setInverted(TalonFXInvertType.CounterClockwise);
-        } else {
-            leftLeader.setInverted(TalonFXInvertType.CounterClockwise);
-            leftFollower.setInverted(TalonFXInvertType.CounterClockwise);
-            rightLeader.setInverted(TalonFXInvertType.Clockwise);
-            rightFollower.setInverted(TalonFXInvertType.Clockwise);
-        }
-
-        
-        
-    }
-
-    /**
      * Sets encoders to 0
      */
     private void resetEncoders() {
         leftLeader.setSelectedSensorPosition(0);
         rightLeader.setSelectedSensorPosition(0);
+        leftFollower.setSelectedSensorPosition(0);
+        rightFollower.setSelectedSensorPosition(0);
     }
 
 
