@@ -92,24 +92,6 @@ public final class Constants {
         public final static DifferentialDriveVoltageConstraint AUTO_VOLTAGE_CONSTRAINT = new DifferentialDriveVoltageConstraint(
             DrivetrainConstants.DRIVE_FEED_FORWARD, DrivetrainConstants.DRIVE_KINEMATICS, DrivetrainConstants.MAX_VOLTAGE);
                 
-    
-
-        // Encoder and PID Constants (For Auto) // TODO: change for new robot
-        public static final double TRACKWIDTH_METERS = 0.781987; // horizontal distance between wheels
-        public static final double COUNTS_PER_MOTOR_REVOLUTION = 2048;
-        public static final double WHEEL_DIAMETER_METERS = 0.1524;
-
-        // 18 to 52 gear reduction 
-        //TODO edit gear ratios
-        public static final double WHEEL_REVOLUTIONS_PER_MOTOR_REVOLUTIONS =
-                (18.0 / 52.0) * (10.0 / 42.0);
-        public static final double METERS_PER_COUNT =
-                (1 / COUNTS_PER_MOTOR_REVOLUTION)
-                        * // MOTOR ROTATIONS per count
-                        WHEEL_REVOLUTIONS_PER_MOTOR_REVOLUTIONS
-                        * (WHEEL_DIAMETER_METERS * Math.PI);
-
-
     }
 
     public static final class TurretConstants {
