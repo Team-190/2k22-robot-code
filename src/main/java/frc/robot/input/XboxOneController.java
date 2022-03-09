@@ -54,6 +54,7 @@ public class XboxOneController extends Joystick {
     * @return the value of the axis
     */
     public double getLeftStickY() {
+        // Forward axis is negative so negate in code
         return -this.getRawAxis(1);
     }
 
@@ -90,6 +91,7 @@ public class XboxOneController extends Joystick {
     * @return the value of the axis
     */
     public double getRightStickY() {
+        // Forward axis is negative so negate in code
         return -this.getRawAxis(5);
     }
 

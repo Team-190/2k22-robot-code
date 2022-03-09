@@ -37,11 +37,11 @@ public class DefaultArcadeDriveCommand extends CommandBase {
         double throttleLeftValue;
         double rotationRightValue;
 
-        // throttleLeftValue = leftStick.getAxis(AttackThreeAxis.Y);
-        // rotationRightValue = rightStick.getAxis(AttackThreeAxis.X);
-        throttleLeftValue = controller.getLeftStickY();
-        rotationRightValue = controller.getRightStickX();
-
+        throttleLeftValue = leftStick.getAxis(AttackThreeAxis.Y);
+        rotationRightValue = rightStick.getAxis(AttackThreeAxis.X);
+        // throttleLeftValue = leftStick.getY();
+        // rotationRightValue = rightStick.getX();
+  
         drivetrainSubsystem.arcadeDrive(throttleLeftValue, rotationRightValue, true);
     }
 
