@@ -16,6 +16,7 @@ import frc.robot.Constants.DrivetrainConstants.DRIVE_STYLE;
 import frc.robot.commands.drivetrain.DefaultArcadeDriveCommand;
 import frc.robot.commands.drivetrain.DefaultCurvatureDriveCommand;
 import frc.robot.commands.drivetrain.DefaultTankDriveCommand;
+import frc.robot.subsystems.TurretSubsystem;
 
 /**
 * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -38,11 +39,13 @@ public class Robot extends TimedRobot {
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
 
-        driveMethodChooser.addOption("Arcade", DRIVE_STYLE.ARCADE);
         driveMethodChooser.addOption("Tank", DRIVE_STYLE.TANK);
         driveMethodChooser.addOption("Curvature", DRIVE_STYLE.MCFLY);
         driveMethodChooser.setDefaultOption("Arcade", DRIVE_STYLE.ARCADE);
         SmartDashboard.putData("Drive Method", driveMethodChooser);
+        
+        robotContainer.turretSubsystem.resetEncoder();
+        robotContainer.setDefaultCommands();
     }
 
     /**

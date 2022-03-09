@@ -1,15 +1,24 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.wpilibj.SPI;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import frc.robot.Constants.DrivetrainConstants;
 
@@ -26,12 +35,14 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     private final MotorControllerGroup leftSide = new MotorControllerGroup(leftLeader, leftFollower);
     private final MotorControllerGroup rightSide = new MotorControllerGroup(rightLeader, rightFollower);
 
-    private final DifferentialDrive differentialDrive = new DifferentialDrive(leftSide, rightSide);
+    public final DifferentialDrive differentialDrive = new DifferentialDrive(leftSide, rightSide);
 
     // Objects for PID tracking
-    private final AHRS navx = new AHRS(SPI.Port.kMXP);
+    // private final AHRS navx = new AHRS(SPI.Port.kMXP);
+    public final ADXRS450_Gyro gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
     private final DifferentialDriveOdometry odometry =
             new DifferentialDriveOdometry(Rotation2d.fromDegrees(0));
+    private double angleOffset = 0;
 
     /**
     * Construct an instance of the Drivetrain
@@ -53,6 +64,16 @@ public class DrivetrainSubsystem extends PIDSubsystem {
         // Configure the Followers
         leftFollower.follow(leftLeader);
         rightFollower.follow(rightLeader);
+
+        // Configure invert type on the motors
+        leftLeader.setInverted(InvertType.InvertMotorOutput);
+        leftFollower.setInverted(InvertType.FollowMaster);
+        rightLeader.setInverted(InvertType.None);
+        rightFollower.setInverted(InvertType.FollowMaster);
+
+        // Set Break Mode
+        setBreakMode();
+        // setCoastMode();
 
         // Configure the PID feedback and constants
         leftLeader.configSelectedFeedbackSensor(
@@ -77,20 +98,137 @@ public class DrivetrainSubsystem extends PIDSubsystem {
                 DrivetrainConstants.D,
                 DrivetrainConstants.F);
 
-        // Wait for NAVX init before finishing DriveSubsystem init
+        // Wait for Gyro init before finishing DriveSubsystem init
         try {
-            Thread.sleep(3000);
+            Thread.sleep(2000);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        // Reset Drive Odometry
-        odometry.resetPosition(new Pose2d(), Rotation2d.fromDegrees(navx.getYaw()));
+        // Reset Drive Odometry, Encoders, and Gyro
+        resetAll();
         setSetpoint(0);
     }
 
     @Override
     public void periodic() {
+        
+        SmartDashboard.putNumber("Left Drive Encoder", leftLeader.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Left Follower Drive Encoder", leftFollower.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Right Drive Encoder", rightLeader.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Right Follower Drive Encoder", rightFollower.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Difference Meters", Math.abs(getDistanceMeters(leftLeader)-getDistanceMeters(rightLeader)));
+        SmartDashboard.putNumber("Get left wheel speed", leftLeader.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("Get right wheel speed", rightLeader.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("gyro raw yaw", gyro.getAngle());
+        SmartDashboard.putNumber("gyro yaw", getYawDegrees());
+        SmartDashboard.putNumber("Meters Left Side Traveled", getDistanceMeters(leftLeader));
+        SmartDashboard.putNumber("Meters Right Side Traveled", getDistanceMeters(rightLeader));
+        
+        
+
+        // Update the Odometry
+        odometry.update(
+            Rotation2d.fromDegrees(getYawDegrees()),
+            getDistanceMeters(leftLeader),
+            getDistanceMeters(rightLeader)
+        );
+        
+        
+    }
+
+    /**
+     * Gets distance in meters
+     *
+     * @return the distance in meters
+     */
+    public double getDistanceMeters(TalonFX talon) {
+        return talon.getSelectedSensorPosition() * DrivetrainConstants.METERS_PER_COUNT;
+    }
+
+    /**
+     * (counts / 100 ms) * (meters / count) * (10 ms / 1 s) == (meters / second)
+     *
+     * @return Wheel speeds in meters / second
+     */
+    public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+        return new DifferentialDriveWheelSpeeds(
+            leftLeader.getSelectedSensorVelocity() * DrivetrainConstants.METERS_PER_COUNT * 10,
+            rightLeader.getSelectedSensorVelocity() * DrivetrainConstants.METERS_PER_COUNT * 10
+        );
+    }
+
+    
+
+    /**
+     * Gets the chassis's yaw (orientation of the robot)
+     *
+     * @return yaw in degrees (-180 to 180 degrees)
+     */
+    public double getYawDegrees() {
+        double angle = ((gyro.getAngle()) + angleOffset) % 360;
+        if (angle <= 180.0)
+            return angle;
+        return angle - 360;
+    }
+
+    /**
+     * Sets drive motors to brake
+     */
+    public void setBreakMode() {
+        leftLeader.setNeutralMode(NeutralMode.Brake);
+        rightLeader.setNeutralMode(NeutralMode.Brake);
+        leftFollower.setNeutralMode(NeutralMode.Brake);
+        rightFollower.setNeutralMode(NeutralMode.Brake);
+    }
+
+    /**
+     * Sets drive motors to coast
+     */
+    public void setCoastMode() {
+        leftLeader.setNeutralMode(NeutralMode.Coast);
+        rightLeader.setNeutralMode(NeutralMode.Coast);
+        leftFollower.setNeutralMode(NeutralMode.Coast);
+        rightFollower.setNeutralMode(NeutralMode.Coast);
+    }
+
+    /**
+     * Sets encoders to 0
+     */
+    private void resetEncoders() {
+        leftLeader.setSelectedSensorPosition(0);
+        rightLeader.setSelectedSensorPosition(0);
+        leftFollower.setSelectedSensorPosition(0);
+        rightFollower.setSelectedSensorPosition(0);
+    }
+
+
+    /**
+     * Resets the Yaw position of the gyro and sets an offset
+     * @param forwards True if robot is going forwards, false if backwards
+     */
+    public void resetGyro(boolean forwards) {
+        gyro.reset();
+        angleOffset = forwards ? 0 : 180; // No offset if true, 180 offset if false
+    }
+
+
+    /**
+     * Resets odometry to specified pose
+     *
+     * @param pose pose to reset to
+     */
+    private void resetOdometry(Pose2d pose) {
+        resetEncoders();
+        odometry.resetPosition(pose, Rotation2d.fromDegrees(getYawDegrees()));
+    }
+
+    /**
+     * Resets gyro, Encoders, odometry
+     */
+    public void resetAll() {
+        resetGyro(true);
+        resetOdometry(new Pose2d(0, 0, Rotation2d.fromDegrees(getYawDegrees())));
     }
 
     /**
@@ -128,6 +266,7 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     * @param square Whether to square the inputs
     */
     public void westCoastDrive(double leftStick, double rightStick, boolean square) {
+        //differentialDrive.tankDrive(Math.copySign(Math.pow(leftStick, power), leftStick), Math.copySign(Math.pow(leftStick, power), leftStick));
         differentialDrive.tankDrive(leftStick, rightStick, square);
     }
 
@@ -142,7 +281,40 @@ public class DrivetrainSubsystem extends PIDSubsystem {
         differentialDrive.curvatureDrive(throttle, radius, quickTurn);
     }
 
+    /**
+     * Gets the magnitude of the velocity of the robot
+     * @return the magnitude of the drivetrain
+     */
+    public double magnitudeVelocity() {
+        double leftSpeeds = leftLeader.getSelectedSensorVelocity() * DrivetrainConstants.METERS_PER_COUNT * 10;
+        double rightSpeeds = rightLeader.getSelectedSensorVelocity() * DrivetrainConstants.METERS_PER_COUNT * 10;
+
+        // Distance from the left wheel to the center of the instantanious turn
+        double lengthToVirtualCenter = (leftSpeeds * DrivetrainConstants.TRACKWIDTH_METERS) / (rightSpeeds - leftSpeeds);
+
+        // The robot's angular velocity
+        double angularVelocity = leftSpeeds/lengthToVirtualCenter;
+
+        // The instantanious velocity of the shooter
+        double magnitudeVelocity = angularVelocity * (lengthToVirtualCenter + (DrivetrainConstants.TRACKWIDTH_METERS/2));
+
+        return magnitudeVelocity;
+    }
+
     // PID methods
+    /**
+     * Controls the left and right sides of the drive directly with voltages.
+     *
+     * @param leftVolts the commanded left output
+     * @param rightVolts the commanded right output
+     */
+    public void tankDriveVolts(double leftVolts, double rightVolts) {
+        leftLeader.setVoltage(leftVolts);
+        leftFollower.setVoltage(leftVolts);
+        rightLeader.setVoltage(rightVolts);
+        rightFollower.setVoltage(rightVolts);
+        differentialDrive.feed();
+    }
 
     @Override
     protected void useOutput(double output, double setpoint) {}
@@ -151,6 +323,7 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     protected double getMeasurement() {
         return 0;
     }
+
 
     /**
     * Get the position of the robot relative to the starting position
