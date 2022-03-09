@@ -39,7 +39,6 @@ public class Robot extends TimedRobot {
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
 
-        driveMethodChooser.addOption("Arcade", DRIVE_STYLE.ARCADE);
         driveMethodChooser.addOption("Tank", DRIVE_STYLE.TANK);
         driveMethodChooser.addOption("Curvature", DRIVE_STYLE.MCFLY);
         driveMethodChooser.setDefaultOption("Arcade", DRIVE_STYLE.ARCADE);

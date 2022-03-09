@@ -3,6 +3,7 @@ package frc.robot.commands.drivetrain;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.input.AttackThree;
+import frc.robot.input.AttackThree.AttackThreeAxis;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class DefaultCurvatureDriveCommand extends CommandBase {
@@ -34,10 +35,10 @@ public class DefaultCurvatureDriveCommand extends CommandBase {
         double rotationRightValue = 0.0;
         boolean squareQuickTurn;
 
-        throttleLeftValue = leftStick.getY();
-        rotationRightValue = rightStick.getX();
+        throttleLeftValue = leftStick.getAxis(AttackThreeAxis.Y);
+        rotationRightValue = rightStick.getAxis(AttackThreeAxis.X);
 
-        squareQuickTurn = rightStick.getButton(3).get();
+        squareQuickTurn = rightStick.getMiddleFaceButton();
         drivetrainSubsystem.curvatureDrive(throttleLeftValue, rotationRightValue, squareQuickTurn);
     }
 
