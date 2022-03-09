@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -17,6 +18,12 @@ import frc.robot.commands.drivetrain.DefaultArcadeDriveCommand;
 import frc.robot.input.AttackThree;
 import frc.robot.input.XboxOneController;
 import frc.robot.subsystems.CollectorSubsystem;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
+import frc.robot.commands.climber.ClimberJumpGrabCommand;
+import frc.robot.commands.drivetrain.DefaultArcadeDriveCommand;
+import frc.robot.input.AttackThree;
+import frc.robot.input.XboxOneController;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.LimeLightSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
@@ -50,11 +57,13 @@ public class RobotContainer {
                 Constants.TurretConstants.F,
                 limeLightSubsystem);
 
+    public final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
+
     /*
     * Input
     */
-    public final AttackThree leftStick =
-            new AttackThree(Constants.InputConstants.LEFT_JOYSTICK_CHANNEL);
+   public final AttackThree leftStick =
+           new AttackThree(Constants.InputConstants.LEFT_JOYSTICK_CHANNEL);
     public final AttackThree rightStick =
             new AttackThree(Constants.InputConstants.RIGHT_JOYSTICK_CHANNEL);
     public final XboxOneController driverXboxController =
@@ -96,6 +105,9 @@ public class RobotContainer {
         driverXboxController.aButton.whenPressed(new InstantCommand(()-> drivetrainSubsystem.resetAll(), drivetrainSubsystem));
         leftStick.middleFaceButton.whenPressed(new InstantCommand(()-> drivetrainSubsystem.resetGyro(false), drivetrainSubsystem));
         drivetrainSubsystem.gyro.calibrate();
+        rightStick.middleFaceButton.whenPressed(() -> {
+            new ClimberJumpGrabCommand(this).schedule();
+        });
     }
 
     /**
@@ -112,7 +124,13 @@ public class RobotContainer {
         // Default drive command
         // drivetrainSubsystem.setDefaultCommand(new DefaultArcadeDriveCommand(this));
         turretSubsystem.setDefaultCommand(new VisionCommand(this));
+        //drivetrainSubsystem.setDefaultCommand(new DefaultArcadeDriveCommand(this));
+        //climberSubsystem.setDefaultCommand(new ClimberJumpGrabCommand(this));
     }
 
-    public void periodic() {}
+    public void periodic() {
+        if (!climberSubsystem.jumperLimitSwitch.get()) {
+            new ClimberJumpGrabCommand(this).schedule();
+        }
+    }
 }

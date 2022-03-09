@@ -119,4 +119,14 @@ public final class Constants {
 
     }
 
+    public static final class ClimberConstants {
+
+        public static final int JUMPER_ID = 2;
+        public static final int RELEASE_JUMPER_ID = 1;
+        public static final int CLAMPER_ID = 0;
+        public static final int PIVOT_ID = 3;
+        public static final int EXTENDER_ID = 4;
+
+        public static final int CLIMBER_MOTOR_CHANNEL = 0;
+    }
 }

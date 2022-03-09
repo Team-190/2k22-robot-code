@@ -8,11 +8,12 @@ import frc.robot.input.AttackThree.AttackThreeAxis;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class DefaultArcadeDriveCommand extends CommandBase {
-    private final DrivetrainSubsystem drivetrainSubsystem;
+    //private final DrivetrainSubsystem drivetrainSubsystem;
 
     private final AttackThree leftStick;
     private final AttackThree rightStick;
     private final XboxOneController controller;
+    private DrivetrainSubsystem drivetrainSubsystem = null;
 
     public DefaultArcadeDriveCommand(RobotContainer robotContainer) {
         this.leftStick = robotContainer.leftStick;
