@@ -129,4 +129,37 @@ public final class Constants {
 
         public static final int CLIMBER_MOTOR_CHANNEL = 0;
     }
+
+    /**
+     * Constants for the shooterSubsystem
+     */
+    public static final class ShooterConstants {
+
+        // CAN Ids
+        public static final int BOTTOM_SHOOTER_CHANNEL = 2;
+        public static final int TOP_SHOOTER_CHANNEL = 3;
+
+        // shared PID Constants
+        public static final int SLOT_ID = 0;
+        public static final int PID_LOOPTYPE = 0;
+        public static final int TIMEOUT_MS = 20;
+        public static final double TICKS_PER_ROTATION = 2048;
+        public static final double MAX_SPEED_RPM = 6000;
+        public static final int RPM_THRESHOLD = 50;
+
+        // Bottom PID Constants
+        public static final double BOTTOM_P = 0.00001;
+        public static final double BOTTOM_I = 0.0005;
+        public static final double BOTTOM_D = 0;
+        public static final double BOTTOM_F = 0.050;
+
+        // Top PID Constants
+        public static final double TOP_P = 0.00001;
+        public static final double TOP_I = 0.0005;
+        public static final double TOP_D = 0;
+        public static final double TOP_F = 0.050;
+
+
+
+    }
 }

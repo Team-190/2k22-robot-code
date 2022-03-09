@@ -15,6 +15,9 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.Turret.VisionCommand;
 import frc.robot.commands.auto.simpleTest.testAuto;
 import frc.robot.commands.drivetrain.DefaultArcadeDriveCommand;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.input.AttackThree;
 import frc.robot.input.XboxOneController;
 import frc.robot.subsystems.CollectorSubsystem;
@@ -27,6 +30,7 @@ import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.LimeLightSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
 /**
 * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -35,6 +39,11 @@ import frc.robot.subsystems.TurretSubsystem;
 * subsystems, commands, and button mappings) should be declared here.
 */
 public class RobotContainer {
+
+    // Choosers
+    public final SendableChooser<Integer> bottomRPMChooser = new SendableChooser<>();
+    public final SendableChooser<Integer> topRPMChooser = new SendableChooser<>();
+
     /*
     * Subsystems
     */
@@ -58,6 +67,9 @@ public class RobotContainer {
                 limeLightSubsystem);
 
     public final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
+
+        public final ShooterSubsystem shooterSubsystem = 
+                new ShooterSubsystem();
 
     /*
     * Input
