@@ -12,10 +12,20 @@ import frc.robot.commands.auto.Trajectories;
 
 public class twoBallTrajectory extends Trajectories{
     private static final Pose2d POINT1 = new Pose2d(2, 0, new Rotation2d(Units.degreesToRadians(0)));
+    private static final Pose2d POINT2 = new Pose2d(2, -1, new Rotation2d(Units.degreesToRadians(-90)));
+
     public static final Trajectory START = TrajectoryGenerator.generateTrajectory(
         List.of(
             new Pose2d(0.000, 0.000, new Rotation2d(Units.degreesToRadians(0))),
             POINT1
         ),
         FORWARD_CONFIG);
+
+    public static final Trajectory TURN = TrajectoryGenerator.generateTrajectory(
+        List.of(
+            POINT1,
+            POINT2
+        ),
+        FORWARD_CONFIG);
+    
 }

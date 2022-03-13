@@ -10,31 +10,51 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
   
-  public WPI_TalonFX bottomShooterMotor = new WPI_TalonFX(ShooterConstants.BOTTOM_SHOOTER_CHANNEL);
+  public WPI_TalonFX shooterMotor = new WPI_TalonFX(ShooterConstants.FLYWHEEL_CHANNEL);
+  //public WPI_TalonFX hoodMotor = new WPI_TalonFX(ShooterConstants.HOOD_CHANNEL);
+  private boolean isRunning = false;
 
 
   /** Creates a new ShooterSubsystem. */
   public ShooterSubsystem() {
 
     configFeedbackSensors();
-    configPIDF(bottomShooterMotor, ShooterConstants.BOTTOM_P, ShooterConstants.BOTTOM_I, ShooterConstants.BOTTOM_D, ShooterConstants.BOTTOM_F);
 
-    bottomShooterMotor.configClosedLoopPeakOutput(0, 1);
+    // kF calculation found here: https://docs.ctre-phoenix.com/en/stable/ch16_ClosedLoop.html
+    configPIDF(shooterMotor, ShooterConstants.FLYWHEEL_P, ShooterConstants.FLYWHEEL_I, ShooterConstants.FLYWHEEL_D, 1023 / rpmToTicksPer100ms(ShooterConstants.MAX_SPEED_RPM));
 
-    bottomShooterMotor.setNeutralMode(NeutralMode.Coast);
+    shooterMotor.configClosedLoopPeakOutput(0, 1);
 
-    bottomShooterMotor.setInverted(false);
+    shooterMotor.setNeutralMode(NeutralMode.Coast);
 
+    shooterMotor.setInverted(true);
+
+  }
+
+  public boolean getIsRunning() {
+    return isRunning;
+  }
+
+  public void setIsRunning(boolean set) {
+    isRunning = set;
   }
   
   private void configFeedbackSensors() {
-    bottomShooterMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, ShooterConstants.PID_LOOPTYPE, ShooterConstants.TIMEOUT_MS);
+    shooterMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, ShooterConstants.PID_LOOPTYPE, ShooterConstants.TIMEOUT_MS);
+  }
+
+  @Override
+  public void periodic() {
+    SmartDashboard.putNumber("Shooter Encoder velocity", ticksToRPM(shooterMotor.getSelectedSensorVelocity()));
+    // SmartDashboard.putNumber("Turret Encoder Error", shooterMotor.getClosedLoopError());
+
   }
 
   public void configPIDF(WPI_TalonFX motorController, double P, double I, double D, double F) {
@@ -44,23 +64,44 @@ public class ShooterSubsystem extends SubsystemBase {
     motorController.config_kF(ShooterConstants.SLOT_ID, F);
   }
 
+  public void flywheelToggle(double rpm) {
+    // if (!isRunning) {
+    //   flywheelPID(rpm);
+    //   isRunning = true;
+    // } else {
+    //   flywheelManual(0);
+    //   isRunning = false;
+    // }
+
+    if (!isRunning) {
+      flywheelManual(rpm);
+      isRunning = true;
+    } else {
+      flywheelManual(0);
+      isRunning = false;
+    }
+
+
+    
+  }
+
   /**
    * Sets the speed of shooter
    * @param speed percent output [-1, 1]
    */
-  public void bottomShooterManual(double speed) {
-    bottomShooterMotor.set(speed);
+  public void flywheelManual(double speed) {
+    shooterMotor.set(speed);
   }
 
   /**
    * Sets rotations per minute
    * @param rpm input of rotations per minute
    */
-  public void bottomshooterPID(double rpm) {
+  public void flywheelPID(double rpm) {
     
     rpm = MathUtil.clamp(rpm, 0, ShooterConstants.MAX_SPEED_RPM);
 
-    bottomShooterMotor.set(ControlMode.Velocity, rpmToTicksPer100ms(rpm));
+    shooterMotor.set(ControlMode.Velocity, rpmToTicksPer100ms(rpm));
   }
 
   /**
@@ -74,14 +115,18 @@ public class ShooterSubsystem extends SubsystemBase {
     return rpm * ShooterConstants.TICKS_PER_ROTATION / 600;
   }
 
+  public double ticksToRPM(double tick) {
+    return (tick * 600) / ShooterConstants.TICKS_PER_ROTATION;
+  }
+
   /**
    * Check if the Shooter is at the correct Rotations per minute (rpm)
    *
    * @param targetRPM The target rpm
    * @return true if the Shooter is at the specified rpm, false otherwise
    */
-  public boolean bottomAtTargetRPM(double targetRPM) {
-    return Math.abs(targetRPM - convertCPDToRPM(bottomShooterMotor.getSelectedSensorVelocity()))
+  public boolean flywheelAtTargetRPM(double targetRPM) {
+    return Math.abs(targetRPM - convertCPDToRPM(shooterMotor.getSelectedSensorVelocity()))
             < Constants.ShooterConstants.RPM_THRESHOLD;
   }
 
@@ -112,11 +157,11 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void stop() {
-      bottomShooterMotor.set(0);
+      shooterMotor.set(0);
   }
 
-  public double getBottomVelocity() {
-    return convertCPDToRPM(bottomShooterMotor.getSelectedSensorVelocity());
+  public double getFlywheelVelocity() {
+    return convertCPDToRPM(shooterMotor.getSelectedSensorVelocity());
   }
 
 }

@@ -5,43 +5,34 @@
 package frc.robot.commands.climber;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.ClimberSubsystem;
 
-public class ClimberRetractCommand extends CommandBase {
-
-  ClimberSubsystem climberSubsystem = null;
-
-  /** Creates a new ClimberRetractCommand. */
-  public ClimberRetractCommand(RobotContainer robotContainer) {
+public class ClampCommand extends CommandBase {
+  ClimberSubsystem climberSubsystem;
+  /** Creates a new ClampCommand. */
+  public ClampCommand(RobotContainer robotContainer) {
     // Use addRequirements() here to declare subsystem dependencies.
-
     this.climberSubsystem = robotContainer.climberSubsystem;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    climberSubsystem.clamperClose();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    climberSubsystem.extendClimber(-0.5);
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    climberSubsystem.extendClimber(0);
-    climberSubsystem.brakeActuate(false);
-    climberSubsystem.setStage(4);
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return climberSubsystem.getClimberPosition() <= 3000;
+    return false;
   }
 }

@@ -6,19 +6,20 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import frc.robot.Constants;
 import frc.robot.Constants.TurretConstants;
-import frc.robot.subsystems.LimeLightSubsystem;
 
 public class TurretSubsystem extends PIDSubsystem {
 
-  WPI_TalonSRX turretMotor = new WPI_TalonSRX(Constants.TurretConstants.TURRET_CHANNEL);
+  WPI_TalonFX turretMotor = new WPI_TalonFX(Constants.TurretConstants.TURRET_CHANNEL);
   ShuffleboardTab tab = Shuffleboard.getTab("Turret");
 
   LimeLightSubsystem limeLightSubsystem = null;
@@ -33,29 +34,27 @@ public class TurretSubsystem extends PIDSubsystem {
 
 
   /** Creates a new TurretSubsystem. */
-  public TurretSubsystem(double P, double I, double D, double F, LimeLightSubsystem limeLightSubsystem) {
+  public TurretSubsystem(double P, double I, double D, LimeLightSubsystem limeLightSubsystem) {
       super(
           // The PIDController used by the subsystem
           new PIDController(P, I, D));
 
       this.limeLightSubsystem = limeLightSubsystem;
-          
-      configPIDF(
+      
+
+      configPID(
               turretMotor,
               TurretConstants.P,
               TurretConstants.I,
-              TurretConstants.D,
-              TurretConstants.F);
-      turretMotor.configAllowableClosedloopError(0, 0.5);
-      turretMotor.configClosedLoopPeakOutput(0, 0.15);
+              TurretConstants.D);
+      turretMotor.configAllowableClosedloopError(0, TurretConstants.TOLERANCE);
+      turretMotor.configClosedLoopPeakOutput(0, .5);
       turretMotor.configSelectedFeedbackSensor(
-        FeedbackDevice.QuadEncoder, TurretConstants.PID_LOOPTYPE, TurretConstants.TIMEOUT_MS);
-      turretMotor.setInverted(true);
-      turretMotor.setSensorPhase(true);
+        FeedbackDevice.IntegratedSensor, TurretConstants.PID_LOOPTYPE, TurretConstants.TIMEOUT_MS);
+      turretMotor.setInverted(false);
 
       
-      tab.addNumber("Turret Encoder Position", () -> turretMotor.getSelectedSensorPosition());
-      tab.addNumber("Turret Encoder Error", () -> turretMotor.getClosedLoopError());
+      
       tab.addNumber("LimelightAngleTicks", () -> degreesToTicks(limeLightSubsystem.degreesAskew()));
       tab.addNumber("LimelightAngleDegrees", () -> limeLightSubsystem.degreesAskew());
   }
@@ -66,13 +65,11 @@ public class TurretSubsystem extends PIDSubsystem {
     * @param P proportional value
     * @param I integral value
     * @param D derivative value
-    * @param F feed forward value
     */
-    public void configPIDF(WPI_TalonSRX motorController, double P, double I, double D, double F) {
+    public void configPID(WPI_TalonFX motorController, double P, double I, double D) {
       motorController.config_kP(TurretConstants.SLOT_ID, P);
       motorController.config_kI(TurretConstants.SLOT_ID, I);
       motorController.config_kD(TurretConstants.SLOT_ID, D);
-      //motorController.config_kF(TurretConstants.SLOT_ID, F);
   }
 
   @Override
@@ -115,7 +112,7 @@ public class TurretSubsystem extends PIDSubsystem {
    * Checks if the PID motion is complete
    */
   public boolean isMotionComplete(){
-    return (Math.abs(turretMotor.getSelectedSensorPosition()-turretMotor.getClosedLoopTarget())<=1); // TODO: set tolerance
+    return (Math.abs(turretMotor.getSelectedSensorPosition()-turretMotor.getClosedLoopTarget())<=TurretConstants.TOLERANCE); // TODO: set tolerance
   }
 
   /**
@@ -124,7 +121,7 @@ public class TurretSubsystem extends PIDSubsystem {
    * @return current degree amount
    */
   public double ticksToDegrees (double ticks) {
-    return ticks * 3.6;
+    return ticks / TurretConstants.TICKS_PER_DEGREE;
   }
 
   /**
@@ -133,8 +130,7 @@ public class TurretSubsystem extends PIDSubsystem {
    * @return current encoder tick value
    */
   public double degreesToTicks (double degrees){
-    double ticks = degrees/3.6;
-    return ticks;
+    return degrees * TurretConstants.TICKS_PER_DEGREE;
   }
 
   /**
@@ -158,6 +154,13 @@ public class TurretSubsystem extends PIDSubsystem {
       offset = setpoint + TURRET_MINIMUM_LIMIT;
       setpoint = TURRET_MAXIMUM_LIMIT + offset;
     }
+
+    if (false) {
+      turretMotor.configMotionCruiseVelocity(rpmToTicksPer100ms(TurretConstants.TURRET_MOTOR_VELOCITY));
+      turretMotor.configMotionAcceleration(rpmToTicksPer100ms(TurretConstants.TURRET_MOTOR_ACCELERATION));
+      turretMotor.configMotionSCurveStrength(TurretConstants.TURRET_MOTOR_MOTION_SMOOTHING);
+    }
+
     turretMotor.set(ControlMode.Position, setpoint);
   }
 
@@ -168,7 +171,18 @@ public class TurretSubsystem extends PIDSubsystem {
    */
   public void relativeTurretPID(double setpoint) {
     // turretMotor.getClosedLoopTarget()
-    turretPID(turretMotor.getClosedLoopError() + turretMotor.getSelectedSensorPosition() + setpoint);
+    turretPID(turretMotor.getClosedLoopTarget() + setpoint);
+  }
+
+  /**
+   * Converts rotations per minute to ticks per 100ms
+   * Multiplies rotations per minute by ticks per rotation
+   * Divides by 600 to convert from minute to millisecond
+   * @param rpm input of rotations per minute
+   * @return output of ticks per 100ms
+   */
+  public double rpmToTicksPer100ms(double rpm) {
+    return rpm * TurretConstants.TICKS_PER_ROTATION / 600;
   }
 
   @Override
@@ -204,14 +218,15 @@ public class TurretSubsystem extends PIDSubsystem {
   /**
    * Reset the encoder position
    */
-  public void resetEncoder() {
-    turretMotor.setSelectedSensorPosition(0);
+  public void resetEncoder(double ticks) {
+    turretMotor.setSelectedSensorPosition(ticks);
   }
 
 
   @Override
   public void periodic() {
-    
+    SmartDashboard.putNumber("Turret Encoder Position", turretMotor.getSelectedSensorPosition());
+    SmartDashboard.putNumber("Turret Encoder Error", turretMotor.getClosedLoopError());
 
   }
 }

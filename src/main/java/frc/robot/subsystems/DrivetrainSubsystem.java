@@ -66,10 +66,10 @@ public class DrivetrainSubsystem extends PIDSubsystem {
         rightFollower.follow(rightLeader);
 
         // Configure invert type on the motors
-        leftLeader.setInverted(InvertType.InvertMotorOutput);
-        leftFollower.setInverted(InvertType.FollowMaster);
-        rightLeader.setInverted(InvertType.None);
-        rightFollower.setInverted(InvertType.FollowMaster);
+        leftLeader.setInverted(true);
+        leftFollower.setInverted(true);
+        rightLeader.setInverted(false);
+        rightFollower.setInverted(false);
 
         // Set Break Mode
         setBreakMode();
@@ -255,7 +255,7 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     * @param square Whether to square the inputs
     */
     public void arcadeDrive(double throttle, double rotation, boolean square) {
-        differentialDrive.arcadeDrive(throttle, rotation, square);
+        // differentialDrive.arcadeDrive(throttle, rotation, square);
     }
 
     /**

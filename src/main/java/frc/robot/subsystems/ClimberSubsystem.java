@@ -14,11 +14,12 @@ import frc.robot.Constants.ClimberConstants;
 
 public class ClimberSubsystem extends SubsystemBase {
 
-    Solenoid jumper = new Solenoid(PneumaticsModuleType.CTREPCM, ClimberConstants.JUMPER_ID);
-    Solenoid release_jumper = new Solenoid(PneumaticsModuleType.CTREPCM, ClimberConstants.RELEASE_JUMPER_ID);
-    Solenoid clamper = new Solenoid(PneumaticsModuleType.CTREPCM, ClimberConstants.CLAMPER_ID);
-    Solenoid pivot = new Solenoid(PneumaticsModuleType.CTREPCM, ClimberConstants.PIVOT_ID);
-    Solenoid extender = new Solenoid(PneumaticsModuleType.CTREPCM, ClimberConstants.EXTENDER_ID);
+    Solenoid jumper = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.JUMPER_ID);
+    Solenoid release_jumper = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.RELEASE_JUMPER_ID);
+    Solenoid clamper = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.CLAMPER_ID);
+    // Solenoid pivot = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.PIVOT_ID);
+    // Solenoid extender = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.EXTENDER_ID);
+    Solenoid brake = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.BREAK_ID);
     int jumpStage = 0;
 
     public DigitalInput jumperLimitSwitch = new DigitalInput(0); // Limit switch is pressed when in neutral state,
@@ -32,12 +33,13 @@ public class ClimberSubsystem extends SubsystemBase {
     private final SendableChooser<Double> delayTimeChooser = new SendableChooser<>();
 
     public ClimberSubsystem() {
+        climber_motor.setInverted(true);
 
         for (double i = 0.01; i < 0.5; i+=0.01) {
             delayTimeChooser.addOption(i+" Seconds", i);
         }
 
-        SmartDashboard.putData(delayTimeChooser);
+        // SmartDashboard.putData(delayTimeChooser);
     }
 
     /**
@@ -46,6 +48,19 @@ public class ClimberSubsystem extends SubsystemBase {
      */
     public void jumperActuate(boolean on) {
         jumper.set(on);
+    }
+
+    
+    public void brakeActuate(boolean on) {
+        brake.set(on);
+    }
+
+    /**
+     * True if break on else false
+     * @return
+     */
+    public boolean getBrake() {
+        return brake.get();
     }
 
     /**
@@ -63,25 +78,25 @@ public class ClimberSubsystem extends SubsystemBase {
     }
 
     public void clamperClose() {
-        clamper.set(true);
+        clamper.set(false);
     }
 
     public void clamperOpen() {
-        clamper.set(false);
+        clamper.set(true);
     }
 
     /**
      * Turns the pivot solenoid on
      */
     public void pivotActuate() {
-        pivot.set(true);
+        // pivot.set(true);
     }
 
     /**
      * Turns the extender solenoid on
      */
     public void extenderActuate() {
-        extender.set(true);
+        // extender.set(true);
     }
 
     /**
@@ -129,6 +144,18 @@ public class ClimberSubsystem extends SubsystemBase {
     }
 
     /**
+     * Gets the position of the climber
+     * @return The encoder position of the climber (in ticks)
+     */
+    public double getClimberPosition() {
+        return climber_motor.getSelectedSensorPosition();
+    }
+
+    public void resetClimberPos() {
+        climber_motor.setSelectedSensorPosition(0);
+    }
+
+    /**
      * Gets the distance of the robot from the ground
      * @return The distance of the robot from the ground (in inches)
      */
@@ -143,6 +170,7 @@ public class ClimberSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putBoolean("Jumper Limit Switch", jumperLimitSwitch.get());
+        SmartDashboard.putNumber("Climber Position", climber_motor.getSelectedSensorPosition());
     }
 
 

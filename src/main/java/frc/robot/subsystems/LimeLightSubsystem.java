@@ -23,6 +23,7 @@ public class LimeLightSubsystem extends SubsystemBase {
   NetworkTableEntry ty;
   NetworkTableEntry ta;
   NetworkTableEntry ledMode;
+  public boolean enableVision = true;
 
   //read values periodically
   double x;
@@ -43,6 +44,7 @@ public class LimeLightSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     x = -1*tx.getDouble(0);
+    y = ty.getDouble(0);
     v = tv.getDouble(0);
 
     // post to smart dashboard periodically
@@ -71,10 +73,12 @@ public class LimeLightSubsystem extends SubsystemBase {
 
   /**
    * Gets the distance to target TODO: do this
-   * @return distance to target (meters)
+   * @return distance to target (inches)
    */
   public double getDistanceToTarget() {
-    return 1;
+    int limelightHeight = 34;
+    int limelightMountAngleDegrees = 25;
+    return (104 - limelightHeight)/Math.tan(Math.toRadians(limelightMountAngleDegrees + y));
   }
 
   /**
@@ -82,6 +86,23 @@ public class LimeLightSubsystem extends SubsystemBase {
    */
   public void lightOn() {
     ledMode.setNumber(3);
+  }
+
+  public void toggleVision() {
+    enableVision = !enableVision;
+    if (enableVision) {
+      lightOn();
+    } else {
+      lightOff();
+    }
+  }
+
+  /**
+   * Sees if vision is enabled
+   * @return True if vision is inabled else false
+   */
+  public boolean getVision() {
+    return enableVision;
   }
 
   /**

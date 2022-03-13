@@ -4,52 +4,39 @@
 
 package frc.robot.commands.shooter;
 
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.CollectorSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
-public class ShootCommand extends CommandBase {
+public class AutoShootCommand extends CommandBase {
+
   ShooterSubsystem shooterSubsystem = null;
   CollectorSubsystem collectorSubsystem = null;
-  RobotContainer robotContainer;
-  double speed = 0;
-  double startTime;
-  boolean tripped = true;
-  
+  double rpm = 0;
+
   /** Creates a new ShootCommand. */
-  public ShootCommand(RobotContainer robotContainer, double speed) {
+  public AutoShootCommand(RobotContainer robotContainer, double rpm) {
     // Use addRequirements() here to declare subsystem dependencies.
 
-    shooterSubsystem = robotContainer.shooterSubsystem;
-    collectorSubsystem = robotContainer.collectorSubsystem;
-    this.robotContainer = robotContainer;
+    this.shooterSubsystem = robotContainer.shooterSubsystem;
+    this.collectorSubsystem = robotContainer.collectorSubsystem;
+    this.rpm = rpm;
 
-    this.speed = speed;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    startTime = RobotController.getFPGATime() / 1000.0;
+    shooterSubsystem.flywheelPID(rpm);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    
-    
-
-    if (!shooterSubsystem.getIsRunning()) {
-      
-        new ShootCommand(robotContainer, speed).schedule();
-        shooterSubsystem.setIsRunning(true);
-    } else {
-      shooterSubsystem.flywheelManual(0);
-      shooterSubsystem.setIsRunning(false);
+    if (shooterSubsystem.flywheelAtTargetRPM(rpm)) {
+      collectorSubsystem.upperBallPath(.7);
     }
-
   }
 
   // Called once the command ends or is interrupted.

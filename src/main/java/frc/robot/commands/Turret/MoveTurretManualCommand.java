@@ -2,22 +2,24 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.climber;
+package frc.robot.commands.Turret;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Robot;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.subsystems.TurretSubsystem;
 
-public class ClimberRetractCommand extends CommandBase {
+public class MoveTurretManualCommand extends CommandBase {
 
-  ClimberSubsystem climberSubsystem = null;
+  TurretSubsystem turretSubsystem = null;
+  double setpoint;
 
-  /** Creates a new ClimberRetractCommand. */
-  public ClimberRetractCommand(RobotContainer robotContainer) {
+  /**
+   * Creates a new MoveTurretManualCommand.
+   */
+  public MoveTurretManualCommand(RobotContainer robotContainer, double setpoint) {
     // Use addRequirements() here to declare subsystem dependencies.
-
-    this.climberSubsystem = robotContainer.climberSubsystem;
+    this.turretSubsystem = robotContainer.turretSubsystem;
+    this.setpoint = setpoint;
   }
 
   // Called when the command is initially scheduled.
@@ -28,20 +30,17 @@ public class ClimberRetractCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    climberSubsystem.extendClimber(-0.5);
+    turretSubsystem.relativeTurretPID(this.setpoint);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    climberSubsystem.extendClimber(0);
-    climberSubsystem.brakeActuate(false);
-    climberSubsystem.setStage(4);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return climberSubsystem.getClimberPosition() <= 3000;
+    return false;
   }
 }

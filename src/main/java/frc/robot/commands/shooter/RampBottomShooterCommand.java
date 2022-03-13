@@ -20,11 +20,11 @@ public class RampBottomShooterCommand extends CommandBase {
 
     @Override
     public void execute() {
-        shooterSubsystem.bottomshooterPID(rpm);
+        shooterSubsystem.flywheelPID(rpm);
     }
 
     @Override
     public boolean isFinished() {
-        return shooterSubsystem.bottomAtTargetRPM(rpm);
+        return shooterSubsystem.flywheelAtTargetRPM(rpm);
     }
 }

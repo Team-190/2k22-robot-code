@@ -2,43 +2,43 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.climber;
+package frc.robot.commands.collector;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.subsystems.CollectorSubsystem;
 
-public class ClimberGrabNextCommand extends CommandBase {
+public class ToggleCollectCommand extends CommandBase {
+  CollectorSubsystem collectorSubsystem = null;
+  double speed = 0;
+  boolean toggle = false;
 
-  ClimberSubsystem climberSubsystem = null;
-  Timer timer = null;
-
-  /** Creates a new ClimberGrabNextCommand. */
-  public ClimberGrabNextCommand(RobotContainer robotContainer) {
+  /** Creates a new ToggleCollectCommand. */
+  public ToggleCollectCommand(RobotContainer robotContainer, double speed) {
     // Use addRequirements() here to declare subsystem dependencies.
+    this.collectorSubsystem = robotContainer.collectorSubsystem;
+    this.speed = speed;
 
-    climberSubsystem = robotContainer.climberSubsystem;
-    timer = new Timer();
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    timer.reset();
+    toggle = !toggle;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    climberSubsystem.extenderActuate();
+    toggle = !toggle;
+    if (toggle) {
+      collectorSubsystem.collect(speed);
+      collectorSubsystem.extend();
 
-    timer.start();
-    if (timer.hasElapsed(1))
-      climberSubsystem.pivotActuate();
-
-    if (timer.hasElapsed(1.5))
-      climberSubsystem.clamperToggle();
+    } else {
+      collectorSubsystem.collect(0);
+      collectorSubsystem.retract();
+    }
   }
 
   // Called once the command ends or is interrupted.

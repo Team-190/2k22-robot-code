@@ -48,6 +48,6 @@ public class DefaultTankDriveCommand extends CommandBase {
     /** At the end, stop the drivetrain. */
     @Override
     public void end(boolean interrupted) {
-        drivetrainSubsystem.arcadeDrive(0.0, 0.0, false);
+        drivetrainSubsystem.westCoastDrive(0.0, 0.0, false);
     }
 }
