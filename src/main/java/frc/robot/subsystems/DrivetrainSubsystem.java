@@ -71,6 +71,11 @@ public class DrivetrainSubsystem extends PIDSubsystem {
         rightLeader.setInverted(false);
         rightFollower.setInverted(false);
 
+        leftFollower.setStatusFramePeriod(1, 255);
+        rightFollower.setStatusFramePeriod(1, 255);
+        leftFollower.setStatusFramePeriod(2, 255);
+        rightFollower.setStatusFramePeriod(2, 255);
+
         // Set Break Mode
         setBreakMode();
         // setCoastMode();

@@ -176,6 +176,8 @@ public class RobotContainer {
         // buttonBoxRight.release.whenPressed(new InstantCommand(()-> turretSubsystem.resetEncoder(-40000)));
         
         // buttonBoxRight.tilt.whenPressed(new InstantCommand(()-> turretSubsystem.resetEncoder(40000)));
+
+        driverXboxController.bButton.whenPressed(new InstantCommand(()-> climberSubsystem.jumperActuate(true)));
         
 
         new Trigger(()-> (driverXboxController.getLeftTrigger() > 0.005))

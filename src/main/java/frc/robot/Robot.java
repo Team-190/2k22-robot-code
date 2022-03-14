@@ -52,6 +52,7 @@ public class Robot extends TimedRobot {
         robotContainer.turretSubsystem.resetEncoder(0);
         robotContainer.setDefaultCommands();
         robotContainer.climberSubsystem.resetClimberPos();
+        robotContainer.climberSubsystem.jumperActuate(false);
     }
 
     /**
@@ -122,6 +123,8 @@ public class Robot extends TimedRobot {
                    new DefaultCurvatureDriveCommand(robotContainer));
        }
        */
+
+      robotContainer.climberSubsystem.jumperActuate(false);
        
 
     }
