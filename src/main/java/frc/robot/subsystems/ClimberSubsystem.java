@@ -22,7 +22,7 @@ public class ClimberSubsystem extends SubsystemBase {
     Solenoid brake = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.BREAK_ID);
     int jumpStage = 0;
 
-    public DigitalInput jumperLimitSwitch = new DigitalInput(0); // Limit switch is pressed when in neutral state,
+    public DigitalInput jumperLimitSwitch = new DigitalInput(ClimberConstants.JUMPER_LIMIT_SWITCH_ID); // Limit switch is pressed when in neutral state,
                                                                  // not pressed when "jumping"
 
     public AnalogInput distanceSensor = new AnalogInput(0); // Ultrasonic Sensor
@@ -169,8 +169,8 @@ public class ClimberSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("Jumper Limit Switch", jumperLimitSwitch.get());
-        SmartDashboard.putNumber("Climber Position", climber_motor.getSelectedSensorPosition());
+        // SmartDashboard.putBoolean("Jumper Limit Switch", jumperLimitSwitch.get());
+        // SmartDashboard.putNumber("Climber Position", climber_motor.getSelectedSensorPosition());
     }
 
 

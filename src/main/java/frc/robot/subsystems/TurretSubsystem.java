@@ -25,8 +25,8 @@ public class TurretSubsystem extends PIDSubsystem {
   LimeLightSubsystem limeLightSubsystem = null;
 
   double lastSeen = 0;
-  double TURRET_MAXIMUM_LIMIT = 1000000; // TODO: Find this
-  double TURRET_MINIMUM_LIMIT = -1000000; // TODO: Find this
+  double TURRET_MAXIMUM_LIMIT = 80000; // TODO: Find this
+  double TURRET_MINIMUM_LIMIT = -80000; // TODO: Find this
   int turnToDirection = 1;
   int defaultDirection = 1;
 
@@ -41,14 +41,19 @@ public class TurretSubsystem extends PIDSubsystem {
 
       this.limeLightSubsystem = limeLightSubsystem;
       // turretMotor.setStatusFramePeriod(frame, periodMs)
+      turretMotor.configFactoryDefault();
 
-      configPID(
+      configPIDF(
               turretMotor,
               TurretConstants.P,
               TurretConstants.I,
-              TurretConstants.D);
+              TurretConstants.D,
+              1023 / rpmToTicksPer100ms(TurretConstants.TURRET_MAX_RPM));
+
       turretMotor.configAllowableClosedloopError(0, TurretConstants.TOLERANCE);
-      turretMotor.configClosedLoopPeakOutput(0, .5);
+      turretMotor.configClosedLoopPeakOutput(0, 1);
+      turretMotor.configClosedLoopPeriod(0, 1);
+      turretMotor.configClosedloopRamp(0.00);
       turretMotor.configSelectedFeedbackSensor(
         FeedbackDevice.IntegratedSensor, TurretConstants.PID_LOOPTYPE, TurretConstants.TIMEOUT_MS);
       turretMotor.setInverted(false);
@@ -65,11 +70,13 @@ public class TurretSubsystem extends PIDSubsystem {
     * @param P proportional value
     * @param I integral value
     * @param D derivative value
+    * @param F feedforward value
     */
-    public void configPID(WPI_TalonFX motorController, double P, double I, double D) {
+    public void configPIDF(WPI_TalonFX motorController, double P, double I, double D, double F) {
       motorController.config_kP(TurretConstants.SLOT_ID, P);
       motorController.config_kI(TurretConstants.SLOT_ID, I);
       motorController.config_kD(TurretConstants.SLOT_ID, D);
+      motorController.config_kF(TurretConstants.SLOT_ID, F);
   }
 
   @Override
@@ -104,15 +111,19 @@ public class TurretSubsystem extends PIDSubsystem {
    * Move turret towards vision target
    */
   public void turretVision(){
+    double degrees = limeLightSubsystem.degreesAskew();
+
     // Takes in degrees off from target, converts it into ticks, move turret by those ticks
-    relativeTurretPID(degreesToTicks(limeLightSubsystem.degreesAskew()));
+    if (limeLightSubsystem.getVision() && limeLightSubsystem.targetFound()) {
+      relativeTurretPID(degreesToTicks(degrees));
+    }
   }
 
   /**
    * Checks if the PID motion is complete
    */
   public boolean isMotionComplete(){
-    return (Math.abs(turretMotor.getSelectedSensorPosition()-turretMotor.getClosedLoopTarget())<=TurretConstants.TOLERANCE); // TODO: set tolerance
+    return (Math.abs(turretMotor.getSelectedSensorPosition()-turretMotor.getClosedLoopTarget())<=TurretConstants.TOLERANCE);
   }
 
   /**
@@ -147,21 +158,19 @@ public class TurretSubsystem extends PIDSubsystem {
    */
   public void turretPID(double setpoint) {
     double offset = 0;
-    if (turretMotor.getClosedLoopTarget() > TURRET_MAXIMUM_LIMIT) {
+    if (setpoint > TURRET_MAXIMUM_LIMIT) {
       offset = setpoint - TURRET_MAXIMUM_LIMIT;
       setpoint = TURRET_MINIMUM_LIMIT + offset;
-    } else if (turretMotor.getClosedLoopTarget() > TURRET_MINIMUM_LIMIT) {
+    } else if (setpoint < TURRET_MINIMUM_LIMIT) {
       offset = setpoint + TURRET_MINIMUM_LIMIT;
       setpoint = TURRET_MAXIMUM_LIMIT + offset;
     }
 
-    if (false) {
       turretMotor.configMotionCruiseVelocity(rpmToTicksPer100ms(TurretConstants.TURRET_MOTOR_VELOCITY));
       turretMotor.configMotionAcceleration(rpmToTicksPer100ms(TurretConstants.TURRET_MOTOR_ACCELERATION));
       turretMotor.configMotionSCurveStrength(TurretConstants.TURRET_MOTOR_MOTION_SMOOTHING);
-    }
 
-    turretMotor.set(ControlMode.Position, setpoint);
+    turretMotor.set(ControlMode.MotionMagic, setpoint);
   }
 
 

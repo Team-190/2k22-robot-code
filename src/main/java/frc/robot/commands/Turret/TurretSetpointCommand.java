@@ -13,12 +13,12 @@ public class TurretSetpointCommand extends CommandBase {
   
   TurretSubsystem turretSubsystem = null;
   LimeLightSubsystem limeLightSubsystem = null;
-  int setpoint;
+  double setpoint;
 
   /**
    * Creates a new TurretSetpointCommand.
    */
-  public TurretSetpointCommand(RobotContainer robotContainer, int setpoint) {
+  public TurretSetpointCommand(RobotContainer robotContainer, double setpoint) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.turretSubsystem = robotContainer.turretSubsystem;
     this.setpoint = setpoint;

@@ -34,7 +34,7 @@ public class AutoShootCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (shooterSubsystem.flywheelAtTargetRPM(rpm)) {
+    if (shooterSubsystem.flywheelAtTargetRPM()) {
       collectorSubsystem.upperBallPath(.7);
     }
   }

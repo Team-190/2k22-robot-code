@@ -107,7 +107,9 @@ public class Robot extends TimedRobot {
         if (defaultAutonomousCommand != null) {
             defaultAutonomousCommand.cancel();
         }
+        robotContainer.compressor.enableAnalog(90, 120);
         robotContainer.climberSubsystem.resetClimberPos();
+        // robotContainer.pneumaticHub.makeCompressor();
 
 
         /*

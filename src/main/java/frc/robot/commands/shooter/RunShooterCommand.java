@@ -14,7 +14,7 @@ public class RunShooterCommand extends CommandBase {
         this.bottomRPM = bottomRPM;
         this.topRPM = topRPM;
 
-        addRequirements(shooterSubsystem);
+        // addRequirements(shooterSubsystem);
     }
 
     @Override

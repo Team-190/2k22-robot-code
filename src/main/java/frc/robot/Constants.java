@@ -31,6 +31,9 @@ public final class Constants {
         public static final int UPPERBALLPATH_CHANNEL = 6;
         public static final int COLLECTOR_CHANNEL = 5;
 
+        // DIO Ports
+        public static final int PHOTOELECTRIC_SENSOR_ID = 0;
+
         // Solenoid Ids
         public static final int FORWARD_CHANNEL = 4;
         public static final int REVERSE_CHANNEL = 5;
@@ -115,18 +118,19 @@ public final class Constants {
         public static final int SLOT_ID = 0;
         public static final int PID_LOOPTYPE = 0;
         public static final int TIMEOUT_MS = 20;
-        public static final double P = .06;
+        public static final double P = 0.5;
         public static final double I = 0;
-        public static final double D = 0.0;
-        public static final int TOLERANCE = 100;
+        public static final double D = 0.02;
+        public static final int TOLERANCE = 200;
         public static final int TICKS_PER_ROTATION = 2048;
         public static final double TURRET_GEAR_RATIO = 0.012987012987; // 77:1 gear ratio
         public static final double TICKS_PER_DEGREE = (TICKS_PER_ROTATION * 1/TURRET_GEAR_RATIO) / 360;
 
         public static final double TURRET_STEP_SIZE = 1;
-        public static final int TURRET_MOTOR_VELOCITY = 6380;
-        public static final int TURRET_MOTOR_ACCELERATION = TURRET_MOTOR_VELOCITY * 2;
-        public static final int TURRET_MOTOR_MOTION_SMOOTHING = 8;
+        public static final int TURRET_MAX_RPM = 6380;
+        public static final int TURRET_MOTOR_VELOCITY = 6380/2;
+        public static final int TURRET_MOTOR_ACCELERATION = TURRET_MOTOR_VELOCITY * 4;
+        public static final int TURRET_MOTOR_MOTION_SMOOTHING = 3;
 
 
 
@@ -142,7 +146,10 @@ public final class Constants {
         public static final int EXTENDER_ID = 4;
         public static final int BREAK_ID = 3;
 
-        public static final int CLIMBER_MOTOR_CHANNEL = 9;
+        // DIO inputs
+        public static final int JUMPER_LIMIT_SWITCH_ID = 1;
+
+        public static final int CLIMBER_MOTOR_CHANNEL = 13;
     }
 
     /**
@@ -152,7 +159,7 @@ public final class Constants {
 
         // CAN Ids
         public static final int FLYWHEEL_CHANNEL = 8;
-        //public static final int HOOD_CHANNEL = 6;
+        public static final int HOOD_CHANNEL = 9;
 
         // Shared PID Values
         public static final int SLOT_ID = 0;
@@ -161,19 +168,25 @@ public final class Constants {
         public static final double TICKS_PER_ROTATION = 2048;
 
         // Flywheel PID Constants
-        public static final double FLYWHEEL_P = 0.0;
+        public static final double FLYWHEEL_P = 1.0; // 1
         public static final double FLYWHEEL_I = 0.0;
         public static final double FLYWHEEL_D = 0.0;
         public static final double MAX_SPEED_RPM = 6380;
         public static final int RPM_THRESHOLD = 50;
 
         // Hood PID Constants
-        public static final double HOOD_P = 0.0;
+        public static final double HOOD_P = 0.4;
         public static final double HOOD_I = 0.0;
         public static final double HOOD_D = 0.0;
-        public static final int HOOD_TOLERANCE = 10;
-
+        public static final int HOOD_TOLERANCE = 200;
+        public static final double HOOD_GEAR_RATIO = 0.00311526479751; // 321:1
+        public static final double TICKS_PER_DEGREE = (TICKS_PER_ROTATION * 1/HOOD_GEAR_RATIO) / 360;
+        public static final double HOOD_MOTOR_VELOCITY = 6380;
+        public static final double HOOD_MOTOR_ACCELERATION = HOOD_MOTOR_VELOCITY * 2;
+        public static final int HOOD_MOTOR_MOTION_SMOOTHING = 2;
+        public static final double HOOD_MINIMUM_LIMIT = 27;
+        public static final double HOOD_MAXIMUM_LIMIT = 53;
         
-
+    
     }
 }

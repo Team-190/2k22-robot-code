@@ -18,21 +18,50 @@ import frc.robot.Constants.ShooterConstants;
 public class ShooterSubsystem extends SubsystemBase {
   
   public WPI_TalonFX shooterMotor = new WPI_TalonFX(ShooterConstants.FLYWHEEL_CHANNEL);
-  //public WPI_TalonFX hoodMotor = new WPI_TalonFX(ShooterConstants.HOOD_CHANNEL);
+  public WPI_TalonFX hoodMotor = new WPI_TalonFX(ShooterConstants.HOOD_CHANNEL);
   private boolean isRunning = false;
 
 
   /** Creates a new ShooterSubsystem. */
   public ShooterSubsystem() {
 
-    configFeedbackSensors();
+    shooterMotor.configFactoryDefault();
+    hoodMotor.configFactoryDefault();
+
+    
 
     // kF calculation found here: https://docs.ctre-phoenix.com/en/stable/ch16_ClosedLoop.html
-    configPIDF(shooterMotor, ShooterConstants.FLYWHEEL_P, ShooterConstants.FLYWHEEL_I, ShooterConstants.FLYWHEEL_D, 1023 / rpmToTicksPer100ms(ShooterConstants.MAX_SPEED_RPM));
+    configPIDF(
+              shooterMotor, 
+              ShooterConstants.FLYWHEEL_P, 
+              ShooterConstants.FLYWHEEL_I, 
+              ShooterConstants.FLYWHEEL_D, 
+              1023 / rpmToTicksPer100ms(ShooterConstants.MAX_SPEED_RPM));
 
+    configPIDF(
+              hoodMotor, 
+              ShooterConstants.HOOD_P, 
+              ShooterConstants.HOOD_I, 
+              ShooterConstants.HOOD_D, 
+              1023 / rpmToTicksPer100ms(ShooterConstants.MAX_SPEED_RPM));
+              
+
+            
     shooterMotor.configClosedLoopPeakOutput(0, 1);
+    shooterMotor.configClosedLoopPeriod(0, 1);
+    shooterMotor.configClosedloopRamp(0.00);
+
+    hoodMotor.configClosedLoopPeakOutput(0, 1);
+    hoodMotor.configClosedLoopPeriod(0, 1);
+    hoodMotor.configClosedloopRamp(0.00);
+
+    hoodMotor.configAllowableClosedloopError(0, ShooterConstants.HOOD_TOLERANCE);
+    shooterMotor.configAllowableClosedloopError(0, ShooterConstants.RPM_THRESHOLD);
+
+    configFeedbackSensors();
 
     shooterMotor.setNeutralMode(NeutralMode.Coast);
+    hoodMotor.setNeutralMode(NeutralMode.Brake);
 
     shooterMotor.setInverted(true);
 
@@ -48,11 +77,15 @@ public class ShooterSubsystem extends SubsystemBase {
   
   private void configFeedbackSensors() {
     shooterMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, ShooterConstants.PID_LOOPTYPE, ShooterConstants.TIMEOUT_MS);
+    hoodMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, ShooterConstants.PID_LOOPTYPE, ShooterConstants.TIMEOUT_MS);
   }
 
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Shooter Encoder velocity", ticksToRPM(shooterMotor.getSelectedSensorVelocity()));
+    SmartDashboard.putNumber("Hood Encoder Position", hoodMotor.getSelectedSensorPosition());
+    SmartDashboard.putNumber("Hood Degrees Position", hoodTicksToDegrees(hoodMotor.getSelectedSensorPosition()));
+
     // SmartDashboard.putNumber("Turret Encoder Error", shooterMotor.getClosedLoopError());
 
   }
@@ -65,21 +98,22 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void flywheelToggle(double rpm) {
-    // if (!isRunning) {
-    //   flywheelPID(rpm);
-    //   isRunning = true;
-    // } else {
-    //   flywheelManual(0);
-    //   isRunning = false;
-    // }
 
     if (!isRunning) {
-      flywheelManual(rpm);
+      flywheelPID(rpm);
       isRunning = true;
     } else {
       flywheelManual(0);
       isRunning = false;
     }
+
+    // if (!isRunning) {
+    //   flywheelManual(rpm);
+    //   isRunning = true;
+    // } else {
+    //   flywheelManual(0);
+    //   isRunning = false;
+    // }
 
 
     
@@ -121,13 +155,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
   /**
    * Check if the Shooter is at the correct Rotations per minute (rpm)
-   *
-   * @param targetRPM The target rpm
    * @return true if the Shooter is at the specified rpm, false otherwise
    */
-  public boolean flywheelAtTargetRPM(double targetRPM) {
-    return Math.abs(targetRPM - convertCPDToRPM(shooterMotor.getSelectedSensorVelocity()))
-            < Constants.ShooterConstants.RPM_THRESHOLD;
+  public boolean flywheelAtTargetRPM() {
+    return (Math.abs(shooterMotor.getSelectedSensorPosition()-shooterMotor.getClosedLoopTarget())<=ShooterConstants.RPM_THRESHOLD);
   }
 
   /**
@@ -154,6 +185,102 @@ public class ShooterSubsystem extends SubsystemBase {
             * ShooterConstants.TICKS_PER_ROTATION
             * (1.0 / 60.0)
             * (1.0 / 10.0);
+  }
+
+  public double hoodTicksToDegrees(double ticks){
+    return ticks/ShooterConstants.TICKS_PER_DEGREE;
+  }
+
+  public double hoodDegreesToTicks (double degrees){
+    return degrees * ShooterConstants.TICKS_PER_DEGREE;
+  }
+
+  public void hoodManual(double speed) {
+    hoodMotor.set(speed);
+  }
+  
+  /**
+   * Adjust hood angle based on the distance from the target
+   * @param distance the distance from the vision target (in inches)
+   */
+  public void adjustHood(double distance){
+    double minAngle = ShooterConstants.HOOD_MINIMUM_LIMIT;
+    double maxAngle = ShooterConstants.HOOD_MAXIMUM_LIMIT;
+
+    // Data from excel
+    double slope = 0.0793; //m
+    double yIntercept = 13.857; //b
+
+    // Distance from target in inches
+    double distanceAtMinHoodAngle = 166;
+    double distanceAtMaxHoodAngle = 494;
+
+    if (distance <= distanceAtMinHoodAngle) {
+      setHoodAngle(minAngle);
+    } else if (distance < distanceAtMaxHoodAngle) {
+      setHoodAngle(slope*distance + yIntercept);
+    } else {
+      setHoodAngle(maxAngle);
+    }
+  }
+
+  /**
+   * Adjust the Flywheel RPM based on the distance from the target
+   * @param distance the distance from the vision target (in inches)
+   */
+  public void adjustFlywheelRPM(double distance) {
+    double minRPM = 2342;
+    double maxRPM = ShooterConstants.MAX_SPEED_RPM;
+
+    // Data from excel
+    double slope = 8.3014; //m
+    double yIntercept = 2342; //b
+
+    // Distance from target in inches
+    double distanceAtMinRPM = 166;
+    double distanceAtMaxRPM = 487;
+
+    if (distance <= distanceAtMinRPM) {
+      setHoodAngle(minRPM);
+    } else if (distance < distanceAtMaxRPM) {
+      setHoodAngle(slope*distance + yIntercept);
+    } else {
+      setHoodAngle(maxRPM);
+    }
+  }
+
+  /**
+   * Sets the angle of the hood
+   * @param degrees the angle the hood is set to (in degrees)
+   */
+  public void setHoodAngle(double degrees){
+    if (degrees > ShooterConstants.HOOD_MAXIMUM_LIMIT) {
+      degrees = ShooterConstants.HOOD_MAXIMUM_LIMIT;
+    } else if (degrees < ShooterConstants.HOOD_MINIMUM_LIMIT) {
+      degrees = ShooterConstants.HOOD_MINIMUM_LIMIT;
+    }
+
+
+    hoodMotor.configMotionCruiseVelocity(rpmToTicksPer100ms(ShooterConstants.HOOD_MOTOR_VELOCITY));
+    hoodMotor.configMotionAcceleration(rpmToTicksPer100ms(ShooterConstants.HOOD_MOTOR_ACCELERATION));
+    hoodMotor.configMotionSCurveStrength(ShooterConstants.HOOD_MOTOR_MOTION_SMOOTHING);
+
+    hoodMotor.set(ControlMode.MotionMagic, hoodDegreesToTicks(degrees));
+  }
+
+  public void relativeHoodAngle(double degrees) {
+    setHoodAngle(hoodTicksToDegrees(hoodMotor.getClosedLoopTarget()) + degrees);
+  }
+
+  public boolean hoodMotionCommplete() {
+    return (Math.abs(hoodMotor.getSelectedSensorPosition()-hoodMotor.getClosedLoopTarget())<=ShooterConstants.HOOD_TOLERANCE);
+  }
+
+  /**
+   * Resets the hood sensor to lowest position
+   */
+  public void resetHood(double degrees){
+    hoodMotor.setSelectedSensorPosition(hoodDegreesToTicks(degrees));
   }
 
   public void stop() {

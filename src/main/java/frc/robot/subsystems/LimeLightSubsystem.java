@@ -43,7 +43,7 @@ public class LimeLightSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    x = -1*tx.getDouble(0);
+    x = tx.getDouble(0);
     y = ty.getDouble(0);
     v = tv.getDouble(0);
 
@@ -53,6 +53,7 @@ public class LimeLightSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("LimelightV", v);
     SmartDashboard.putNumber("LimelightArea", area);
     SmartDashboard.putBoolean("Limelight Has Target", targetFound());
+    SmartDashboard.putNumber("Limlight degrees askew", degreesAskew());
   }
 
   /**
@@ -78,7 +79,9 @@ public class LimeLightSubsystem extends SubsystemBase {
   public double getDistanceToTarget() {
     int limelightHeight = 34;
     int limelightMountAngleDegrees = 25;
-    return (104 - limelightHeight)/Math.tan(Math.toRadians(limelightMountAngleDegrees + y));
+    int heightToGoal = 104;
+
+    return (heightToGoal - limelightHeight)/Math.tan(Math.toRadians(limelightMountAngleDegrees + y));
   }
 
   /**
@@ -88,13 +91,24 @@ public class LimeLightSubsystem extends SubsystemBase {
     ledMode.setNumber(3);
   }
 
+  /**
+   * Toggles the vision 
+   */
   public void toggleVision() {
-    enableVision = !enableVision;
-    if (enableVision) {
+    if (!getVision()) {
       lightOn();
     } else {
       lightOff();
     }
+    enableVision = getVision();
+  }
+
+  /**
+   * Sets the limelight to be on or off
+   * @param on true for LED on false for off
+   */
+  public void setVision(boolean on) {
+    ledMode.setNumber((on ? 3 : 1));
   }
 
   /**
@@ -102,7 +116,8 @@ public class LimeLightSubsystem extends SubsystemBase {
    * @return True if vision is inabled else false
    */
   public boolean getVision() {
-    return enableVision;
+    // return enableVision;
+    return ledMode.getNumber(1).intValue() == 3;
   }
 
   /**

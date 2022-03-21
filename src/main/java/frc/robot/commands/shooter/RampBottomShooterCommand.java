@@ -25,6 +25,6 @@ public class RampBottomShooterCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return shooterSubsystem.flywheelAtTargetRPM(rpm);
+        return shooterSubsystem.flywheelAtTargetRPM();
     }
 }
