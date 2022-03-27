@@ -6,10 +6,12 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -20,13 +22,14 @@ import frc.robot.Constants.TurretConstants;
 public class TurretSubsystem extends PIDSubsystem {
 
   WPI_TalonFX turretMotor = new WPI_TalonFX(Constants.TurretConstants.TURRET_CHANNEL);
+  DigitalInput turretLimit = new DigitalInput(TurretConstants.TURRET_LIMIT_CHANNEL);
   ShuffleboardTab tab = Shuffleboard.getTab("Turret");
 
   LimeLightSubsystem limeLightSubsystem = null;
 
   double lastSeen = 0;
-  double TURRET_MAXIMUM_LIMIT = 80000; // TODO: Find this
-  double TURRET_MINIMUM_LIMIT = -80000; // TODO: Find this
+  double TURRET_MAXIMUM_LIMIT = degreesToTicks(190); // TODO: Find this
+  double TURRET_MINIMUM_LIMIT = degreesToTicks(-190); // TODO: Find this
   int turnToDirection = 1;
   int defaultDirection = 1;
 
@@ -57,6 +60,13 @@ public class TurretSubsystem extends PIDSubsystem {
       turretMotor.configSelectedFeedbackSensor(
         FeedbackDevice.IntegratedSensor, TurretConstants.PID_LOOPTYPE, TurretConstants.TIMEOUT_MS);
       turretMotor.setInverted(false);
+
+      turretMotor.setNeutralMode(NeutralMode.Brake);
+
+      turretMotor.configForwardSoftLimitEnable(true);
+      turretMotor.configReverseSoftLimitEnable(true);
+      turretMotor.configForwardSoftLimitThreshold(degreesToTicks(190));
+      turretMotor.configReverseSoftLimitThreshold(degreesToTicks(-190));
 
       
       
@@ -114,9 +124,16 @@ public class TurretSubsystem extends PIDSubsystem {
     double degrees = limeLightSubsystem.degreesAskew();
 
     // Takes in degrees off from target, converts it into ticks, move turret by those ticks
-    if (limeLightSubsystem.getVision() && limeLightSubsystem.targetFound()) {
-      relativeTurretPID(degreesToTicks(degrees));
+    if (limeLightSubsystem.getVision() && limeLightSubsystem.targetFound() && !visionWithinTolerance()) {
+      turretPID(turretMotor.getSelectedSensorPosition() + degreesToTicks(degrees));
     }
+  }
+
+  /**
+   * Finds if vision is within tolerance
+   */
+  public boolean visionWithinTolerance() {
+    return Math.abs(ticksToDegrees(turretMotor.getSelectedSensorPosition()) - limeLightSubsystem.degreesAskew()) < ticksToDegrees(TurretConstants.TOLERANCE);
   }
 
   /**
@@ -157,25 +174,29 @@ public class TurretSubsystem extends PIDSubsystem {
    * @param setpoint encoder tick value for turret to move to
    */
   public void turretPID(double setpoint) {
-    double offset = 0;
+    
     if (setpoint > TURRET_MAXIMUM_LIMIT) {
-      offset = setpoint - TURRET_MAXIMUM_LIMIT;
-      setpoint = TURRET_MINIMUM_LIMIT + offset;
+      setpoint = degreesToTicks(-175);
     } else if (setpoint < TURRET_MINIMUM_LIMIT) {
-      offset = setpoint + TURRET_MINIMUM_LIMIT;
-      setpoint = TURRET_MAXIMUM_LIMIT + offset;
+      setpoint = degreesToTicks(175);
     }
 
-      turretMotor.configMotionCruiseVelocity(rpmToTicksPer100ms(TurretConstants.TURRET_MOTOR_VELOCITY));
-      turretMotor.configMotionAcceleration(rpmToTicksPer100ms(TurretConstants.TURRET_MOTOR_ACCELERATION));
-      turretMotor.configMotionSCurveStrength(TurretConstants.TURRET_MOTOR_MOTION_SMOOTHING);
+    // if (setpoint >  TURRET_MAXIMUM_LIMIT) {
+    //   setpoint = TURRET_MAXIMUM_LIMIT;
+    // } else if (setpoint < TURRET_MINIMUM_LIMIT) {
+    //   setpoint = TURRET_MINIMUM_LIMIT;
+    // }
+
+    turretMotor.configMotionCruiseVelocity(rpmToTicksPer100ms(TurretConstants.TURRET_MOTOR_VELOCITY));
+    turretMotor.configMotionAcceleration(rpmToTicksPer100ms(TurretConstants.TURRET_MOTOR_ACCELERATION));
+    turretMotor.configMotionSCurveStrength(TurretConstants.TURRET_MOTOR_MOTION_SMOOTHING);
 
     turretMotor.set(ControlMode.MotionMagic, setpoint);
   }
 
 
   /**
-   * Move turret relatively by setpoint
+   * Move turret relatively by setpoint // TODO: create another vision relative function
    * @param setpoint encoder tick value to move turret by
    */
   public void relativeTurretPID(double setpoint) {
@@ -223,6 +244,14 @@ public class TurretSubsystem extends PIDSubsystem {
     return this.turnToDirection;
   }
 
+  /**
+   * Gets the state of the turret limit switch
+   * @return true if the turret is over the magnet else false
+   */
+  public boolean getTurretLimit() {
+    return turretLimit.get();
+  }
+
 
   /**
    * Reset the encoder position
@@ -231,11 +260,27 @@ public class TurretSubsystem extends PIDSubsystem {
     turretMotor.setSelectedSensorPosition(ticks);
   }
 
+  /**
+   * Checks to see if the turret is within climber tolerance
+   * @return True if the turret is within tolerence else false
+   */
+  public boolean getPivotTolerance() {
+    double currentPosition = turretMotor.getSelectedSensorPosition();
+    boolean ethernetSwitchTolerance = currentPosition < -3000 && currentPosition > -30000;
+    boolean turretBehindTolerance = currentPosition < -50000 || currentPosition > 60000;
+    return ethernetSwitchTolerance || turretBehindTolerance;
+  }
+
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Turret Encoder Position", turretMotor.getSelectedSensorPosition());
-    SmartDashboard.putNumber("Turret Encoder Error", turretMotor.getClosedLoopError());
+    // SmartDashboard.putNumber("Turret Encoder Position", turretMotor.getSelectedSensorPosition());
+    // SmartDashboard.putNumber("Turret Encoder Error", turretMotor.getClosedLoopError());
+    // SmartDashboard.putBoolean("Turret Limit", getTurretLimit());
+
+    if (getTurretLimit()) {
+      // turretMotor.configClearPositionOnLimitR(true, 20);
+    }
 
   }
 }

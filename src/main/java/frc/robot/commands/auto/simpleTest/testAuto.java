@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
+import frc.robot.commands.auto.TrajectoryFollowerCommand;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -19,18 +20,10 @@ public class testAuto extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
 
     robotContainer.drivetrainSubsystem.resetAll();
-    robotContainer.drivetrainSubsystem.resetGyro(false);
+    robotContainer.drivetrainSubsystem.resetGyro(true);
     addCommands(
-
-      new RunCommand(()-> robotContainer.shooterSubsystem.flywheelManual(.6), robotContainer.shooterSubsystem).withTimeout(2),
-      new RunCommand(()-> robotContainer.collectorSubsystem.upperBallPath(.7), robotContainer.shooterSubsystem).withTimeout(2),
-      new InstantCommand(()-> robotContainer.shooterSubsystem.flywheelManual(0)),
-      new InstantCommand(()-> robotContainer.collectorSubsystem.upperBallPath(0)),
-      new RunCommand(()-> robotContainer.drivetrainSubsystem.westCoastDrive(-0.4, -0.4, false), robotContainer.drivetrainSubsystem).withTimeout(4)
-      // new RunCommand(()-> robotContainer.drivetrainSubsystem.westCoastDrive(-0.4, -0.4,false)), robotContainer.drivetrainSubsystem).withTimeout(2)
-
-    
-    
+      
+      new TrajectoryFollowerCommand(robotContainer, testTrajectory.START)
     
     );
     // new TestVoltCommand(robotContainer).withTimeout(2));

@@ -17,20 +17,32 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.Turret.TurretSetpointCommand;
-import frc.robot.commands.auto.simpleTest.testAuto;
+import frc.robot.commands.Turret.VisionCommand;
+import frc.robot.commands.auto.twoBallAuto.twoBallAuto;
+import frc.robot.commands.climber.toggleClimberCommand;
+import frc.robot.commands.collector.AutomateBallpathCommand;
+import frc.robot.commands.collector.CollectCommand;
 import frc.robot.commands.drivetrain.DefaultTankDriveCommand;
-import frc.robot.commands.shooter.hoodToAngleCommand;
+import frc.robot.commands.hotlineblink.AllianceColorCommand;
+import frc.robot.commands.hotlineblink.BlinkinReadyToShootCommand;
+import frc.robot.commands.hotlineblink.SpitBallsWithColorCommand;
+import frc.robot.commands.shooter.LowPortCommand;
+import frc.robot.commands.shooter.ShootDistanceCommand;
+import frc.robot.commands.shooter.ShooterToggleCommand;
+import frc.robot.commands.shooter.SpitBallsOutCommand;
 import frc.robot.input.AttackThree;
 import frc.robot.input.XboxOneController;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.CollectorSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.HotlineBlinkSubsystem;
 import frc.robot.subsystems.LimeLightSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
@@ -44,8 +56,8 @@ import frc.robot.subsystems.TurretSubsystem;
 public class RobotContainer {
 
     // Choosers
-    public final SendableChooser<Integer> bottomRPMChooser = new SendableChooser<>();
-    public final SendableChooser<Integer> topRPMChooser = new SendableChooser<>();
+    public final SendableChooser<Integer> shooterRPMChooser = new SendableChooser<>();
+    // public final SendableChooser<Integer> topRPMChooser = new SendableChooser<>();
 
     // Cameras
     UsbCamera camera1;
@@ -72,8 +84,9 @@ public class RobotContainer {
 
     public final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
 
-    public final ShooterSubsystem shooterSubsystem = 
-            new ShooterSubsystem();
+    public final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
+
+    public final HotlineBlinkSubsystem hotlineBlinkSubsystem = new HotlineBlinkSubsystem();
 
     
     // Compressor
@@ -95,7 +108,7 @@ public class RobotContainer {
     public final AttackThree rightStick =
             new AttackThree(Constants.InputConstants.RIGHT_JOYSTICK_CHANNEL);
     public final XboxOneController driverXboxController =
-            new XboxOneController(Constants.InputConstants.DRIVER_XBOX_CHANNEL);
+            new XboxOneController(Constants.InputConstants.XBOX_CHANNEL);
     //  public final ButtonBoxLeft buttonBoxLeft = new ButtonBoxLeft(2);
     // public final ButtonBoxRight buttonBoxRight = new ButtonBoxRight(3);
 
@@ -106,65 +119,80 @@ public class RobotContainer {
     */
     public RobotContainer() {
 
+        for (int i = 1500; i < 6001; i += 50) {
+            shooterRPMChooser.addOption(""+i+ " RPM", i);
+        }
+
+        SmartDashboard.putData("Set Flywheel RPM", shooterRPMChooser);
+
         // initializeCamera();
 
-        // leftStick.triggerButton.whenHeld(new RunCommand(()-> collectorSubsystem.collect(.75), collectorSubsystem))
-        //     .whenReleased(new RunCommand(()-> collectorSubsystem.collect(0), collectorSubsystem));
-
-        // leftStick.triggerButton.whenPressed(new ToggleCollectCommand(this, 0.75));
+        // Left Stick Bindings
         leftStick.triggerButton.whenPressed(new InstantCommand(()-> collectorSubsystem.toggleCollector(.75), collectorSubsystem));
+        leftStick.triggerButton.whenPressed(new AutomateBallpathCommand(this));
         
+        // Until interupt / timeout may fix stuff
+        leftStick.middleFaceButton.whenPressed(new InstantCommand(()->  collectorSubsystem.collect(0.75)));
+        leftStick.middleFaceButton.whenPressed(new AutomateBallpathCommand(this));
+
+        leftStick.bottomFaceButton.whenHeld(new RunCommand(()-> collectorSubsystem.collect(-0.75)))
+            .whenReleased(new InstantCommand(()-> collectorSubsystem.collect(0))); 
+
+        /*
+        leftStick.middleFaceButton.whenPressed(new CollectCommand(this, 0.75));
+        leftStick.middleFaceButton.whenPressed(new AutomateBallpathCommand(this));
+
+        leftStick.bottomFaceButton.whenHeld(new CollectCommand(this, -0.75))
+            .whenReleased(new InstantCommand(()-> collectorSubsystem.collect(0))); 
+        */
+
+        // leftStick.leftFaceButton.whenPressed(new InstantCommand(()-> climberSubsystem.resetClimberPos()));
+
+        // leftStick.bottomFaceButton.whenPressed(new ClimberSetpointCommand(this, 0));
+
+        // leftStick.rightFaceButton.whenPressed(new ClimberSetpointCommand(this, 150000));
+
+        // leftStick.leftFaceButton.whenPressed(new TurretSetpointCommand(this, turretSubsystem.degreesToTicks(-90)));
+        // leftStick.rightFaceButton.whenPressed(new TurretSetpointCommand(this, turretSubsystem.degreesToTicks(90)));
+        // leftStick.bottomFaceButton.whenPressed(new TurretSetpointCommand(this, turretSubsystem.degreesToTicks(0)));
+
+        // Right Stick Bindings
+        // rightStick.leftFaceButton.whenPressed(new RunCommand(()-> turretSubsystem.turretVision(), turretSubsystem));
+        // rightStick.bottomFaceButton.whenPressed(new VisionCommand(this));
+
+        rightStick.triggerButton.whenHeld(new RunCommand(()-> collectorSubsystem.upperBallPath(.7)))
+            .whenReleased(new InstantCommand(()-> collectorSubsystem.upperBallPath(0)));
+
+        // rightStick.middleFaceButton.whenPressed(new InstantCommand(()-> turretSubsystem.resetEncoder(0), turretSubsystem));
+
+        rightStick.bottomFaceButton.whenPressed(new ShootDistanceCommand(this));
+        rightStick.bottomFaceButton.whenPressed(new InstantCommand(()-> shooterSubsystem.setToggle(!shooterSubsystem.getToggle())));
+
+        rightStick.rightFaceButton.whenPressed(new SpitBallsWithColorCommand(this));
+
+        rightStick.middleFaceButton.whenPressed(new LowPortCommand(this));
+        rightStick.middleFaceButton.whenPressed(new InstantCommand(()-> shooterSubsystem.setToggle(!shooterSubsystem.getToggle())));
+        // rightStick.bottomFaceButton.whenPressed(new ShooterToggleCommand(this));
+        // rightStick.bottomFaceButton.whenPressed(new InstantCommand(()-> shooterSubsystem.flywheelToggle(shooterRPMChooser.getSelected())));
+
+        // rightStick.rightFaceButton.whenPressed(new InstantCommand(()-> shooterSubsystem.resetHood(27)));
 
 
-        leftStick.middleFaceButton.whenPressed(new InstantCommand(()-> collectorSubsystem.extend(), collectorSubsystem));
-        // leftStick.leftFaceButton.whenPressed(new InstantCommand(()-> turret.extend(), collectorSubsystem));
+        // Controller Bindings
+        // driverXboxController.selectButton.whenPressed(new InstantCommand(()-> climberSubsystem.togglePivot()));
+        // driverXboxController.selectButton.whenPressed(new toggleClimberCommand(this));
+        // driverXboxController.startButton.whileHeld(new RunCommand(()-> turretSubsystem.turretManual(0.2), turretSubsystem))
+        //     .whenReleased(new InstantCommand(()-> turretSubsystem.turretManual(0), turretSubsystem));
 
-        // leftStick.leftFaceButton.whenPressed(new TurretSetpointCommand(this, -40000));
-        // leftStick.rightFaceButton.whenPressed(new TurretSetpointCommand(this, 40000));
-        // leftStick.bottomFaceButton.whenPressed(new TurretSetpointCommand(this, 0));
-
-        // leftStick.leftFaceButton.whenPressed(new InstantCommand(()-> turretSubsystem.turretPID(-40000)));
-        // leftStick.rightFaceButton.whenPressed(new InstantCommand(()-> turretSubsystem.turretPID(40000)));
-        // leftStick.bottomFaceButton.whenPressed(new InstantCommand(()-> turretSubsystem.turretPID(0)));
-
-        // leftStick.leftFaceButton.whenPressed(new RunCommand(()-> turretSubsystem.turretPID(-40000), turretSubsystem));
-        // leftStick.rightFaceButton.whenPressed(new RunCommand(()-> turretSubsystem.turretPID(40000), turretSubsystem));
-        // leftStick.bottomFaceButton.whenPressed(new RunCommand(()-> turretSubsystem.turretPID(0), turretSubsystem));
-
-        leftStick.leftFaceButton.whenPressed(new TurretSetpointCommand(this, turretSubsystem.degreesToTicks(-90)));
-        leftStick.rightFaceButton.whenPressed(new TurretSetpointCommand(this, turretSubsystem.degreesToTicks(90)));
-        leftStick.bottomFaceButton.whenPressed(new TurretSetpointCommand(this, turretSubsystem.degreesToTicks(0)));
-
-        rightStick.leftFaceButton.whenPressed(new RunCommand(()-> turretSubsystem.turretVision()));
-
-        
-        // leftStick.rightFaceButton.whenPressed(new InstantCommand(()-> collectorSubsystem.retract(), collectorSubsystem));
-
-        rightStick.triggerButton.whenHeld(new RunCommand(()-> collectorSubsystem.upperBallPath(.7), collectorSubsystem))
-            .whenReleased(new RunCommand(()-> collectorSubsystem.upperBallPath(0), collectorSubsystem));
-
-        rightStick.middleFaceButton.whenPressed(new InstantCommand(()-> turretSubsystem.resetEncoder(0), turretSubsystem));
-
-        rightStick.bottomFaceButton.whenPressed(new InstantCommand(()-> shooterSubsystem.flywheelToggle(3500)));
-        // rightStick.bottomFaceButton.whenPressed(new ShootCommand(this, .55));
-
-        driverXboxController.selectButton.whileHeld(new RunCommand(()-> turretSubsystem.turretManual(-0.2), turretSubsystem))
-            .whenReleased(new InstantCommand(()-> turretSubsystem.turretManual(0), turretSubsystem));
-        driverXboxController.startButton.whileHeld(new RunCommand(()-> turretSubsystem.turretManual(0.2), turretSubsystem))
-            .whenReleased(new InstantCommand(()-> turretSubsystem.turretManual(0), turretSubsystem));
-
-        // buttonBoxLeft.traverseLeft.whileHeld(new RunCommand(()-> climberSubsystem.extendClimber(.6), climberSubsystem))
-        //     .whenReleased(new RunCommand(()-> climberSubsystem.extendClimber(0), climberSubsystem));
-        // buttonBoxRight.traverseRight.whileHeld(new RunCommand(()-> climberSubsystem.extendClimber(-.6), climberSubsystem))
-
+        /*
         new POVButton(driverXboxController, 90)
-            .whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(turretSubsystem.degreesToTicks(.5)), turretSubsystem));
+            .whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(turretSubsystem.degreesToTicks(1)), turretSubsystem));
+            // .whenReleased(new VisionCommand(this));
 
         new POVButton(driverXboxController, 270)
-            .whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(-turretSubsystem.degreesToTicks(.5)), turretSubsystem));
+            .whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(-turretSubsystem.degreesToTicks(1)), turretSubsystem));
+            // .whenReleased(new VisionCommand(this));;
 
-        
-        /*
         new POVButton(driverXboxController, 0)
             .whileHeld(new RunCommand(()-> climberSubsystem.extendClimber(.3), climberSubsystem))
             .whenReleased(new RunCommand(()-> climberSubsystem.extendClimber(0), climberSubsystem));
@@ -173,16 +201,49 @@ public class RobotContainer {
             .whileHeld(new RunCommand(()-> climberSubsystem.extendClimber(-.3), climberSubsystem))
             .whenReleased(new RunCommand(()-> climberSubsystem.extendClimber(0), climberSubsystem));
         */
+
+        driverXboxController.selectButton.whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(-turretSubsystem.degreesToTicks(1)), turretSubsystem));
+        driverXboxController.startButton.whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(turretSubsystem.degreesToTicks(1)), turretSubsystem));
+
+        new POVButton(driverXboxController, 0)
+            .whenPressed(new TurretSetpointCommand(this, 0));
+
+        new POVButton(driverXboxController, 90)
+            .whenPressed(new TurretSetpointCommand(this, turretSubsystem.degreesToTicks(90)));
+
+        new POVButton(driverXboxController, 180)
+            .whenPressed(new TurretSetpointCommand(this, turretSubsystem.degreesToTicks(180)));
+
+        new POVButton(driverXboxController, 270)
+            .whenPressed(new TurretSetpointCommand(this, turretSubsystem.degreesToTicks(-90)));
+
+
+        driverXboxController.xButton.whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(-turretSubsystem.degreesToTicks(1)), turretSubsystem));
+        driverXboxController.bButton.whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(turretSubsystem.degreesToTicks(1)), turretSubsystem));
+
+        // driverXboxController.yButton.whileHeld(new RunCommand(()-> shooterSubsystem.relativeHoodAngle(0.5)));
+        // driverXboxController.aButton.whileHeld(new RunCommand(()-> shooterSubsystem.relativeHoodAngle(-0.5)));
+
+        // driverXboxController.bButton.whenPressed(new InstantCommand(()-> shooterSubsystem.setHoodAngle(52)));
         
 
+        driverXboxController.leftBumper.whenPressed(new InstantCommand(()-> limeLightSubsystem.toggleVision()));
+
+        new Trigger(()-> (driverXboxController.getRightTrigger() > 0.005))
+            .whenActive(new InstantCommand(()-> climberSubsystem.leftBrakeActuate(true)))
+            .whenInactive(new InstantCommand(()-> climberSubsystem.leftBrakeActuate(false)));
+
+        new Trigger(()-> (driverXboxController.getLeftTrigger() > 0.005))
+            // .whenActive(new InstantCommand(()-> climberSubsystem.leftBrakeActuate(true)))
+            // .whenInactive(new InstantCommand(()-> climberSubsystem.leftBrakeActuate(false)));
+            .whenActive(new RunCommand(()-> collectorSubsystem.upperBallPath(-.7), collectorSubsystem))
+            .whenInactive(new RunCommand(()-> collectorSubsystem.upperBallPath(0), collectorSubsystem));
+        
+        
+        // driverXboxController.yButton.whenPressed(new hoodToAngleCommand(this, 40));
+        // driverXboxController.aButton.whenPressed(new hoodToAngleCommand(this, 27));
+
         /*
-        driverXboxController.yButton.whenPressed(new ClimbUpCommand(this));
-        driverXboxController.aButton.whenPressed(new ClimberDownCommand(this));
-        */
-
-        driverXboxController.yButton.whenPressed(new hoodToAngleCommand(this, 40));
-        driverXboxController.aButton.whenPressed(new hoodToAngleCommand(this, 27));
-
         new POVButton(driverXboxController, 0)
             .whileHeld(new RunCommand(()-> shooterSubsystem.relativeHoodAngle(0.5)));
             // .whenReleased(new InstantCommand(()-> shooterSubsystem.hoodManual(0)));
@@ -190,36 +251,13 @@ public class RobotContainer {
         new POVButton(driverXboxController, 180)
             .whileHeld(new RunCommand(()-> shooterSubsystem.relativeHoodAngle(-0.5)));
             // .whenReleased(new InstantCommand(()-> shooterSubsystem.hoodManual(0)));
-
-        rightStick.rightFaceButton.whenPressed(new InstantCommand(()-> shooterSubsystem.resetHood(27)));
+        */
+        
 
         // new Trigger(()-> (Math.abs(driverXboxController.getLeftStickY()) > 0.05))
         //     .whenActive(new RunCommand(()-> shooterSubsystem.hoodManual(driverXboxController.getLeftStickY())))
         //     .whenInactive(new InstantCommand(()-> shooterSubsystem.relativeHoodAngle(0)));
 
-        new Trigger(()-> (driverXboxController.getRightTrigger() > 0.005))
-            .whenActive(new RunCommand(()-> climberSubsystem.brakeActuate(true), climberSubsystem))
-            .whenInactive(new RunCommand(()-> climberSubsystem.brakeActuate(false), climberSubsystem));
-
-        // buttonBoxRight.colorWheel.whenPressed(new RunCommand(()-> climberSubsystem.brakeActuate(true), climberSubsystem));
-        // buttonBoxRight.colorWheel.whenReleased(new RunCommand(()-> climberSubsystem.brakeActuate(false), climberSubsystem));
-
-        
-        driverXboxController.rightBumper.whenPressed(new InstantCommand(()-> climberSubsystem.clamperToggle()));
-
-
-
-        driverXboxController.leftBumper.whenPressed(new InstantCommand(()-> limeLightSubsystem.toggleVision()));
-        // buttonBoxRight.release.whenPressed(new InstantCommand(()-> turretSubsystem.resetEncoder(-40000)));
-        
-        // buttonBoxRight.tilt.whenPressed(new InstantCommand(()-> turretSubsystem.resetEncoder(40000)));
-
-        driverXboxController.bButton.whenPressed(new InstantCommand(()-> climberSubsystem.jumperActuate(true)));
-        
-
-        new Trigger(()-> (driverXboxController.getLeftTrigger() > 0.005))
-            .whenActive(new RunCommand(()-> collectorSubsystem.upperBallPath(-.7), collectorSubsystem))
-            .whenInactive(new RunCommand(()-> collectorSubsystem.upperBallPath(0), collectorSubsystem));
 
         drivetrainSubsystem.gyro.calibrate();
 
@@ -257,6 +295,8 @@ public class RobotContainer {
             new ClimberJumpGrabCommand(this).schedule();
         });
         */
+
+        
     }
 
     /**
@@ -266,12 +306,14 @@ public class RobotContainer {
     */
     public Command getAutonomousCommand() {
         // return null;
-        return new testAuto(this);
+        return new twoBallAuto(this);
     }
 
     public void setDefaultCommands() {
         // Default drive command
         drivetrainSubsystem.setDefaultCommand(new DefaultTankDriveCommand(this));
+        hotlineBlinkSubsystem.setDefaultCommand(new AllianceColorCommand(this));
+        turretSubsystem.setDefaultCommand(new VisionCommand(this));
         // turretSubsystem.setDefaultCommand(new VisionCommand(this));
         //drivetrainSubsystem.setDefaultCommand(new DefaultArcadeDriveCommand(this));
         //climberSubsystem.setDefaultCommand(new ClimberJumpGrabCommand(this));
@@ -280,10 +322,19 @@ public class RobotContainer {
 
     public void periodic() {
         /*
-        if (!climberSubsystem.jumperLimitSwitch.get()) {
+        if (!climberSubsystem.jumperLimitS
+        witch.get()) {
             new ClimberJumpGrabCommand(this).schedule();
         }
         */
+        /* TODO: Uncomment this really good code when climber is on lmao
+        if (!climberSubsystem.getTogglePivot() && turretSubsystem.getPivotTolerance()) {
+            climberSubsystem.leftPivotActuate(true);
+            climberSubsystem.rightPivotActuate(true);
+        } else if (!climberSubsystem.getTogglePivot()) {
+            climberSubsystem.leftPivotActuate(false);
+            climberSubsystem.rightPivotActuate(false);
+        }*/
 
     }
 

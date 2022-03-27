@@ -118,17 +118,17 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     @Override
     public void periodic() {
         
-        SmartDashboard.putNumber("Left Drive Encoder", leftLeader.getSelectedSensorPosition());
-        SmartDashboard.putNumber("Left Follower Drive Encoder", leftFollower.getSelectedSensorPosition());
-        SmartDashboard.putNumber("Right Drive Encoder", rightLeader.getSelectedSensorPosition());
-        SmartDashboard.putNumber("Right Follower Drive Encoder", rightFollower.getSelectedSensorPosition());
-        SmartDashboard.putNumber("Difference Meters", Math.abs(getDistanceMeters(leftLeader)-getDistanceMeters(rightLeader)));
-        SmartDashboard.putNumber("Get left wheel speed", leftLeader.getSelectedSensorVelocity());
-        SmartDashboard.putNumber("Get right wheel speed", rightLeader.getSelectedSensorVelocity());
-        SmartDashboard.putNumber("gyro raw yaw", gyro.getAngle());
-        SmartDashboard.putNumber("gyro yaw", getYawDegrees());
-        SmartDashboard.putNumber("Meters Left Side Traveled", getDistanceMeters(leftLeader));
-        SmartDashboard.putNumber("Meters Right Side Traveled", getDistanceMeters(rightLeader));
+        // SmartDashboard.putNumber("Left Drive Encoder", leftLeader.getSelectedSensorPosition());
+        // SmartDashboard.putNumber("Left Follower Drive Encoder", leftFollower.getSelectedSensorPosition());
+        // SmartDashboard.putNumber("Right Drive Encoder", rightLeader.getSelectedSensorPosition());
+        // SmartDashboard.putNumber("Right Follower Drive Encoder", rightFollower.getSelectedSensorPosition());
+        // SmartDashboard.putNumber("Difference Meters", Math.abs(getDistanceMeters(leftLeader)-getDistanceMeters(rightLeader)));
+        // SmartDashboard.putNumber("Get left wheel speed", leftLeader.getSelectedSensorVelocity());
+        // SmartDashboard.putNumber("Get right wheel speed", rightLeader.getSelectedSensorVelocity());
+        // SmartDashboard.putNumber("gyro raw yaw", gyro.getAngle());
+        // SmartDashboard.putNumber("gyro yaw", getYawDegrees());
+        // SmartDashboard.putNumber("Meters Left Side Traveled", getDistanceMeters(leftLeader));
+        // SmartDashboard.putNumber("Meters Right Side Traveled", getDistanceMeters(rightLeader));
         
         
 

@@ -5,34 +5,48 @@
 package frc.robot.commands.climber;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.subsystems.LimeLightSubsystem;
+import frc.robot.subsystems.TurretSubsystem;
 
-public class ClampCommand extends CommandBase {
+public class toggleClimberCommand extends CommandBase {
   ClimberSubsystem climberSubsystem;
-  /** Creates a new ClampCommand. */
-  public ClampCommand(RobotContainer robotContainer) {
+  TurretSubsystem turretSubsystem;
+  LimeLightSubsystem limeLightSubsystem;
+  boolean toggle = false;
+
+  /** Creates a new toggleClimberCommand. */
+  public toggleClimberCommand(RobotContainer robotContainer) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.climberSubsystem = robotContainer.climberSubsystem;
+    climberSubsystem = robotContainer.climberSubsystem;
+    turretSubsystem = robotContainer.turretSubsystem;
+    limeLightSubsystem = robotContainer.limeLightSubsystem;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    climberSubsystem.clamperClose();
+    limeLightSubsystem.setVision(false);
+    turretSubsystem.turretPID(0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+
+  }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    climberSubsystem.togglePivot();
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return turretSubsystem.isMotionComplete();
   }
 }

@@ -1,102 +1,105 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
 
 public class ClimberSubsystem extends SubsystemBase {
 
-    Solenoid jumper = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.JUMPER_ID);
-    Solenoid release_jumper = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.RELEASE_JUMPER_ID);
-    Solenoid clamper = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.CLAMPER_ID);
-    // Solenoid pivot = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.PIVOT_ID);
-    // Solenoid extender = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.EXTENDER_ID);
-    Solenoid brake = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.BREAK_ID);
-    int jumpStage = 0;
+    // Initialize Solenoids
+    Solenoid leftPivot = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.LEFT_PIVOT_ID);
+    Solenoid rightPivot = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.RIGHT_PIVOT_ID);
+    Solenoid leftBrake = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.LEFT_BRAKE_ID);
+    Solenoid rightBrake = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.RIGHT_BRAKE_ID);
 
-    public DigitalInput jumperLimitSwitch = new DigitalInput(ClimberConstants.JUMPER_LIMIT_SWITCH_ID); // Limit switch is pressed when in neutral state,
-                                                                 // not pressed when "jumping"
-
-    public AnalogInput distanceSensor = new AnalogInput(0); // Ultrasonic Sensor
-
+    // Initailize Motors
     WPI_TalonFX climber_motor = new WPI_TalonFX(ClimberConstants.CLIMBER_MOTOR_CHANNEL);
 
-    // Choosers
-    private final SendableChooser<Double> delayTimeChooser = new SendableChooser<>();
+    boolean togglePivot = false;
+
 
     public ClimberSubsystem() {
+
+        climber_motor.configFactoryDefault();
+
+        // kF calculation found here: https://docs.ctre-phoenix.com/en/stable/ch16_ClosedLoop.html
+        configPIDF(
+                    ClimberConstants.CLIMBER_P, 
+                    ClimberConstants.CLIMBER_I, 
+                    ClimberConstants.CLIMBER_D, 
+                    1023 / rpmToTicksPer100ms(ClimberConstants.MAX_MOTOR_RPM));
+
+        climber_motor.configClosedLoopPeakOutput(0, 1);
+        climber_motor.configClosedLoopPeriod(0, 1);
+        climber_motor.configClosedloopRamp(0.00);
+        climber_motor.configAllowableClosedloopError(0, ClimberConstants.CLIMBER_TOLERANCE);
+
+        configFeedbackSensors();
+
+        climber_motor.setNeutralMode(NeutralMode.Brake);
         climber_motor.setInverted(true);
 
-        for (double i = 0.01; i < 0.5; i+=0.01) {
-            delayTimeChooser.addOption(i+" Seconds", i);
-        }
-
-        // SmartDashboard.putData(delayTimeChooser);
     }
+
+    private void configFeedbackSensors() {
+        climber_motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, ClimberConstants.PID_LOOPTYPE, ClimberConstants.TIMEOUT_MS);
+    }
+
+    public void configPIDF(double P, double I, double D, double F) {
+        climber_motor.config_kP(ClimberConstants.SLOT_ID, P);
+        climber_motor.config_kI(ClimberConstants.SLOT_ID, I);
+        climber_motor.config_kD(ClimberConstants.SLOT_ID, D);
+        climber_motor.config_kF(ClimberConstants.SLOT_ID, F);
+      }
 
     /**
-     * Turns the jumper solenoid on or off
-     * @param on state of the solenoid
+     * Converts rotations per minute to ticks per 100ms
+     * Multiplies rotations per minute by ticks per rotation
+     * Divides by 600 to convert from minute to millisecond
+     * @param rpm input of rotations per minute
+     * @return output of ticks per 100ms
      */
-    public void jumperActuate(boolean on) {
-        jumper.set(on);
+    public double rpmToTicksPer100ms(double rpm) {
+        return rpm * ClimberConstants.TICKS_PER_ROTATION / 600;
     }
-
     
-    public void brakeActuate(boolean on) {
-        brake.set(on);
+    /**
+     * Turns the left brake solenoid on or off
+     * @param on True for unbrake False for brake
+     */
+    public void leftBrakeActuate(boolean on) {
+        leftBrake.set(on);
     }
 
     /**
-     * True if break on else false
-     * @return
+     * Turns the right brake solenoid on or off
+     * @param on True for unbrake False for brake
      */
-    public boolean getBrake() {
-        return brake.get();
+    public void rightBrakeActuate(boolean on) {
+        rightBrake.set(on);
     }
 
     /**
-     * Turns the release jumper solenoid on
+     * Turns the left pivot solenoid on or off
+     * @param on True for extended else false
      */
-    public void releaseJumperActuate() {
-        release_jumper.set(true);
+    public void leftPivotActuate(boolean on) {
+        leftPivot.set(on);
     }
 
     /**
-     * Toggles the clamper solenoid on and off
+     * Turns the right pivot solenoid on or off
+     * @param on True for extended else false
      */
-    public void clamperToggle() {
-        clamper.toggle();
-    }
-
-    public void clamperClose() {
-        clamper.set(false);
-    }
-
-    public void clamperOpen() {
-        clamper.set(true);
-    }
-
-    /**
-     * Turns the pivot solenoid on
-     */
-    public void pivotActuate() {
-        // pivot.set(true);
-    }
-
-    /**
-     * Turns the extender solenoid on
-     */
-    public void extenderActuate() {
-        // extender.set(true);
+    public void rightPivotActuate(boolean on) {
+        rightPivot.set(on);
     }
 
     /**
@@ -108,39 +111,40 @@ public class ClimberSubsystem extends SubsystemBase {
     }
 
     /**
-     * Determines if the climber extender has reached the forward limit
-     * @return true if it has reached the limit, false otherwise
+     * Extend the climber to a set position
+     * @param setpoint position for the climber to go to (in ticks)
      */
-    public boolean climberLimitFwd() {
-        return climber_motor.isFwdLimitSwitchClosed() == 1;
+    public void climberPID(double setpoint){
+        /*
+        if (setpoint > ShooterConstants.HOOD_MAXIMUM_LIMIT) {
+        degrees = ShooterConstants.HOOD_MAXIMUM_LIMIT;
+        } else if (degrees < ShooterConstants.HOOD_MINIMUM_LIMIT) {
+        degrees = ShooterConstants.HOOD_MINIMUM_LIMIT;
+        }
+        */
+
+
+        climber_motor.configMotionCruiseVelocity(rpmToTicksPer100ms(ClimberConstants.CLIMBER_MOTOR_VELOCITY));
+        climber_motor.configMotionAcceleration(rpmToTicksPer100ms(ClimberConstants.CLIMBER_MOTOR_ACCELERATION));
+        climber_motor.configMotionSCurveStrength(ClimberConstants.CLIMBER_MOTOR_MOTION_SMOOTHING);
+
+        climber_motor.set(ControlMode.MotionMagic, setpoint);
     }
 
     /**
-     * Determines if the climber extender has reached the reverse limit
-     * @return true if it has reached the limit, false otherwise
+     * Move the climber relatively by the setpoint
+     * @param setpoint the number of tickcs to relatively move by
      */
-    public boolean climberLimitRev() {
-        return climber_motor.isRevLimitSwitchClosed() == 1;
-    }
-
-    public Double getDelay() {
-        return delayTimeChooser.getSelected();
+    public void relativeClimberPID(double setpoint) {
+        climberPID(climber_motor.getClosedLoopTarget() + setpoint);
     }
 
     /**
-     * gets current climbing stage
-     * @return an integer representing the current climbing stage
+     * Checks to see if the motion is complete
+     * @return true if complete else false
      */
-    public int getStage(){
-        return jumpStage;
-    }
-
-    /**
-     * sets climbing stage to stage
-     * @param stage the stage we're setting to
-     */
-    public void setStage(int stage){
-        jumpStage = stage;
+    public boolean isMotionComplete() {
+        return (Math.abs(climber_motor.getSelectedSensorPosition() - climber_motor.getClosedLoopTarget()) < ClimberConstants.CLIMBER_TOLERANCE);
     }
 
     /**
@@ -151,21 +155,27 @@ public class ClimberSubsystem extends SubsystemBase {
         return climber_motor.getSelectedSensorPosition();
     }
 
-    public void resetClimberPos() {
-        climber_motor.setSelectedSensorPosition(0);
+    /**
+     * Toggles both pivots for the climber out and in
+     */
+    public void togglePivot() {
+        togglePivot = !togglePivot;
+        leftPivotActuate(togglePivot);
+        rightPivotActuate(togglePivot);
     }
 
     /**
-     * Gets the distance of the robot from the ground
-     * @return The distance of the robot from the ground (in inches)
+     * Gets the state of the toggle pivot
+     * @return true for pivot out false for pivot in
      */
-    public double getDistance() {
-        double rawValue = distanceSensor.getValue();
-        // voltage_scale_factor allows us to compensate for differences in supply voltage.
-        double voltage_scale_factor = 5/RobotController.getVoltage5V();
-        double currentDistanceInches = rawValue * voltage_scale_factor * 0.0492;
-        return currentDistanceInches;
+    public boolean getTogglePivot() {
+        return togglePivot;
     }
+
+    public void resetClimberPos() {
+        climber_motor.setSelectedSensorPosition(0);
+    }
+    
 
     @Override
     public void periodic() {

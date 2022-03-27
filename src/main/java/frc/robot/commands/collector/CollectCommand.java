@@ -2,39 +2,33 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.Turret;
+package frc.robot.commands.collector;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.TurretSubsystem;
-import frc.robot.subsystems.LimeLightSubsystem;
+import frc.robot.subsystems.CollectorSubsystem;
 
-public class VisionCommand extends CommandBase {
-  private final TurretSubsystem turretSubsystem;
-  private final LimeLightSubsystem limeLightSubsystem;
-  /** Creates a new VisionCommand. */
-  public VisionCommand(RobotContainer robotContainer) {
+public class CollectCommand extends CommandBase {
+  CollectorSubsystem collectorSubsystem;
+  double speed = 0;
+  /** Creates a new CollectCommand. */
+  public CollectCommand(RobotContainer robotContainer, double speed) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.turretSubsystem = robotContainer.turretSubsystem;
-    this.limeLightSubsystem = robotContainer.limeLightSubsystem;
-    addRequirements(turretSubsystem);
+
+    collectorSubsystem = robotContainer.collectorSubsystem;
+    addRequirements(collectorSubsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // if (!limeLightSubsystem.targetFound() || !limeLightSubsystem.getVision()) {
-    //   turretSubsystem.turretManual(0);
-    // } else 
-    if (limeLightSubsystem.targetFound()) {
-      turretSubsystem.turretVision();
-    }
+    
+    collectorSubsystem.collect(speed);
   }
 
   // Called once the command ends or is interrupted.

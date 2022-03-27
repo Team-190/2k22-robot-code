@@ -29,6 +29,6 @@ public class RunShooterCommand extends CommandBase {
      */
     @Override
     public void end(boolean interrupted) {
-        shooterSubsystem.stop();
+        shooterSubsystem.stopFlywheel();
     }
 }

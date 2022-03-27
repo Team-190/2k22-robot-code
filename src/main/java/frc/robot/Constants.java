@@ -20,10 +20,7 @@ public final class Constants {
         // USB Ids
         public static final int LEFT_JOYSTICK_CHANNEL = 0;
         public static final int RIGHT_JOYSTICK_CHANNEL = 1;
-        public static final int DRIVER_XBOX_CHANNEL = 2;
-        public static final int OPERATOR_XBOX_CHANNEL = 3;
-        public static final int BUTTON_BOX_LEFT_CHANNEL = 4;
-        public static final int BUTTON_BOX_RIGHT_CHANNEL = 5;
+        public static final int XBOX_CHANNEL = 2;
     }
 
     public static final class CollectorConstants {
@@ -72,10 +69,10 @@ public final class Constants {
         public static final double TRACKWIDTH_METERS = 0.7144; // horizontal distance between wheels
         public static final double COUNTS_PER_MOTOR_REVOLUTION = 2048;
         public static final double WHEEL_DIAMETER_METERS = 0.1016; // 4 inch diameter in meters
-        public static final double AUTO_P = 2.8055; // Calculated by SysID
+        public static final double AUTO_P = 2.1989; // Calculated by SysID
 
         // (14/58) ratio to (20/28) on the drivetrain gearbox
-        public static final double WHEEL_REVOLUTIONS_PER_MOTOR_REVOLUTIONS = 0.172; // (0.172)
+        public static final double WHEEL_REVOLUTIONS_PER_MOTOR_REVOLUTIONS = 0.161716; // (0.172)
         public static final double METERS_PER_COUNT =
                 (1 / COUNTS_PER_MOTOR_REVOLUTION)
                         * // MOTOR ROTATIONS per count
@@ -93,9 +90,9 @@ public final class Constants {
         public final static int MAX_VOLTAGE = 11;
 
         // Constants calculated by System Identification software
-        public static final double S_VOLTS = 0.70419; 
-        public static final double V_VOLT_SECONDS_PER_METER = 1.9284;
-        public static final double A_VOLT_SECONDS_SQUARED_PER_METER = 0.4825;
+        public static final double S_VOLTS = 0.65089; 
+        public static final double V_VOLT_SECONDS_PER_METER = 1.938;
+        public static final double A_VOLT_SECONDS_SQUARED_PER_METER = 0.14035;
 
         public static final SimpleMotorFeedforward DRIVE_FEED_FORWARD =
                 new SimpleMotorFeedforward(
@@ -113,6 +110,7 @@ public final class Constants {
     public static final class TurretConstants {
 
         public static final int TURRET_CHANNEL = 7;
+        public static final int TURRET_LIMIT_CHANNEL = 1;
 
         //PID Constants
         public static final int SLOT_ID = 0;
@@ -121,14 +119,14 @@ public final class Constants {
         public static final double P = 0.5;
         public static final double I = 0;
         public static final double D = 0.02;
-        public static final int TOLERANCE = 200;
+        public static final int TOLERANCE = 400;
         public static final int TICKS_PER_ROTATION = 2048;
         public static final double TURRET_GEAR_RATIO = 0.012987012987; // 77:1 gear ratio
         public static final double TICKS_PER_DEGREE = (TICKS_PER_ROTATION * 1/TURRET_GEAR_RATIO) / 360;
 
         public static final double TURRET_STEP_SIZE = 1;
         public static final int TURRET_MAX_RPM = 6380;
-        public static final int TURRET_MOTOR_VELOCITY = 6380/2;
+        public static final int TURRET_MOTOR_VELOCITY = 5250;
         public static final int TURRET_MOTOR_ACCELERATION = TURRET_MOTOR_VELOCITY * 4;
         public static final int TURRET_MOTOR_MOTION_SMOOTHING = 3;
 
@@ -137,19 +135,37 @@ public final class Constants {
 
     }
 
+    public static final class LEDConstants {
+        public static final int HOTLINE_BLINK_CHANNEL = 0;
+    }
+
     public static final class ClimberConstants {
 
-        public static final int JUMPER_ID = 0;
-        public static final int RELEASE_JUMPER_ID = 1;
-        public static final int CLAMPER_ID = 2;
-        public static final int PIVOT_ID = 5;
-        public static final int EXTENDER_ID = 4;
-        public static final int BREAK_ID = 3;
+        // Climber Solenoid Id's
+        public static final int LEFT_PIVOT_ID = 2;
+        public static final int RIGHT_PIVOT_ID = 3;
+        public static final int LEFT_BRAKE_ID = 0;
+        public static final int RIGHT_BRAKE_ID = 1;
 
-        // DIO inputs
-        public static final int JUMPER_LIMIT_SWITCH_ID = 1;
-
+        // Climber Motor CAN Id's
         public static final int CLIMBER_MOTOR_CHANNEL = 13;
+
+        // Climber PID Constants
+        public static final double CLIMBER_P = 0.2;
+        public static final double CLIMBER_I = 0.0;
+        public static final double CLIMBER_D = 0.0;
+        public static final int SLOT_ID = 0;
+        public static final int PID_LOOPTYPE = 0;
+        public static final int TIMEOUT_MS = 20;
+        public static final double TICKS_PER_ROTATION = 2048;
+        public static final int CLIMBER_TOLERANCE = 300;
+        public static final double MAX_MOTOR_RPM = 6380;
+        public static final double CLIMBER_MOTOR_VELOCITY = 6380;
+        public static final double CLIMBER_MOTOR_ACCELERATION = CLIMBER_MOTOR_VELOCITY * 2;
+        public static final int CLIMBER_MOTOR_MOTION_SMOOTHING = 2;
+
+        public static final double CLIMBER_LEFT_EXTEND_POSITION = 150000;
+        public static final double CLIMBER_RIGHT_EXTEND_POSITION = -150000;
     }
 
     /**
@@ -178,7 +194,7 @@ public final class Constants {
         public static final double HOOD_P = 0.4;
         public static final double HOOD_I = 0.0;
         public static final double HOOD_D = 0.0;
-        public static final int HOOD_TOLERANCE = 200;
+        public static final int HOOD_TOLERANCE = 600;
         public static final double HOOD_GEAR_RATIO = 0.00311526479751; // 321:1
         public static final double TICKS_PER_DEGREE = (TICKS_PER_ROTATION * 1/HOOD_GEAR_RATIO) / 360;
         public static final double HOOD_MOTOR_VELOCITY = 6380;

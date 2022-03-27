@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.auto.twoBallAuto;
+package frc.robot.commands.auto.threeBallAutoStraight;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -17,9 +17,9 @@ import frc.robot.commands.shooter.ShootDistanceCommand;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class twoBallAuto extends SequentialCommandGroup {
+public class threeBallAutoStraight extends SequentialCommandGroup {
   /** Creates a new twoBallAuto. */
-  public twoBallAuto(RobotContainer robotContainer) {
+  public threeBallAutoStraight(RobotContainer robotContainer) {
 
     robotContainer.turretSubsystem.resetEncoder(robotContainer.turretSubsystem.degreesToTicks(-180));
     robotContainer.limeLightSubsystem.setVision(true);
@@ -29,20 +29,19 @@ public class twoBallAuto extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-      new InstantCommand(()-> robotContainer.climberSubsystem.leftPivotActuate(true)),
-      new InstantCommand(()-> robotContainer.climberSubsystem.rightPivotActuate(true)),
-      new VisionCommand(robotContainer).withTimeout(.5),
-      new TrajectoryFollowerCommand(robotContainer, twoBallTrajectory.START)
-        .alongWith(new InstantCommand(()-> robotContainer.collectorSubsystem.toggleCollector(.75))
-        , new InstantCommand(()-> robotContainer.shooterSubsystem.setToggle(true))),
-      new VisionCommand(robotContainer).alongWith(
-        new ShootDistanceCommand(robotContainer))
-      .withTimeout(2),
+      new VisionCommand(robotContainer).withTimeout(0.1),
+      new ShootDistanceCommand(robotContainer).withTimeout(2),
+      new TrajectoryFollowerCommand(robotContainer, threeBallStraightTrajectory.START)
+        .alongWith(new InstantCommand(()-> robotContainer.collectorSubsystem.toggleCollector(.75))),
+      new ShootDistanceCommand(robotContainer).withTimeout(2),
       new RunCommand(()-> robotContainer.collectorSubsystem.upperBallPath(0.7)).withTimeout(2),
-      new InstantCommand(()-> robotContainer.collectorSubsystem.toggleCollector(0)),
-      new InstantCommand(()-> robotContainer.shooterSubsystem.setToggle(false)),
-      new ShootDistanceCommand(robotContainer).withTimeout(0.1),
-      new InstantCommand(()-> robotContainer.collectorSubsystem.upperBallPath(0))
+      new InstantCommand(()-> robotContainer.shooterSubsystem.setToggle(!robotContainer.shooterSubsystem.getToggle())),
+      new InstantCommand(()-> robotContainer.collectorSubsystem.upperBallPath(0)),
+      new TrajectoryFollowerCommand(robotContainer, threeBallStraightTrajectory.PLAYERSTATION),
+      new RunCommand(()-> robotContainer.collectorSubsystem.upperBallPath(0.7)).withTimeout(2),
+      new InstantCommand(()-> robotContainer.shooterSubsystem.setToggle(!robotContainer.shooterSubsystem.getToggle())),
+      new InstantCommand(()-> robotContainer.collectorSubsystem.upperBallPath(0)),
+      new InstantCommand(()-> robotContainer.collectorSubsystem.toggleCollector(0))
 
 
       /*

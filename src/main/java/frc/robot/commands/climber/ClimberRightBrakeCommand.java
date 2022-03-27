@@ -4,42 +4,31 @@
 
 package frc.robot.commands.climber;
 
-import edu.wpi.first.wpilibj.Timer;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.ClimberSubsystem;
 
-public class ClimberGrabNextCommand extends CommandBase {
+public class ClimberRightBrakeCommand extends CommandBase {
 
-  ClimberSubsystem climberSubsystem = null;
-  Timer timer = null;
-
-  /** Creates a new ClimberGrabNextCommand. */
-  public ClimberGrabNextCommand(RobotContainer robotContainer) {
+  ClimberSubsystem climberSubsystem;
+  boolean brake = true;
+  /** Creates a new ClimberLeftPivotCommand. */
+  public ClimberRightBrakeCommand(RobotContainer robotContainer, boolean brake) {
     // Use addRequirements() here to declare subsystem dependencies.
-
     climberSubsystem = robotContainer.climberSubsystem;
-    timer = new Timer();
+    this.brake = brake;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    timer.reset();
+    climberSubsystem.rightBrakeActuate(brake);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    climberSubsystem.extenderActuate();
-
-    timer.start();
-    if (timer.hasElapsed(1))
-      climberSubsystem.pivotActuate();
-
-    if (timer.hasElapsed(1.5))
-      climberSubsystem.clamperToggle();
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override

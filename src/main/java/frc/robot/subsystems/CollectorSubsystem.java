@@ -34,6 +34,7 @@ public class CollectorSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
 
     SmartDashboard.putBoolean("Detect Ball", detectBallpath());
+    SmartDashboard.putBoolean("Get Toggle", getToggle());
   }
 
   public void collect(double speed){
@@ -64,14 +65,18 @@ public class CollectorSubsystem extends SubsystemBase {
   public void toggleCollector(double speed) {
     toggle = !toggle;
     if (toggle) {
-      collectorMotor.set(speed);
+      collect(speed);
       extend();
 
     } else {
-      collectorMotor.set(0);
+      collect(0);
       retract();
     }
 
+  }
+
+  public boolean getToggle() {
+    return toggle;
   }
 
   public void toggle(){

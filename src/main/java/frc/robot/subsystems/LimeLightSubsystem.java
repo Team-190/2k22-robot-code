@@ -48,12 +48,13 @@ public class LimeLightSubsystem extends SubsystemBase {
     v = tv.getDouble(0);
 
     // post to smart dashboard periodically
-    SmartDashboard.putNumber("LimelightX", x);
-    SmartDashboard.putNumber("LimelightY", y);
-    SmartDashboard.putNumber("LimelightV", v);
-    SmartDashboard.putNumber("LimelightArea", area);
-    SmartDashboard.putBoolean("Limelight Has Target", targetFound());
-    SmartDashboard.putNumber("Limlight degrees askew", degreesAskew());
+    // SmartDashboard.putNumber("LimelightX", x);
+    // SmartDashboard.putNumber("LimelightY", y);
+    // SmartDashboard.putNumber("LimelightV", v);
+    // SmartDashboard.putNumber("LimelightArea", area);
+    // SmartDashboard.putBoolean("Limelight Has Target", targetFound());
+    // SmartDashboard.putNumber("Limlight degrees askew", degreesAskew());
+    SmartDashboard.putNumber("Distance to Target", getDistanceToTarget());
   }
 
   /**
@@ -77,8 +78,8 @@ public class LimeLightSubsystem extends SubsystemBase {
    * @return distance to target (inches)
    */
   public double getDistanceToTarget() {
-    int limelightHeight = 34;
-    int limelightMountAngleDegrees = 25;
+    double limelightHeight = 23.5;
+    int limelightMountAngleDegrees = 28; // Angle from verticle
     int heightToGoal = 104;
 
     return (heightToGoal - limelightHeight)/Math.tan(Math.toRadians(limelightMountAngleDegrees + y));

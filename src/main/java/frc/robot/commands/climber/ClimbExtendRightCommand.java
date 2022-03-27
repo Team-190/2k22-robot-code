@@ -4,7 +4,6 @@
 
 package frc.robot.commands.climber;
 
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -12,17 +11,20 @@ import frc.robot.subsystems.ClimberSubsystem;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class ClimberDownCommand extends SequentialCommandGroup {
+public class ClimbExtendRightCommand extends SequentialCommandGroup {
+
   ClimberSubsystem climberSubsystem;
-  /** Creates a new ClimberDownCommand. */
-  public ClimberDownCommand(RobotContainer robotContainer) {
+  /** Creates a new ClimbMidBarCommand. */
+  public ClimbExtendRightCommand(RobotContainer robotContainer, double setpoint) {
+
     climberSubsystem = robotContainer.climberSubsystem;
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-      new InstantCommand(()-> climberSubsystem.brakeActuate(true)).withTimeout(3),
-      new ClampCommand(robotContainer).withTimeout(.5),
-      new ClimberRetractCommand(robotContainer)
+      new ClimberRightBrakeCommand(robotContainer, false),
+      new ClimberSetpointCommand(robotContainer, setpoint),
+      new ClimberRightBrakeCommand(robotContainer, true)
+
     );
   }
 }

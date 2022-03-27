@@ -47,12 +47,13 @@ public class Robot extends TimedRobot {
         // SmartDashboard.putData("Drive Method", driveMethodChooser);
 
         // robotContainer.compressor.enableDigital();
-        robotContainer.compressor.enableAnalog(90, 120);
+        robotContainer.compressor.enableAnalog(90, 115);
+        robotContainer.limeLightSubsystem.setVision(false);
         
         robotContainer.turretSubsystem.resetEncoder(0);
+        robotContainer.shooterSubsystem.resetHood(27);
         robotContainer.setDefaultCommands();
         robotContainer.climberSubsystem.resetClimberPos();
-        robotContainer.climberSubsystem.jumperActuate(false);
     }
 
     /**
@@ -107,8 +108,13 @@ public class Robot extends TimedRobot {
         if (defaultAutonomousCommand != null) {
             defaultAutonomousCommand.cancel();
         }
-        robotContainer.compressor.enableAnalog(90, 120);
+        // robotContainer.compressor.enableAnalog(90, 120);
         robotContainer.climberSubsystem.resetClimberPos();
+        robotContainer.climberSubsystem.leftPivotActuate(true);
+        robotContainer.climberSubsystem.rightPivotActuate(true);
+        // robotContainer.shooterSubsystem.resetHood(27);
+        robotContainer.limeLightSubsystem.setVision(true);
+        // robotContainer.turretSubsystem.resetEncoder(0);
         // robotContainer.pneumaticHub.makeCompressor();
 
 
@@ -126,7 +132,7 @@ public class Robot extends TimedRobot {
        }
        */
 
-      robotContainer.climberSubsystem.jumperActuate(false);
+      
        
 
     }

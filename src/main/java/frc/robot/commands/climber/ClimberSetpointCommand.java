@@ -5,43 +5,38 @@
 package frc.robot.commands.climber;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.ClimberSubsystem;
 
-public class ClimberRetractCommand extends CommandBase {
-
-  ClimberSubsystem climberSubsystem = null;
-
-  /** Creates a new ClimberRetractCommand. */
-  public ClimberRetractCommand(RobotContainer robotContainer) {
+public class ClimberSetpointCommand extends CommandBase {
+  ClimberSubsystem climberSubsystem;
+  double setpoint = 0;
+  /** Creates a new ClimberSetpointCommand. */
+  public ClimberSetpointCommand(RobotContainer robotContainer, double setpoint) {
     // Use addRequirements() here to declare subsystem dependencies.
-
-    this.climberSubsystem = robotContainer.climberSubsystem;
+    climberSubsystem = robotContainer.climberSubsystem;
+    this.setpoint = setpoint;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    climberSubsystem.climberPID(setpoint);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    climberSubsystem.extendClimber(-0.5);
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    climberSubsystem.extendClimber(0);
-    climberSubsystem.brakeActuate(false);
-    climberSubsystem.setStage(4);
+    // climberSubsystem.extendClimber(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return climberSubsystem.getClimberPosition() <= 3000;
+    return climberSubsystem.isMotionComplete();
   }
 }
