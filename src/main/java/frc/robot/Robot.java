@@ -10,6 +10,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -71,6 +72,8 @@ public class Robot extends TimedRobot {
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
         robotContainer.periodic();
+
+        SmartDashboard.putData(Scheduler.getInstance());
     }
 
     /** This function is called once each time the robot enters Disabled mode. */
@@ -112,10 +115,7 @@ public class Robot extends TimedRobot {
         robotContainer.climberSubsystem.resetClimberPos();
         robotContainer.climberSubsystem.leftPivotActuate(true);
         robotContainer.climberSubsystem.rightPivotActuate(true);
-        // robotContainer.shooterSubsystem.resetHood(27);
-        robotContainer.limeLightSubsystem.setVision(true);
-        // robotContainer.turretSubsystem.resetEncoder(0);
-        // robotContainer.pneumaticHub.makeCompressor();
+        // robotContainer.limeLightSubsystem.setVision(true);
 
 
         /*
@@ -140,7 +140,9 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during operator control. */
     @Override
     public void teleopPeriodic() {
+        
     }
+    
 
     @Override
     public void testInit() {

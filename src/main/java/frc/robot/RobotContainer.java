@@ -29,6 +29,7 @@ import frc.robot.commands.auto.twoBallAuto.twoBallAuto;
 import frc.robot.commands.climber.toggleClimberCommand;
 import frc.robot.commands.collector.AutomateBallpathCommand;
 import frc.robot.commands.collector.CollectCommand;
+import frc.robot.commands.collector.ToggleCollectorCommandGroup;
 import frc.robot.commands.drivetrain.DefaultTankDriveCommand;
 import frc.robot.commands.hotlineblink.AllianceColorCommand;
 import frc.robot.commands.hotlineblink.BlinkinReadyToShootCommand;
@@ -119,17 +120,22 @@ public class RobotContainer {
     */
     public RobotContainer() {
 
+        /*
         for (int i = 1500; i < 6001; i += 50) {
             shooterRPMChooser.addOption(""+i+ " RPM", i);
         }
+        */
 
         SmartDashboard.putData("Set Flywheel RPM", shooterRPMChooser);
 
         // initializeCamera();
 
         // Left Stick Bindings
+
         leftStick.triggerButton.whenPressed(new InstantCommand(()-> collectorSubsystem.toggleCollector(.75), collectorSubsystem));
         leftStick.triggerButton.whenPressed(new AutomateBallpathCommand(this));
+
+        // leftStick.triggerButton.whenPressed(new ToggleCollectorCommandGroup(this, 0.75));
         
         // Until interupt / timeout may fix stuff
         leftStick.middleFaceButton.whenPressed(new InstantCommand(()->  collectorSubsystem.collect(0.75)));
@@ -160,8 +166,8 @@ public class RobotContainer {
         // rightStick.leftFaceButton.whenPressed(new RunCommand(()-> turretSubsystem.turretVision(), turretSubsystem));
         // rightStick.bottomFaceButton.whenPressed(new VisionCommand(this));
 
-        rightStick.triggerButton.whenHeld(new RunCommand(()-> collectorSubsystem.upperBallPath(.7)))
-            .whenReleased(new InstantCommand(()-> collectorSubsystem.upperBallPath(0)));
+        rightStick.triggerButton.whenHeld(new RunCommand(()-> collectorSubsystem.upperBallPath(.7), collectorSubsystem))
+            .whenReleased(new InstantCommand(()-> collectorSubsystem.upperBallPath(0), collectorSubsystem));
 
         // rightStick.middleFaceButton.whenPressed(new InstantCommand(()-> turretSubsystem.resetEncoder(0), turretSubsystem));
 
@@ -314,6 +320,7 @@ public class RobotContainer {
         drivetrainSubsystem.setDefaultCommand(new DefaultTankDriveCommand(this));
         hotlineBlinkSubsystem.setDefaultCommand(new AllianceColorCommand(this));
         turretSubsystem.setDefaultCommand(new VisionCommand(this));
+
         // turretSubsystem.setDefaultCommand(new VisionCommand(this));
         //drivetrainSubsystem.setDefaultCommand(new DefaultArcadeDriveCommand(this));
         //climberSubsystem.setDefaultCommand(new ClimberJumpGrabCommand(this));

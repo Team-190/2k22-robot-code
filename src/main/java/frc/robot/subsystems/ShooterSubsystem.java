@@ -222,12 +222,14 @@ public class ShooterSubsystem extends SubsystemBase {
    */
   public void adjustHood(double distance){
     if (distance < 100){
-      setHoodAngle(28);
+      setHoodAngle(32);
     } else if (distance < 120){
       setHoodAngle(27);
+    } else if (distance < 130){
+      setHoodAngle(36);
     }
     else if (distance < 140){
-      setHoodAngle(28);
+      setHoodAngle(36);
     }
     else if (distance < 180){
       setHoodAngle(33);
@@ -264,12 +266,14 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void adjustFlywheel(double distance) {
     if (distance < 100){
-      flywheelPID(2050);
+      flywheelPID(2200);
     } else if (distance < 120){
-      flywheelPID(2100);
+      flywheelPID(2300);
+    } else if (distance < 130){
+      flywheelPID(2150);
     }
     else if (distance < 140){
-      flywheelPID(2100);
+      flywheelPID(2200);
     }
     else if (distance < 180){
       flywheelPID(2500);
@@ -291,15 +295,21 @@ public class ShooterSubsystem extends SubsystemBase {
    */
   public void adjustShooter(double distance) {
     if (distance < 100){
-      setHoodAngle(28);
-      flywheelPID(2050);
+      setHoodAngle(32);
+      flywheelPID(2200);
     } else if (distance < 120){
       setHoodAngle(27);
-      flywheelPID(2100);
+      flywheelPID(2300);
+    } else if (distance < 130){
+      setHoodAngle(36);
+      flywheelPID(2150);
+    } else if (distance < 135){
+      setHoodAngle(36); // 28
+      flywheelPID(2300); // 2100
     }
     else if (distance < 140){
-      setHoodAngle(28);
-      flywheelPID(2100);
+      setHoodAngle(36); // 28
+      flywheelPID(2200); // 2100
     }
     else if (distance < 180){
       setHoodAngle(33);
