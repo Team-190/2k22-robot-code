@@ -51,7 +51,7 @@ public class Robot extends TimedRobot {
         robotContainer.compressor.enableAnalog(90, 115);
         robotContainer.limeLightSubsystem.setVision(false);
         
-        robotContainer.turretSubsystem.resetEncoder(0);
+        robotContainer.turretSubsystem.resetEncoder(robotContainer.turretSubsystem.degreesToTicks(-180));
         robotContainer.shooterSubsystem.resetHood(27);
         robotContainer.setDefaultCommands();
         robotContainer.climberSubsystem.resetClimberPos();
@@ -92,6 +92,8 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         defaultAutonomousCommand = robotContainer.getAutonomousCommand();
 
+        
+        robotContainer.limeLightSubsystem.setVision(true);
         // schedule the autonomous command (example)
         if (defaultAutonomousCommand != null) {
             defaultAutonomousCommand.schedule();
@@ -113,9 +115,9 @@ public class Robot extends TimedRobot {
         }
         // robotContainer.compressor.enableAnalog(90, 120);
         robotContainer.climberSubsystem.resetClimberPos();
-        robotContainer.climberSubsystem.leftPivotActuate(true);
-        robotContainer.climberSubsystem.rightPivotActuate(true);
-        // robotContainer.limeLightSubsystem.setVision(true);
+        // robotContainer.climberSubsystem.leftPivotActuate(true);
+        // robotContainer.climberSubsystem.rightPivotActuate(true);
+        robotContainer.limeLightSubsystem.setVision(false);
 
 
         /*

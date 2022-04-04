@@ -160,12 +160,12 @@ public final class Constants {
         public static final double TICKS_PER_ROTATION = 2048;
         public static final int CLIMBER_TOLERANCE = 300;
         public static final double MAX_MOTOR_RPM = 6380;
-        public static final double CLIMBER_MOTOR_VELOCITY = 6380;
+        public static final double CLIMBER_MOTOR_VELOCITY = 6380/2;
         public static final double CLIMBER_MOTOR_ACCELERATION = CLIMBER_MOTOR_VELOCITY * 2;
         public static final int CLIMBER_MOTOR_MOTION_SMOOTHING = 2;
 
-        public static final double CLIMBER_LEFT_EXTEND_POSITION = 150000;
-        public static final double CLIMBER_RIGHT_EXTEND_POSITION = -150000;
+        public static final double CLIMBER_LEFT_EXTEND_POSITION = 200000;
+        public static final double CLIMBER_RIGHT_EXTEND_POSITION = -200000;
     }
 
     /**

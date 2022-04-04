@@ -26,7 +26,7 @@ public abstract class Trajectories {
     );
     CONFIG.setKinematics(DrivetrainConstants.DRIVE_KINEMATICS);
     CONFIG.addConstraint(DrivetrainConstants.AUTO_VOLTAGE_CONSTRAINT);
-    CONFIG.setReversed(reversed);
+    // CONFIG.setReversed(reversed);
     return CONFIG;
   }
 }

@@ -180,7 +180,7 @@ public class ClimberSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // SmartDashboard.putBoolean("Jumper Limit Switch", jumperLimitSwitch.get());
-        // SmartDashboard.putNumber("Climber Position", climber_motor.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Climber Position", climber_motor.getSelectedSensorPosition());
     }
 
 

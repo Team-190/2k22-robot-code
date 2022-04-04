@@ -23,21 +23,19 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.ClimberConstants;
 import frc.robot.commands.Turret.TurretSetpointCommand;
 import frc.robot.commands.Turret.VisionCommand;
+import frc.robot.commands.auto.threeBallAutoStraight.threeBallAutoStraight;
 import frc.robot.commands.auto.twoBallAuto.twoBallAuto;
+import frc.robot.commands.climber.ClimbExtendLeftCommand;
 import frc.robot.commands.climber.toggleClimberCommand;
 import frc.robot.commands.collector.AutomateBallpathCommand;
-import frc.robot.commands.collector.CollectCommand;
-import frc.robot.commands.collector.ToggleCollectorCommandGroup;
 import frc.robot.commands.drivetrain.DefaultTankDriveCommand;
 import frc.robot.commands.hotlineblink.AllianceColorCommand;
-import frc.robot.commands.hotlineblink.BlinkinReadyToShootCommand;
 import frc.robot.commands.hotlineblink.SpitBallsWithColorCommand;
 import frc.robot.commands.shooter.LowPortCommand;
 import frc.robot.commands.shooter.ShootDistanceCommand;
-import frc.robot.commands.shooter.ShooterToggleCommand;
-import frc.robot.commands.shooter.SpitBallsOutCommand;
 import frc.robot.input.AttackThree;
 import frc.robot.input.XboxOneController;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -57,7 +55,8 @@ import frc.robot.subsystems.TurretSubsystem;
 public class RobotContainer {
 
     // Choosers
-    public final SendableChooser<Integer> shooterRPMChooser = new SendableChooser<>();
+    // public final SendableChooser<Integer> shooterRPMChooser = new SendableChooser<>();
+    public final SendableChooser<Command> autoModeChooser = new SendableChooser<>();
     // public final SendableChooser<Integer> topRPMChooser = new SendableChooser<>();
 
     // Cameras
@@ -125,8 +124,13 @@ public class RobotContainer {
             shooterRPMChooser.addOption(""+i+ " RPM", i);
         }
         */
+        autoModeChooser.setDefaultOption("2 Ball Auto", new twoBallAuto(this));
+        autoModeChooser.addOption("3 Ball Straight Auto", new threeBallAutoStraight(this));
 
-        SmartDashboard.putData("Set Flywheel RPM", shooterRPMChooser);
+
+        SmartDashboard.putData("AutoModeChooser", autoModeChooser);
+
+        // SmartDashboard.putData("Set Flywheel RPM", shooterRPMChooser);
 
         // initializeCamera();
 
@@ -185,8 +189,8 @@ public class RobotContainer {
 
 
         // Controller Bindings
-        // driverXboxController.selectButton.whenPressed(new InstantCommand(()-> climberSubsystem.togglePivot()));
-        // driverXboxController.selectButton.whenPressed(new toggleClimberCommand(this));
+        driverXboxController.selectButton.whenPressed(new InstantCommand(()-> climberSubsystem.togglePivot()));
+        driverXboxController.selectButton.whenPressed(new toggleClimberCommand(this));
         // driverXboxController.startButton.whileHeld(new RunCommand(()-> turretSubsystem.turretManual(0.2), turretSubsystem))
         //     .whenReleased(new InstantCommand(()-> turretSubsystem.turretManual(0), turretSubsystem));
 
@@ -208,8 +212,8 @@ public class RobotContainer {
             .whenReleased(new RunCommand(()-> climberSubsystem.extendClimber(0), climberSubsystem));
         */
 
-        driverXboxController.selectButton.whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(-turretSubsystem.degreesToTicks(1)), turretSubsystem));
-        driverXboxController.startButton.whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(turretSubsystem.degreesToTicks(1)), turretSubsystem));
+        // driverXboxController.selectButton.whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(-turretSubsystem.degreesToTicks(1)), turretSubsystem));
+        // driverXboxController.startButton.whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(turretSubsystem.degreesToTicks(1)), turretSubsystem));
 
         new POVButton(driverXboxController, 0)
             .whenPressed(new TurretSetpointCommand(this, 0));
@@ -222,6 +226,9 @@ public class RobotContainer {
 
         new POVButton(driverXboxController, 270)
             .whenPressed(new TurretSetpointCommand(this, turretSubsystem.degreesToTicks(-90)));
+
+        driverXboxController.yButton.whenPressed(new ClimbExtendLeftCommand(this,- ClimberConstants.CLIMBER_LEFT_EXTEND_POSITION));
+        // driverXboxController.yButton.whenPressed(new InstantCommand(()-> climberSubsystem.climberPID(-ClimberConstants.CLIMBER_LEFT_EXTEND_POSITION)));
 
 
         driverXboxController.xButton.whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(-turretSubsystem.degreesToTicks(1)), turretSubsystem));
@@ -238,6 +245,8 @@ public class RobotContainer {
         new Trigger(()-> (driverXboxController.getRightTrigger() > 0.005))
             .whenActive(new InstantCommand(()-> climberSubsystem.leftBrakeActuate(true)))
             .whenInactive(new InstantCommand(()-> climberSubsystem.leftBrakeActuate(false)));
+            // .whenActive(new InstantCommand(()-> climberSubsystem.rightBrakeActuate(true)))
+            // .whenInactive(new InstantCommand(()-> climberSubsystem.rightBrakeActuate(false)));
 
         new Trigger(()-> (driverXboxController.getLeftTrigger() > 0.005))
             // .whenActive(new InstantCommand(()-> climberSubsystem.leftBrakeActuate(true)))
@@ -260,9 +269,9 @@ public class RobotContainer {
         */
         
 
-        // new Trigger(()-> (Math.abs(driverXboxController.getLeftStickY()) > 0.05))
-        //     .whenActive(new RunCommand(()-> shooterSubsystem.hoodManual(driverXboxController.getLeftStickY())))
-        //     .whenInactive(new InstantCommand(()-> shooterSubsystem.relativeHoodAngle(0)));
+        new Trigger(()-> (Math.abs(driverXboxController.getLeftStickY()) > 0.05))
+            .whenActive(new RunCommand(()-> climberSubsystem.extendClimber(driverXboxController.getLeftStickY()/2)))
+            .whenInactive(new InstantCommand(()-> climberSubsystem.extendClimber(0)));
 
 
         drivetrainSubsystem.gyro.calibrate();
@@ -312,7 +321,7 @@ public class RobotContainer {
     */
     public Command getAutonomousCommand() {
         // return null;
-        return new twoBallAuto(this);
+        return autoModeChooser.getSelected();
     }
 
     public void setDefaultCommands() {
@@ -328,20 +337,13 @@ public class RobotContainer {
     }
 
     public void periodic() {
-        /*
-        if (!climberSubsystem.jumperLimitS
-        witch.get()) {
-            new ClimberJumpGrabCommand(this).schedule();
-        }
-        */
-        /* TODO: Uncomment this really good code when climber is on lmao
         if (!climberSubsystem.getTogglePivot() && turretSubsystem.getPivotTolerance()) {
             climberSubsystem.leftPivotActuate(true);
             climberSubsystem.rightPivotActuate(true);
         } else if (!climberSubsystem.getTogglePivot()) {
             climberSubsystem.leftPivotActuate(false);
             climberSubsystem.rightPivotActuate(false);
-        }*/
+        }
 
     }
 

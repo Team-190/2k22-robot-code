@@ -28,8 +28,8 @@ public class TurretSubsystem extends PIDSubsystem {
   LimeLightSubsystem limeLightSubsystem = null;
 
   double lastSeen = 0;
-  double TURRET_MAXIMUM_LIMIT = degreesToTicks(190); // TODO: Find this
-  double TURRET_MINIMUM_LIMIT = degreesToTicks(-190); // TODO: Find this
+  double TURRET_MAXIMUM_LIMIT = degreesToTicks(186); // TODO: Find this
+  double TURRET_MINIMUM_LIMIT = degreesToTicks(-186); // TODO: Find this
   int turnToDirection = 1;
   int defaultDirection = 1;
 
@@ -196,11 +196,10 @@ public class TurretSubsystem extends PIDSubsystem {
 
 
   /**
-   * Move turret relatively by setpoint // TODO: create another vision relative function
+   * Move turret relatively by setpoint 
    * @param setpoint encoder tick value to move turret by
    */
   public void relativeTurretPID(double setpoint) {
-    // turretMotor.getClosedLoopTarget()
     turretPID(turretMotor.getClosedLoopTarget() + setpoint);
   }
 
@@ -274,8 +273,9 @@ public class TurretSubsystem extends PIDSubsystem {
 
   @Override
   public void periodic() {
-    // SmartDashboard.putNumber("Turret Encoder Position", turretMotor.getSelectedSensorPosition());
-    // SmartDashboard.putNumber("Turret Encoder Error", turretMotor.getClosedLoopError());
+    SmartDashboard.putNumber("Turret Encoder Position", turretMotor.getSelectedSensorPosition());
+    SmartDashboard.putNumber("Turret Encoder Error", turretMotor.getClosedLoopError());
+    SmartDashboard.putNumber("Turret PID Target", turretMotor.getClosedLoopTarget());
     // SmartDashboard.putBoolean("Turret Limit", getTurretLimit());
 
     if (getTurretLimit()) {

@@ -11,7 +11,7 @@ import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.commands.auto.Trajectories;
 
 public class twoBallTrajectory extends Trajectories{
-    private static final Pose2d POINT1 = new Pose2d(1.5, 0, new Rotation2d(Units.degreesToRadians(0)));
+    private static final Pose2d POINT1 = new Pose2d(2, 0, new Rotation2d(Units.degreesToRadians(0)));
 
     public static final Trajectory START = TrajectoryGenerator.generateTrajectory(
         List.of(

@@ -11,7 +11,6 @@ import frc.robot.RobotContainer;
 import frc.robot.commands.Turret.TurretSetpointCommand;
 import frc.robot.commands.Turret.VisionCommand;
 import frc.robot.commands.auto.TrajectoryFollowerCommand;
-import frc.robot.commands.shooter.AutoShootCommand;
 import frc.robot.commands.shooter.ShootDistanceCommand;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -29,9 +28,11 @@ public class twoBallAuto extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
+      /*
       new InstantCommand(()-> robotContainer.climberSubsystem.leftPivotActuate(true)),
       new InstantCommand(()-> robotContainer.climberSubsystem.rightPivotActuate(true)),
       new VisionCommand(robotContainer).withTimeout(.5),
+      new ShootDistanceCommand(robotContainer).withTimeout(0.1),
       new TrajectoryFollowerCommand(robotContainer, twoBallTrajectory.START)
         .alongWith(new InstantCommand(()-> robotContainer.collectorSubsystem.toggleCollector(.75))
         , new InstantCommand(()-> robotContainer.shooterSubsystem.setToggle(true))),
@@ -43,6 +44,42 @@ public class twoBallAuto extends SequentialCommandGroup {
       new InstantCommand(()-> robotContainer.shooterSubsystem.setToggle(false)),
       new ShootDistanceCommand(robotContainer).withTimeout(0.1),
       new InstantCommand(()-> robotContainer.collectorSubsystem.upperBallPath(0))
+      */
+
+
+      // new InstantCommand(()-> robotContainer.climberSubsystem.leftPivotActuate(true)),
+      // new InstantCommand(()-> robotContainer.climberSubsystem.rightPivotActuate(true)),
+      // new TurretSetpointCommand(robotContainer, robotContainer.turretSubsystem.degreesToTicks(-180)),
+      // new TrajectoryFollowerCommand(robotContainer, twoBallTrajectory.START)
+      //   .alongWith(new InstantCommand(()-> robotContainer.collectorSubsystem.toggleCollector(.75)),
+      //   new InstantCommand(()-> robotContainer.shooterSubsystem.setToggle(true))),
+      // new RunCommand(()-> robotContainer.shooterSubsystem.adjustShooter(138)).alongWith(
+      //   new TurretSetpointCommand(robotContainer, robotContainer.turretSubsystem.degreesToTicks(-180))).withTimeout(2),
+      // new RunCommand(()-> robotContainer.collectorSubsystem.upperBallPath(0.7)).withTimeout(2),
+      // new InstantCommand(()-> robotContainer.limeLightSubsystem.setVision(false)),
+      // new TurretSetpointCommand(robotContainer, 0),
+      // new InstantCommand(()-> robotContainer.collectorSubsystem.toggleCollector(0)),
+      // new InstantCommand(()-> robotContainer.shooterSubsystem.setToggle(false)),
+      // new ShootDistanceCommand(robotContainer).withTimeout(0.1),
+      // new InstantCommand(()-> robotContainer.collectorSubsystem.upperBallPath(0))
+
+
+      new InstantCommand(()-> robotContainer.climberSubsystem.leftPivotActuate(true)),
+      new InstantCommand(()-> robotContainer.climberSubsystem.rightPivotActuate(true)),
+      new VisionCommand(robotContainer).withTimeout(.5),
+      new TrajectoryFollowerCommand(robotContainer, twoBallTrajectory.START)
+        .alongWith(new InstantCommand(()-> robotContainer.collectorSubsystem.toggleCollector(.75)),
+        new InstantCommand(()-> robotContainer.shooterSubsystem.setToggle(true))),
+      new RunCommand(()-> robotContainer.shooterSubsystem.adjustShooter(138)).alongWith(
+        new TurretSetpointCommand(robotContainer, robotContainer.turretSubsystem.degreesToTicks(-180))).withTimeout(2),
+      new RunCommand(()-> robotContainer.collectorSubsystem.upperBallPath(0.7)).withTimeout(2),
+      new InstantCommand(()-> robotContainer.limeLightSubsystem.setVision(false)),
+      new TurretSetpointCommand(robotContainer, 0),
+      new InstantCommand(()-> robotContainer.collectorSubsystem.toggleCollector(0)),
+      new InstantCommand(()-> robotContainer.shooterSubsystem.setToggle(false)),
+      new ShootDistanceCommand(robotContainer).withTimeout(0.1),
+      new InstantCommand(()-> robotContainer.collectorSubsystem.upperBallPath(0))
+
 
 
       /*

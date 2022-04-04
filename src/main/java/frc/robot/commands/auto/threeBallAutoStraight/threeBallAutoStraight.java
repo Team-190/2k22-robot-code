@@ -9,9 +9,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
 import frc.robot.commands.Turret.TurretSetpointCommand;
-import frc.robot.commands.Turret.VisionCommand;
 import frc.robot.commands.auto.TrajectoryFollowerCommand;
-import frc.robot.commands.shooter.AutoShootCommand;
 import frc.robot.commands.shooter.ShootDistanceCommand;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -29,6 +27,7 @@ public class threeBallAutoStraight extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
+      /*
       new VisionCommand(robotContainer).withTimeout(0.1),
       new ShootDistanceCommand(robotContainer).withTimeout(2),
       new TrajectoryFollowerCommand(robotContainer, threeBallStraightTrajectory.START)
@@ -42,6 +41,58 @@ public class threeBallAutoStraight extends SequentialCommandGroup {
       new InstantCommand(()-> robotContainer.shooterSubsystem.setToggle(!robotContainer.shooterSubsystem.getToggle())),
       new InstantCommand(()-> robotContainer.collectorSubsystem.upperBallPath(0)),
       new InstantCommand(()-> robotContainer.collectorSubsystem.toggleCollector(0))
+      */
+      
+      /*
+      new InstantCommand(()-> robotContainer.climberSubsystem.leftPivotActuate(true)),
+      new InstantCommand(()-> robotContainer.climberSubsystem.rightPivotActuate(true)),
+      new VisionCommand(robotContainer).withTimeout(.5),
+      new TrajectoryFollowerCommand(robotContainer, threeBallStraightTrajectory.START)
+        .alongWith(new InstantCommand(()-> robotContainer.collectorSubsystem.toggleCollector(.75))
+        , new InstantCommand(()-> robotContainer.shooterSubsystem.setToggle(true))),
+      new VisionCommand(robotContainer).alongWith(
+        new ShootDistanceCommand(robotContainer))
+      .withTimeout(2),
+      new RunCommand(()-> robotContainer.collectorSubsystem.upperBallPath(0.7)).withTimeout(2),
+      new InstantCommand(()-> robotContainer.collectorSubsystem.upperBallPath(0)),
+      new TrajectoryFollowerCommand(robotContainer, threeBallStraightTrajectory.PLAYERSTATION),
+      new VisionCommand(robotContainer).alongWith(
+        new ShootDistanceCommand(robotContainer))
+      .withTimeout(2),
+      new RunCommand(()-> robotContainer.collectorSubsystem.upperBallPath(0.7)).withTimeout(2),
+      new InstantCommand(()-> robotContainer.collectorSubsystem.toggleCollector(0)),
+      new InstantCommand(()-> robotContainer.shooterSubsystem.setToggle(false)),
+      new ShootDistanceCommand(robotContainer).withTimeout(0.1),
+      new InstantCommand(()-> robotContainer.collectorSubsystem.upperBallPath(0))
+      */
+
+      new InstantCommand(()-> robotContainer.climberSubsystem.leftPivotActuate(true)),
+      new InstantCommand(()-> robotContainer.climberSubsystem.rightPivotActuate(true)),
+      // new VisionCommand(robotContainer).withTimeout(.5),
+      new TurretSetpointCommand(robotContainer, robotContainer.turretSubsystem.degreesToTicks(-180)),
+      new TrajectoryFollowerCommand(robotContainer, threeBallStraightTrajectory.START)
+        .alongWith(new InstantCommand(()-> robotContainer.collectorSubsystem.toggleCollector(.75)),
+        new InstantCommand(()-> robotContainer.shooterSubsystem.setToggle(true))),
+      new RunCommand(()-> robotContainer.shooterSubsystem.adjustShooter(138)).alongWith(
+        new TurretSetpointCommand(robotContainer, robotContainer.turretSubsystem.degreesToTicks(-180))).withTimeout(2),
+      new RunCommand(()-> robotContainer.collectorSubsystem.upperBallPath(0.7)).withTimeout(2),
+      new ShootDistanceCommand(robotContainer).withTimeout(0.1),
+      new InstantCommand(()-> robotContainer.collectorSubsystem.upperBallPath(0)),
+      new TrajectoryFollowerCommand(robotContainer, threeBallStraightTrajectory.PLAYERSTATION),
+      new TurretSetpointCommand(robotContainer, robotContainer.turretSubsystem.degreesToTicks(-180)),
+      new ShootDistanceCommand(robotContainer).withTimeout(0.1),
+      new RunCommand(()-> robotContainer.shooterSubsystem.adjustShooter(250)).alongWith(
+        new TurretSetpointCommand(robotContainer, robotContainer.turretSubsystem.degreesToTicks(-180))).withTimeout(2),
+      new RunCommand(()-> robotContainer.collectorSubsystem.upperBallPath(0.7)).withTimeout(2),
+      new InstantCommand(()-> robotContainer.limeLightSubsystem.setVision(false)),
+      new TurretSetpointCommand(robotContainer, 0),
+      new InstantCommand(()-> robotContainer.collectorSubsystem.toggleCollector(0)),
+      new InstantCommand(()-> robotContainer.shooterSubsystem.setToggle(false))
+
+
+
+      // new TrajectoryFollowerCommand(robotContainer, threeBallStraightTrajectory.START),
+      // new TrajectoryFollowerCommand(robotContainer, threeBallStraightTrajectory.PLAYERSTATION)
 
 
       /*

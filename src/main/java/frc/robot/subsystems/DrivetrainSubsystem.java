@@ -171,10 +171,10 @@ public class DrivetrainSubsystem extends PIDSubsystem {
      * @return yaw in degrees (-180 to 180 degrees)
      */
     public double getYawDegrees() {
-        double angle = ((gyro.getAngle()) + angleOffset) % 360;
+        double angle = ((Math.abs(gyro.getAngle())) + angleOffset) % 360;
         if (angle <= 180.0)
-            return angle;
-        return angle - 360;
+            return -angle;
+        return -(angle - 360);
     }
 
     /**
