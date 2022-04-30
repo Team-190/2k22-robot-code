@@ -34,6 +34,7 @@ import frc.robot.commands.collector.AutomateBallpathCommand;
 import frc.robot.commands.drivetrain.DefaultTankDriveCommand;
 import frc.robot.commands.hotlineblink.AllianceColorCommand;
 import frc.robot.commands.hotlineblink.SpitBallsWithColorCommand;
+import frc.robot.commands.shooter.InterpolatingShootCommand;
 import frc.robot.commands.shooter.LowPortCommand;
 import frc.robot.commands.shooter.ShootDistanceCommand;
 import frc.robot.input.AttackThree;
@@ -175,7 +176,8 @@ public class RobotContainer {
 
         // rightStick.middleFaceButton.whenPressed(new InstantCommand(()-> turretSubsystem.resetEncoder(0), turretSubsystem));
 
-        rightStick.bottomFaceButton.whenPressed(new ShootDistanceCommand(this));
+        // rightStick.bottomFaceButton.whenPressed(new ShootDistanceCommand(this));
+        rightStick.bottomFaceButton.whenPressed(new InterpolatingShootCommand(this));
         rightStick.bottomFaceButton.whenPressed(new InstantCommand(()-> shooterSubsystem.setToggle(!shooterSubsystem.getToggle())));
 
         rightStick.rightFaceButton.whenPressed(new SpitBallsWithColorCommand(this));

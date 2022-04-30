@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.util.*;
 
 public class ShooterSubsystem extends SubsystemBase {
   
@@ -402,6 +403,16 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public boolean getHoodLimit() {
     return hoodMotor.isFwdLimitSwitchClosed() == 1;
+  }
+
+  public void setFromMap(InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> hoodMap, InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> rpmMap, double distance){
+    InterpolatingDouble interpDistance = new InterpolatingDouble(distance);
+    double hoodAngle = hoodMap.getInterpolated(interpDistance).value;
+    double rpm = rpmMap.getInterpolated(interpDistance).value;
+
+    setHoodAngle(hoodAngle);
+    flywheelPID(rpm);
+
   }
 
 }
