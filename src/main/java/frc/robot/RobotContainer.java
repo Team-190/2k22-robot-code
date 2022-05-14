@@ -189,8 +189,7 @@ public class RobotContainer {
 
 
         // Controller Bindings
-        driverXboxController.selectButton.whenPressed(new InstantCommand(()-> climberSubsystem.togglePivot()));
-        driverXboxController.selectButton.whenPressed(new toggleClimberCommand(this));
+
         // driverXboxController.startButton.whileHeld(new RunCommand(()-> turretSubsystem.turretManual(0.2), turretSubsystem))
         //     .whenReleased(new InstantCommand(()-> turretSubsystem.turretManual(0), turretSubsystem));
 
@@ -226,9 +225,6 @@ public class RobotContainer {
 
         new POVButton(driverXboxController, 270)
             .whenPressed(new TurretSetpointCommand(this, turretSubsystem.degreesToTicks(-90)));
-
-        driverXboxController.yButton.whenPressed(new ClimbExtendLeftCommand(this,- ClimberConstants.CLIMBER_LEFT_EXTEND_POSITION));
-        // driverXboxController.yButton.whenPressed(new InstantCommand(()-> climberSubsystem.climberPID(-ClimberConstants.CLIMBER_LEFT_EXTEND_POSITION)));
 
 
         driverXboxController.xButton.whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(-turretSubsystem.degreesToTicks(1)), turretSubsystem));
@@ -337,6 +333,7 @@ public class RobotContainer {
     }
 
     public void periodic() {
+        /*
         if (!climberSubsystem.getTogglePivot() && turretSubsystem.getPivotTolerance()) {
             climberSubsystem.leftPivotActuate(true);
             climberSubsystem.rightPivotActuate(true);
@@ -344,6 +341,7 @@ public class RobotContainer {
             climberSubsystem.leftPivotActuate(false);
             climberSubsystem.rightPivotActuate(false);
         }
+        */
 
     }
 

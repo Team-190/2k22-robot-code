@@ -118,6 +118,8 @@ public class Robot extends TimedRobot {
         // robotContainer.climberSubsystem.leftPivotActuate(true);
         // robotContainer.climberSubsystem.rightPivotActuate(true);
         robotContainer.limeLightSubsystem.setVision(false);
+        robotContainer.climberSubsystem.leftPivotActuate(true);
+        robotContainer.climberSubsystem.rightPivotActuate(true);
 
 
         /*
