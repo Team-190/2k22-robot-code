@@ -229,15 +229,15 @@ public class RobotContainer {
         new POVButton(driverXboxController, 270)
             .whenPressed(new TurretSetpointCommand(this, turretSubsystem.degreesToTicks(-90)));
 
-        driverXboxController.yButton.whenPressed(new ClimbExtendLeftCommand(this,- ClimberConstants.CLIMBER_LEFT_EXTEND_POSITION));
+        //driverXboxController.yButton.whenPressed(new ClimbExtendLeftCommand(this,- ClimberConstants.CLIMBER_LEFT_EXTEND_POSITION));
         // driverXboxController.yButton.whenPressed(new InstantCommand(()-> climberSubsystem.climberPID(-ClimberConstants.CLIMBER_LEFT_EXTEND_POSITION)));
 
 
         driverXboxController.xButton.whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(-turretSubsystem.degreesToTicks(1)), turretSubsystem));
         driverXboxController.bButton.whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(turretSubsystem.degreesToTicks(1)), turretSubsystem));
 
-        // driverXboxController.yButton.whileHeld(new RunCommand(()-> shooterSubsystem.relativeHoodAngle(0.5)));
-        // driverXboxController.aButton.whileHeld(new RunCommand(()-> shooterSubsystem.relativeHoodAngle(-0.5)));
+        driverXboxController.yButton.whileHeld(new RunCommand(()-> shooterSubsystem.relativeHoodAngle(0.5)));
+        driverXboxController.aButton.whileHeld(new RunCommand(()-> shooterSubsystem.relativeHoodAngle(-0.5)));
 
         // driverXboxController.bButton.whenPressed(new InstantCommand(()-> shooterSubsystem.setHoodAngle(52)));
         

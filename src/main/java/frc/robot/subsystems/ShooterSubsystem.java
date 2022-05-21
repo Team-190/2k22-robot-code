@@ -101,6 +101,7 @@ public class ShooterSubsystem extends SubsystemBase {
     // SmartDashboard.putNumber("Hood Degrees Position", hoodTicksToDegrees(hoodMotor.getSelectedSensorPosition()));
     // SmartDashboard.putBoolean("Hood Limit", getHoodLimit());
     SmartDashboard.putBoolean("ShooterRunning", getIsRunning());
+    SmartDashboard.putBoolean("Shooter Toggle Status", getToggle());
 
     if (getHoodLimit()&&!reset) {
       resetHood(27);

@@ -80,8 +80,8 @@ public class LimeLightSubsystem extends SubsystemBase {
    */
   public double getDistanceToTarget() {
     double limelightHeight = 22.5;
-    double limelightMountAngleDegrees = 28; // Angle from horizontal
-    double heightToGoal = 104.0;
+    double limelightMountAngleDegrees = 26; // Angle from horizontal
+    double heightToGoal = 51.50; //104.0
 
     double angleToGoalDegrees = limelightMountAngleDegrees + y;
     double angleToGoalRadians = angleToGoalDegrees* (3.14159 / 180.0);

@@ -44,8 +44,10 @@ public class InterpolatingShootCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    /*
     if (!shooterSubsystem.getToggle()) {
       shooterSubsystem.stopFlywheel();
+      shooterSubsystem.adjustHood(0.0);
 
     } else {
       hotlineBlinkSubsystem.changeHat(Hat.Gold);
@@ -57,12 +59,21 @@ public class InterpolatingShootCommand extends CommandBase {
         shooterSubsystem.setFromMap(Constants.ShooterConstants.kHoodMap, Constants.ShooterConstants.kRPMMap, distance);
       }
     }
+    */
+
+    if(limeLightSubsystem.getVision()){
+      if(limeLightSubsystem.targetFound()){
+        this.distance = limeLightSubsystem.getDistanceToTarget();
+        shooterSubsystem.setFromMap(Constants.ShooterConstants.kHoodMap, Constants.ShooterConstants.kRPMMap, distance);
+      }
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     shooterSubsystem.stopFlywheel();
+    shooterSubsystem.setHoodAngle(0.0);
   }
 
   // Returns true when the command should end.

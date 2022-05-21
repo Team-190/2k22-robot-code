@@ -4,6 +4,8 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import frc.robot.util.InterpolatingTreeMap;
+import frc.robot.util.InterpolatingDouble;
 
 public final class Constants {
 
@@ -202,7 +204,29 @@ public final class Constants {
         public static final int HOOD_MOTOR_MOTION_SMOOTHING = 2;
         public static final double HOOD_MINIMUM_LIMIT = 27;
         public static final double HOOD_MAXIMUM_LIMIT = 53;
-        
-    
+
+    public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kHoodMap = new InterpolatingTreeMap<>();
+    static {
+        kHoodMap.put(new InterpolatingDouble(100.0), new InterpolatingDouble(32.0));
+        kHoodMap.put(new InterpolatingDouble(120.0), new InterpolatingDouble(27.0));
+        kHoodMap.put(new InterpolatingDouble(130.0), new InterpolatingDouble(36.0));
+        kHoodMap.put(new InterpolatingDouble(135.0), new InterpolatingDouble(36.0));
+        kHoodMap.put(new InterpolatingDouble(140.0), new InterpolatingDouble(36.0));
+        kHoodMap.put(new InterpolatingDouble(180.0), new InterpolatingDouble(33.0));
+        kHoodMap.put(new InterpolatingDouble(220.0), new InterpolatingDouble(40.0));
+        kHoodMap.put(new InterpolatingDouble(244.0), new InterpolatingDouble(52.0));
     }
+
+    public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kRPMMap = new InterpolatingTreeMap<>();
+    static {
+        kRPMMap.put(new InterpolatingDouble(100.0), new InterpolatingDouble(2200.0));
+        kRPMMap.put(new InterpolatingDouble(120.0), new InterpolatingDouble(2300.0));
+        kRPMMap.put(new InterpolatingDouble(130.0), new InterpolatingDouble(2150.0));
+        kRPMMap.put(new InterpolatingDouble(135.0), new InterpolatingDouble(2300.0));
+        kRPMMap.put(new InterpolatingDouble(140.0), new InterpolatingDouble(2200.0));
+        kRPMMap.put(new InterpolatingDouble(180.0), new InterpolatingDouble(2500.0));
+        kRPMMap.put(new InterpolatingDouble(220.0), new InterpolatingDouble(2700.0));
+        kRPMMap.put(new InterpolatingDouble(244.0), new InterpolatingDouble(2750.0));
+    }
+}
 }
