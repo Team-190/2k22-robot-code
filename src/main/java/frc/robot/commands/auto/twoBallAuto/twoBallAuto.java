@@ -69,13 +69,13 @@ public class twoBallAuto extends SequentialCommandGroup {
       new VisionCommand(robotContainer).withTimeout(.5),
       new TrajectoryFollowerCommand(robotContainer, twoBallTrajectory.START)
         .alongWith(new InstantCommand(()-> robotContainer.collectorSubsystem.toggleCollector(.75)),
-        new InstantCommand(()-> robotContainer.shooterSubsystem.setToggle(true))),
+        // new InstantCommand(()-> robotContainer.shooterSubsystem.setToggle(true))),
       new RunCommand(()-> robotContainer.shooterSubsystem.adjustShooter(138)).alongWith(
-        new TurretSetpointCommand(robotContainer, robotContainer.turretSubsystem.degreesToTicks(-180))).withTimeout(2),
+        // new TurretSetpointCommand(robotContainer, robotContainer.turretSubsystem.degreesToTicks(-180))).withTimeout(2),
       new RunCommand(()-> robotContainer.collectorSubsystem.upperBallPath(0.7)).withTimeout(2),
       new InstantCommand(()-> robotContainer.limeLightSubsystem.setVision(false)),
-      new TurretSetpointCommand(robotContainer, 0),
-      new InstantCommand(()-> robotContainer.collectorSubsystem.toggleCollector(0)),
+      // new TurretSetpointCommand(robotContainer, 0),
+      // new InstantCommand(()-> robotContainer.collectorSubsystem.toggleCollector(0)),
       new InstantCommand(()-> robotContainer.shooterSubsystem.setToggle(false)),
       new ShootDistanceCommand(robotContainer).withTimeout(0.1),
       new InstantCommand(()-> robotContainer.collectorSubsystem.upperBallPath(0))
