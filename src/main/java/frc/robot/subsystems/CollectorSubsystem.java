@@ -17,7 +17,7 @@ import frc.robot.Constants.CollectorConstants;
 
 public class CollectorSubsystem extends SubsystemBase {
   //TODO: fix channels once robot is wired
-  public final DoubleSolenoid collectorPiston = new DoubleSolenoid(PneumaticsModuleType.REVPH, CollectorConstants.FORWARD_CHANNEL, CollectorConstants.REVERSE_CHANNEL);
+  public final DoubleSolenoid collectorPiston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, CollectorConstants.FORWARD_CHANNEL, CollectorConstants.REVERSE_CHANNEL);
   public final CANSparkMax upperBallPathMotor = new CANSparkMax(CollectorConstants.UPPERBALLPATH_CHANNEL, CANSparkMaxLowLevel.MotorType.kBrushed);
   public final CANSparkMax collectorMotor = new CANSparkMax(CollectorConstants.COLLECTOR_CHANNEL, CANSparkMaxLowLevel.MotorType.kBrushless);
   public final DigitalInput photoElectricSensor = new DigitalInput(CollectorConstants.PHOTOELECTRIC_SENSOR_ID);

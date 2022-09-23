@@ -13,6 +13,7 @@ import edu.wpi.first.cscore.VideoException;
 import edu.wpi.first.cscore.VideoSource;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticHub;
+import edu.wpi.first.wpilibj.PneumaticsControlModule;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -90,7 +91,7 @@ public class RobotContainer {
 
     
     // Compressor
-    public final Compressor compressor = new Compressor(1, PneumaticsModuleType.REVPH);
+    public final Compressor compressor = new Compressor(1, PneumaticsModuleType.CTREPCM);
     public boolean compressorEnabled = compressor.enabled();
     public boolean compressorPressureSwitch = compressor.getPressureSwitchValue();
     public double compressorCurrent = compressor.getCurrent();
@@ -98,6 +99,7 @@ public class RobotContainer {
     public final PowerDistribution pdh = new PowerDistribution(10, ModuleType.kRev);
 
     public final PneumaticHub pneumaticHub = new PneumaticHub(1);
+    public final PneumaticsControlModule pcm = new PneumaticsControlModule();
 
 
     /*

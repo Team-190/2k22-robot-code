@@ -14,10 +14,10 @@ import frc.robot.Constants.ClimberConstants;
 public class ClimberSubsystem extends SubsystemBase {
 
     // Initialize Solenoids
-    Solenoid leftPivot = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.LEFT_PIVOT_ID);
-    Solenoid rightPivot = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.RIGHT_PIVOT_ID);
-    Solenoid leftBrake = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.LEFT_BRAKE_ID);
-    Solenoid rightBrake = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.RIGHT_BRAKE_ID);
+    Solenoid leftPivot = new Solenoid(PneumaticsModuleType.CTREPCM, ClimberConstants.LEFT_PIVOT_ID);
+    Solenoid rightPivot = new Solenoid(PneumaticsModuleType.CTREPCM, ClimberConstants.RIGHT_PIVOT_ID);
+    Solenoid leftBrake = new Solenoid(PneumaticsModuleType.CTREPCM, ClimberConstants.LEFT_BRAKE_ID);
+    Solenoid rightBrake = new Solenoid(PneumaticsModuleType.CTREPCM, ClimberConstants.RIGHT_BRAKE_ID);
 
     // Initailize Motors
     WPI_TalonFX climber_motor = new WPI_TalonFX(ClimberConstants.CLIMBER_MOTOR_CHANNEL);
