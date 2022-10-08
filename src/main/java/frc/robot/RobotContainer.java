@@ -71,6 +71,7 @@ public class RobotContainer {
                     Constants.DrivetrainConstants.P,
                     Constants.DrivetrainConstants.I,
                     Constants.DrivetrainConstants.D);
+
     public final CollectorSubsystem collectorSubsystem = new CollectorSubsystem();
 
     public final LimeLightSubsystem limeLightSubsystem =
@@ -89,7 +90,6 @@ public class RobotContainer {
 
     public final HotlineBlinkSubsystem hotlineBlinkSubsystem = new HotlineBlinkSubsystem();
 
-    
     // Compressor
     public final Compressor compressor = new Compressor(1, PneumaticsModuleType.REVPH);
     public boolean compressorEnabled = compressor.enabled();
