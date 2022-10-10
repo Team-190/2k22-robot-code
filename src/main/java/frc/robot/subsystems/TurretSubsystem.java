@@ -72,6 +72,7 @@ public class TurretSubsystem extends PIDSubsystem {
       
       tab.addNumber("LimelightAngleTicks", () -> degreesToTicks(limeLightSubsystem.degreesAskew()));
       tab.addNumber("LimelightAngleDegrees", () -> limeLightSubsystem.degreesAskew());
+      
   }
 
   /**
@@ -107,16 +108,15 @@ public class TurretSubsystem extends PIDSubsystem {
    * @return True if the turret gets past the upper or lower limit else False
    */
   public boolean turretUnwrap() {
-    if (turretMotor.getSelectedSensorPosition() >= TURRET_MAXIMUM_LIMIT) {
+    if (getTurretPosition() >= TURRET_MAXIMUM_LIMIT) {
       relativeTurretPID(degreesToTicks(-360));
       return true;
-    } else if (turretMotor.getSelectedSensorPosition() <= TURRET_MINIMUM_LIMIT) {
+    } else if (getTurretPosition() <= TURRET_MINIMUM_LIMIT) {
       relativeTurretPID(degreesToTicks(360));
       return true;
     }
     return false;
   }
-  
   /**
    * Move turret towards vision target
    */
@@ -125,7 +125,7 @@ public class TurretSubsystem extends PIDSubsystem {
 
     // Takes in degrees off from target, converts it into ticks, move turret by those ticks
     if (limeLightSubsystem.getVision() && limeLightSubsystem.targetFound() && !visionWithinTolerance()) {
-      turretPID(turretMotor.getSelectedSensorPosition() + degreesToTicks(degrees));
+      turretPID(getTurretPosition() + degreesToTicks(degrees));
     }
   }
 
@@ -133,14 +133,14 @@ public class TurretSubsystem extends PIDSubsystem {
    * Finds if vision is within tolerance
    */
   public boolean visionWithinTolerance() {
-    return Math.abs(ticksToDegrees(turretMotor.getSelectedSensorPosition()) - limeLightSubsystem.degreesAskew()) < ticksToDegrees(TurretConstants.TOLERANCE);
+    return Math.abs(ticksToDegrees(getTurretPosition()) - limeLightSubsystem.degreesAskew()) < ticksToDegrees(TurretConstants.TOLERANCE);
   }
 
   /**
    * Checks if the PID motion is complete
    */
   public boolean isMotionComplete(){
-    return (Math.abs(turretMotor.getSelectedSensorPosition()-turretMotor.getClosedLoopTarget())<=TurretConstants.TOLERANCE);
+    return (Math.abs(getTurretPosition()-turretMotor.getClosedLoopTarget())<=TurretConstants.TOLERANCE);
   }
 
   /**
@@ -162,11 +162,19 @@ public class TurretSubsystem extends PIDSubsystem {
   }
 
   /**
+   * Get the position of the Turret (Positive is counter Clockwise, 0 is front of robot)
+   * @return the position of the turret in ticks
+   */
+  public double getTurretPosition() {
+    return turretMotor.getSelectedSensorPosition();
+  }
+
+  /**
    * Get the angle of the Turret (Positive is counter Clockwise, 0 is front of robot)
    * @return the angle of the turret in degrees
    */
   public double getTurretAngle() {
-    return ticksToDegrees(turretMotor.getSelectedSensorPosition());
+    return ticksToDegrees(getTurretPosition());
   }
 
   /**
@@ -176,16 +184,10 @@ public class TurretSubsystem extends PIDSubsystem {
   public void turretPID(double setpoint) {
     
     if (setpoint > TURRET_MAXIMUM_LIMIT) {
-      setpoint = degreesToTicks(-175);
+      setpoint -= degreesToTicks(360);
     } else if (setpoint < TURRET_MINIMUM_LIMIT) {
-      setpoint = degreesToTicks(175);
+      setpoint += degreesToTicks(360);
     }
-
-    // if (setpoint >  TURRET_MAXIMUM_LIMIT) {
-    //   setpoint = TURRET_MAXIMUM_LIMIT;
-    // } else if (setpoint < TURRET_MINIMUM_LIMIT) {
-    //   setpoint = TURRET_MINIMUM_LIMIT;
-    // }
 
     turretMotor.configMotionCruiseVelocity(rpmToTicksPer100ms(TurretConstants.TURRET_MOTOR_VELOCITY));
     turretMotor.configMotionAcceleration(rpmToTicksPer100ms(TurretConstants.TURRET_MOTOR_ACCELERATION));
@@ -224,7 +226,7 @@ public class TurretSubsystem extends PIDSubsystem {
    * Sets the direction for the turret to search in (default direction)
    */
   public void setDirection() {
-    this.turnToDirection = this.defaultDirection;
+    setDirection(this.defaultDirection);
   }
 
   /**
@@ -259,12 +261,14 @@ public class TurretSubsystem extends PIDSubsystem {
     turretMotor.setSelectedSensorPosition(ticks);
   }
 
+  
+
   /**
    * Checks to see if the turret is within climber tolerance
    * @return True if the turret is within tolerence else false
    */
   public boolean getPivotTolerance() {
-    double currentPosition = turretMotor.getSelectedSensorPosition();
+    double currentPosition = getTurretPosition();
     boolean ethernetSwitchTolerance = currentPosition < -3000 && currentPosition > -30000;
     boolean turretBehindTolerance = currentPosition < -50000 || currentPosition > 60000;
     return ethernetSwitchTolerance || turretBehindTolerance;
@@ -273,7 +277,7 @@ public class TurretSubsystem extends PIDSubsystem {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Turret Encoder Position", turretMotor.getSelectedSensorPosition());
+    SmartDashboard.putNumber("Turret Encoder Position", getTurretPosition());
     SmartDashboard.putNumber("Turret Encoder Error", turretMotor.getClosedLoopError());
     SmartDashboard.putNumber("Turret PID Target", turretMotor.getClosedLoopTarget());
     // SmartDashboard.putBoolean("Turret Limit", getTurretLimit());

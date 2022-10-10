@@ -122,7 +122,7 @@ public final class Constants {
         public static final int TOLERANCE = 400;
         public static final int TICKS_PER_ROTATION = 2048;
         public static final double TURRET_GEAR_RATIO = 0.012987012987; // 77:1 gear ratio
-        public static final double TICKS_PER_DEGREE = (TICKS_PER_ROTATION * 1/TURRET_GEAR_RATIO) / 360;
+        public static final double TICKS_PER_DEGREE = (TICKS_PER_ROTATION * 1/TURRET_GEAR_RATIO) / 360; // 438
 
         public static final double TURRET_STEP_SIZE = 1;
         public static final int TURRET_MAX_RPM = 6380;

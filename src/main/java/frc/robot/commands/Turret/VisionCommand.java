@@ -23,26 +23,25 @@ public class VisionCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
+    
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // if (!limeLightSubsystem.targetFound() || !limeLightSubsystem.getVision()) {
-    //   turretSubsystem.turretManual(0);
-    // } else 
-    if (limeLightSubsystem.targetFound()) {
-      turretSubsystem.turretVision();
-    } else {
-      // turretSubsystem.turretPID(0) ;
-    }
+     if (limeLightSubsystem.getVision()) {
+      if (limeLightSubsystem.targetFound()) {
+        turretSubsystem.turretVision();
+      } else {
+        turretSubsystem.relativeTurretPID(turretSubsystem.getDirection() * turretSubsystem.degreesToTicks(0.5)) ;
+      }
+    } 
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-
+    turretSubsystem.turretManual(0);
   }
 
   // Returns true when the command should end.

@@ -111,29 +111,21 @@ public class RobotContainer {
             new AttackThree(Constants.InputConstants.RIGHT_JOYSTICK_CHANNEL);
     public final XboxOneController driverXboxController =
             new XboxOneController(Constants.InputConstants.XBOX_CHANNEL);
-    //  public final ButtonBoxLeft buttonBoxLeft = new ButtonBoxLeft(2);
-    // public final ButtonBoxRight buttonBoxRight = new ButtonBoxRight(3);
-
-
+    
     /**
     * Constructor for the robot container Called when the Rio is powered on, and is only called once.
     * We use this to configure commands from buttons and default commands
     */
     public RobotContainer() {
 
-        /*
-        for (int i = 1500; i < 6001; i += 50) {
-            shooterRPMChooser.addOption(""+i+ " RPM", i);
-        }
-        */
+       
         autoModeChooser.setDefaultOption("2 Ball Auto", new twoBallAuto(this));
         autoModeChooser.addOption("3 Ball Straight Auto", new threeBallAutoStraight(this));
 
 
         SmartDashboard.putData("AutoModeChooser", autoModeChooser);
 
-        // SmartDashboard.putData("Set Flywheel RPM", shooterRPMChooser);
-
+        
         // initializeCamera();
 
         // Left Stick Bindings
@@ -150,32 +142,11 @@ public class RobotContainer {
         leftStick.bottomFaceButton.whenHeld(new RunCommand(()-> collectorSubsystem.collect(-0.75)))
             .whenReleased(new InstantCommand(()-> collectorSubsystem.collect(0))); 
 
-        /*
-        leftStick.middleFaceButton.whenPressed(new CollectCommand(this, 0.75));
-        leftStick.middleFaceButton.whenPressed(new AutomateBallpathCommand(this));
-
-        leftStick.bottomFaceButton.whenHeld(new CollectCommand(this, -0.75))
-            .whenReleased(new InstantCommand(()-> collectorSubsystem.collect(0))); 
-        */
-
-        // leftStick.leftFaceButton.whenPressed(new InstantCommand(()-> climberSubsystem.resetClimberPos()));
-
-        // leftStick.bottomFaceButton.whenPressed(new ClimberSetpointCommand(this, 0));
-
-        // leftStick.rightFaceButton.whenPressed(new ClimberSetpointCommand(this, 150000));
-
-        // leftStick.leftFaceButton.whenPressed(new TurretSetpointCommand(this, turretSubsystem.degreesToTicks(-90)));
-        // leftStick.rightFaceButton.whenPressed(new TurretSetpointCommand(this, turretSubsystem.degreesToTicks(90)));
-        // leftStick.bottomFaceButton.whenPressed(new TurretSetpointCommand(this, turretSubsystem.degreesToTicks(0)));
-
-        // Right Stick Bindings
-        // rightStick.leftFaceButton.whenPressed(new RunCommand(()-> turretSubsystem.turretVision(), turretSubsystem));
-        // rightStick.bottomFaceButton.whenPressed(new VisionCommand(this));
+       
 
         rightStick.triggerButton.whenHeld(new RunCommand(()-> collectorSubsystem.upperBallPath(.7), collectorSubsystem))
             .whenReleased(new InstantCommand(()-> collectorSubsystem.upperBallPath(0), collectorSubsystem));
 
-        // rightStick.middleFaceButton.whenPressed(new InstantCommand(()-> turretSubsystem.resetEncoder(0), turretSubsystem));
 
         rightStick.bottomFaceButton.whenPressed(new ShootDistanceCommand(this));
         rightStick.bottomFaceButton.whenPressed(new InstantCommand(()-> shooterSubsystem.setToggle(!shooterSubsystem.getToggle())));
@@ -184,96 +155,54 @@ public class RobotContainer {
 
         rightStick.middleFaceButton.whenPressed(new LowPortCommand(this));
         rightStick.middleFaceButton.whenPressed(new InstantCommand(()-> shooterSubsystem.setToggle(!shooterSubsystem.getToggle())));
-        // rightStick.bottomFaceButton.whenPressed(new ShooterToggleCommand(this));
-        // rightStick.bottomFaceButton.whenPressed(new InstantCommand(()-> shooterSubsystem.flywheelToggle(shooterRPMChooser.getSelected())));
-
-        // rightStick.rightFaceButton.whenPressed(new InstantCommand(()-> shooterSubsystem.resetHood(27)));
 
 
         // Controller Bindings
         driverXboxController.selectButton.whenPressed(new InstantCommand(()-> climberSubsystem.togglePivot()));
         driverXboxController.selectButton.whenPressed(new toggleClimberCommand(this));
-        // driverXboxController.startButton.whileHeld(new RunCommand(()-> turretSubsystem.turretManual(0.2), turretSubsystem))
-        //     .whenReleased(new InstantCommand(()-> turretSubsystem.turretManual(0), turretSubsystem));
-
-        /*
-        new POVButton(driverXboxController, 90)
-            .whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(turretSubsystem.degreesToTicks(1)), turretSubsystem));
-            // .whenReleased(new VisionCommand(this));
-
-        new POVButton(driverXboxController, 270)
-            .whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(-turretSubsystem.degreesToTicks(1)), turretSubsystem));
-            // .whenReleased(new VisionCommand(this));;
-
-        new POVButton(driverXboxController, 0)
-            .whileHeld(new RunCommand(()-> climberSubsystem.extendClimber(.3), climberSubsystem))
-            .whenReleased(new RunCommand(()-> climberSubsystem.extendClimber(0), climberSubsystem));
-
-        new POVButton(driverXboxController, 180)
-            .whileHeld(new RunCommand(()-> climberSubsystem.extendClimber(-.3), climberSubsystem))
-            .whenReleased(new RunCommand(()-> climberSubsystem.extendClimber(0), climberSubsystem));
-        */
-
-        // driverXboxController.selectButton.whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(-turretSubsystem.degreesToTicks(1)), turretSubsystem));
-        // driverXboxController.startButton.whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(turretSubsystem.degreesToTicks(1)), turretSubsystem));
-
+       
+        // Up on the D-Pad
         new POVButton(driverXboxController, 0)
             .whenPressed(new TurretSetpointCommand(this, 0));
 
+        // Right on the D-Pad
         new POVButton(driverXboxController, 90)
-            .whenPressed(new TurretSetpointCommand(this, turretSubsystem.degreesToTicks(90)));
+            .whenPressed(new InstantCommand(() -> turretSubsystem.setDirection(1)));
 
+        // Down on the D-Pad
         new POVButton(driverXboxController, 180)
             .whenPressed(new TurretSetpointCommand(this, turretSubsystem.degreesToTicks(180)));
 
+        // Left on the D-Pad
         new POVButton(driverXboxController, 270)
-            .whenPressed(new TurretSetpointCommand(this, turretSubsystem.degreesToTicks(-90)));
+            .whenPressed(new InstantCommand(() -> turretSubsystem.setDirection(-1)));
 
         driverXboxController.yButton.whenPressed(new ClimbExtendLeftCommand(this,- ClimberConstants.CLIMBER_LEFT_EXTEND_POSITION));
-        // driverXboxController.yButton.whenPressed(new InstantCommand(()-> climberSubsystem.climberPID(-ClimberConstants.CLIMBER_LEFT_EXTEND_POSITION)));
 
 
         driverXboxController.xButton.whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(-turretSubsystem.degreesToTicks(1)), turretSubsystem));
         driverXboxController.bButton.whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(turretSubsystem.degreesToTicks(1)), turretSubsystem));
 
-        // driverXboxController.yButton.whileHeld(new RunCommand(()-> shooterSubsystem.relativeHoodAngle(0.5)));
-        // driverXboxController.aButton.whileHeld(new RunCommand(()-> shooterSubsystem.relativeHoodAngle(-0.5)));
-
-        // driverXboxController.bButton.whenPressed(new InstantCommand(()-> shooterSubsystem.setHoodAngle(52)));
         
 
         driverXboxController.leftBumper.whenPressed(new InstantCommand(()-> limeLightSubsystem.toggleVision()));
+        driverXboxController.leftBumper.whenPressed(new InstantCommand(()-> turretSubsystem.turretManual(0)));
 
         new Trigger(()-> (driverXboxController.getRightTrigger() > 0.005))
             .whenActive(new InstantCommand(()-> climberSubsystem.leftBrakeActuate(true)))
             .whenInactive(new InstantCommand(()-> climberSubsystem.leftBrakeActuate(false)));
-            // .whenActive(new InstantCommand(()-> climberSubsystem.rightBrakeActuate(true)))
-            // .whenInactive(new InstantCommand(()-> climberSubsystem.rightBrakeActuate(false)));
+          
 
         new Trigger(()-> (driverXboxController.getLeftTrigger() > 0.005))
-            // .whenActive(new InstantCommand(()-> climberSubsystem.leftBrakeActuate(true)))
-            // .whenInactive(new InstantCommand(()-> climberSubsystem.leftBrakeActuate(false)));
+          
             .whenActive(new RunCommand(()-> collectorSubsystem.upperBallPath(-.7), collectorSubsystem))
             .whenInactive(new RunCommand(()-> collectorSubsystem.upperBallPath(0), collectorSubsystem));
         
         
-        // driverXboxController.yButton.whenPressed(new hoodToAngleCommand(this, 40));
-        // driverXboxController.aButton.whenPressed(new hoodToAngleCommand(this, 27));
-
-        /*
-        new POVButton(driverXboxController, 0)
-            .whileHeld(new RunCommand(()-> shooterSubsystem.relativeHoodAngle(0.5)));
-            // .whenReleased(new InstantCommand(()-> shooterSubsystem.hoodManual(0)));
-
-        new POVButton(driverXboxController, 180)
-            .whileHeld(new RunCommand(()-> shooterSubsystem.relativeHoodAngle(-0.5)));
-            // .whenReleased(new InstantCommand(()-> shooterSubsystem.hoodManual(0)));
-        */
-        
-
+       
         new Trigger(()-> (Math.abs(driverXboxController.getLeftStickY()) > 0.05))
-            .whenActive(new RunCommand(()-> climberSubsystem.extendClimber(driverXboxController.getLeftStickY()/2)))
-            .whenInactive(new InstantCommand(()-> climberSubsystem.extendClimber(0)));
+            .whenActive(new RunCommand(()-> turretSubsystem.relativeTurretPID())))
+            .whenInactive(new InstantCommand(()-> turretSubsystem.turretManual(0)));
 
 
         drivetrainSubsystem.gyro.calibrate();
