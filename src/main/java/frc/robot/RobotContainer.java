@@ -200,8 +200,8 @@ public class RobotContainer {
         
         
        
-        new Trigger(()-> (Math.abs(driverXboxController.getLeftStickY()) > 0.05))
-            .whenActive(new RunCommand(()-> turretSubsystem.relativeTurretPID())))
+        new Trigger(()-> (Math.abs(driverXboxController.getLeftStickX()) > 0.05))
+            .whenActive(new RunCommand(()-> turretSubsystem.turretManual(driverXboxController.getLeftStickX() * 100))))
             .whenInactive(new InstantCommand(()-> turretSubsystem.turretManual(0)));
 
 
