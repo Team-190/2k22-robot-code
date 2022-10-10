@@ -142,19 +142,8 @@ public class RobotContainer {
         leftStick.bottomFaceButton.whenHeld(new RunCommand(()-> collectorSubsystem.collect(-0.75)))
             .whenReleased(new InstantCommand(()-> collectorSubsystem.collect(0))); 
 
-       
-
-        rightStick.triggerButton.whenHeld(new RunCommand(()-> collectorSubsystem.upperBallPath(.7), collectorSubsystem))
-            .whenReleased(new InstantCommand(()-> collectorSubsystem.upperBallPath(0), collectorSubsystem));
-
-
-        rightStick.bottomFaceButton.whenPressed(new ShootDistanceCommand(this));
-        rightStick.bottomFaceButton.whenPressed(new InstantCommand(()-> shooterSubsystem.setToggle(!shooterSubsystem.getToggle())));
 
         rightStick.rightFaceButton.whenPressed(new SpitBallsWithColorCommand(this));
-
-        rightStick.middleFaceButton.whenPressed(new LowPortCommand(this));
-        rightStick.middleFaceButton.whenPressed(new InstantCommand(()-> shooterSubsystem.setToggle(!shooterSubsystem.getToggle())));
 
 
         // Controller Bindings
@@ -180,17 +169,22 @@ public class RobotContainer {
         driverXboxController.yButton.whenPressed(new ClimbExtendLeftCommand(this,- ClimberConstants.CLIMBER_LEFT_EXTEND_POSITION));
 
 
-        driverXboxController.xButton.whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(-turretSubsystem.degreesToTicks(1)), turretSubsystem));
-        driverXboxController.bButton.whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(turretSubsystem.degreesToTicks(1)), turretSubsystem));
+        //driverXboxController.xButton.whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(-turretSubsystem.degreesToTicks(1)), turretSubsystem));
+        //driverXboxController.bButton.whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(turretSubsystem.degreesToTicks(1)), turretSubsystem));
 
+        driverXboxController.yButton.whenPressed(new ShootDistanceCommand(this));
+        driverXboxController.yButton.whenPressed(new InstantCommand(()-> shooterSubsystem.setToggle(!shooterSubsystem.getToggle())));
+
+        driverXboxController.aButton.whenPressed(new LowPortCommand(this));
+        driverXboxController.aButton.whenPressed(new InstantCommand(()-> shooterSubsystem.setToggle(!shooterSubsystem.getToggle())));
         
 
         driverXboxController.leftBumper.whenPressed(new InstantCommand(()-> limeLightSubsystem.toggleVision()));
         driverXboxController.leftBumper.whenPressed(new InstantCommand(()-> turretSubsystem.turretManual(0)));
 
         new Trigger(()-> (driverXboxController.getRightTrigger() > 0.005))
-            .whenActive(new InstantCommand(()-> climberSubsystem.leftBrakeActuate(true)))
-            .whenInactive(new InstantCommand(()-> climberSubsystem.leftBrakeActuate(false)));
+            .whenActive(new InstantCommand(()-> collectorSubsystem.upperBallPath(.7), collectorSubsystem))
+            .whenInactive(new InstantCommand(()-> collectorSubsystem.upperBallPath(0), collectorSubsystem));
           
 
         new Trigger(()-> (driverXboxController.getLeftTrigger() > 0.005))
@@ -201,7 +195,7 @@ public class RobotContainer {
         
        
         new Trigger(()-> (Math.abs(driverXboxController.getLeftStickX()) > 0.05))
-            .whenActive(new RunCommand(()-> turretSubsystem.turretManual(driverXboxController.getLeftStickX())))
+            .whenActive(new RunCommand(()-> turretSubsystem.turretManual(driverXboxController.getLeftStickX()/50)))
             .whenInactive(new InstantCommand(()-> turretSubsystem.turretManual(0)));
 
 
