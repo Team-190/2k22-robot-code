@@ -172,11 +172,31 @@ public class RobotContainer {
         //driverXboxController.xButton.whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(-turretSubsystem.degreesToTicks(1)), turretSubsystem));
         //driverXboxController.bButton.whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(turretSubsystem.degreesToTicks(1)), turretSubsystem));
 
-        driverXboxController.yButton.whenPressed(new ShootDistanceCommand(this));
-        driverXboxController.yButton.whenPressed(new InstantCommand(()-> shooterSubsystem.setToggle(!shooterSubsystem.getToggle())));
+        //driverXboxController.yButton.whenPressed(new ShootDistanceCommand(this));
+        driverXboxController.yButton.whenPressed(new InstantCommand(()-> {
+            if(shooterSubsystem.getShooterState() != ShooterSubsystem.ShooterState.Long) {
+                new ShootDistanceCommand(this);
+                shooterSubsystem.setToggle(true);
+                shooterSubsystem.setShooterState(ShooterSubsystem.ShooterState.Long);
+            }
+            else {
+                shooterSubsystem.setToggle(false);
+                shooterSubsystem.setShooterState(ShooterSubsystem.ShooterState.Off);
+            }
+        }));
 
-        driverXboxController.aButton.whenPressed(new LowPortCommand(this));
-        driverXboxController.aButton.whenPressed(new InstantCommand(()-> shooterSubsystem.setToggle(!shooterSubsystem.getToggle())));
+        //driverXboxController.aButton.whenPressed(new LowPortCommand(this));
+        driverXboxController.aButton.whenPressed(new InstantCommand(()-> {
+            if(shooterSubsystem.getShooterState() != ShooterSubsystem.ShooterState.Short) {
+                new LowPortCommand(this);
+                shooterSubsystem.setToggle(true);
+                shooterSubsystem.setShooterState(ShooterSubsystem.ShooterState.Short);
+            }
+            else {
+                shooterSubsystem.setToggle(false);
+                shooterSubsystem.setShooterState(ShooterSubsystem.ShooterState.Off);
+            }
+        }));
         
 
         driverXboxController.leftBumper.whenPressed(new InstantCommand(()-> limeLightSubsystem.toggleVision()));
@@ -195,7 +215,8 @@ public class RobotContainer {
         
        
         new Trigger(()-> (Math.abs(driverXboxController.getLeftStickX()) > 0.05))
-            .whenActive(new RunCommand(()-> turretSubsystem.turretManual(driverXboxController.getLeftStickX()/50)))
+            //.whenActive(new RunCommand(()-> turretSubsystem.turretManual(driverXboxController.getLeftStickX()/50)))
+            .whenActive(new RunCommand(()-> turretSubsystem.relativeTurretPID(-turretSubsystem.degreesToTicks(driverXboxController.getLeftStickX())), turretSubsystem))
             .whenInactive(new InstantCommand(()-> turretSubsystem.turretManual(0)));
 
 

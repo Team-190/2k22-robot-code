@@ -22,6 +22,11 @@ public class ShooterSubsystem extends SubsystemBase {
   private boolean isRunning = false;
   private boolean toggle = false;
   private boolean reset = false;
+  private ShooterState ShooterState;
+  
+  public enum ShooterState {
+    Off, Short, Long
+  }
 
 
   /** Creates a new ShooterSubsystem. */
@@ -86,6 +91,13 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public boolean getToggle() {
     return toggle;
+  }
+
+  public void setShooterState(ShooterState set) {
+    shooterState = set;
+  }
+  public ShooterState getShooterState() {
+    return shooterState;
   }
   
   private void configFeedbackSensors() {
