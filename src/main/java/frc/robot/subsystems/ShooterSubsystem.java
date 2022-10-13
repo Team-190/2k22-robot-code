@@ -22,7 +22,7 @@ public class ShooterSubsystem extends SubsystemBase {
   private boolean isRunning = false;
   private boolean toggle = false;
   private boolean reset = false;
-  private ShooterState ShooterState;
+  private ShooterState shooterState;
   
   public enum ShooterState {
     Off, Short, Long
