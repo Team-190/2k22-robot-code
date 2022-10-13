@@ -33,7 +33,7 @@ public class VisionCommand extends CommandBase {
       if (limeLightSubsystem.targetFound()) {
         turretSubsystem.turretVision();
       } else {
-        turretSubsystem.relativeTurretPID(turretSubsystem.getDirection() * turretSubsystem.degreesToTicks(0.5)) ;
+        turretSubsystem.relativeTurretPID(turretSubsystem.getDirection() * turretSubsystem.degreesToTicks(2)) ;
       }
     } 
   }
