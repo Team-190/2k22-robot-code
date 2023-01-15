@@ -41,7 +41,7 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     // private final AHRS navx = new AHRS(SPI.Port.kMXP);
     public final ADXRS450_Gyro gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
     private final DifferentialDriveOdometry odometry =
-            new DifferentialDriveOdometry(Rotation2d.fromDegrees(0));
+            new DifferentialDriveOdometry(Rotation2d.fromDegrees(0), 0 , 0);
     private double angleOffset = 0;
 
     /**
@@ -225,7 +225,7 @@ public class DrivetrainSubsystem extends PIDSubsystem {
      */
     private void resetOdometry(Pose2d pose) {
         resetEncoders();
-        odometry.resetPosition(pose, Rotation2d.fromDegrees(getYawDegrees()));
+        odometry.resetPosition(Rotation2d.fromDegrees(getYawDegrees()), 0 , 0, pose);
     }
 
     /**

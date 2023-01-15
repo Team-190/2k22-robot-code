@@ -366,7 +366,7 @@ public class RobotContainer {
       
       /*
       // intake
-      camera2 = CameraServer.getInstance().startAutomaticCapture();
+      camera2 = CameraServer.startAutomaticCapture();
       camera2.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
       camera2.setResolution(176, 144);
       camera2.setFPS(15); // Can go up to 30
