@@ -46,6 +46,7 @@ public class Robot extends TimedRobot {
         robotContainer.shooterSubsystem.resetHood(27);
         robotContainer.setDefaultCommands();
         robotContainer.climberSubsystem.resetClimberPos();
+        // robotContainer.turretSubsystem.disable();
     }
 
     /**

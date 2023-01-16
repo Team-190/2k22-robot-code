@@ -70,6 +70,11 @@ public class ShooterSubsystem extends SubsystemBase {
  
     shooterMotor.setInverted(true);
 
+    shooterMotor.disable();
+    shooterMotor.stopMotor();
+    hoodMotor.disable();
+    hoodMotor.stopMotor();
+
   }
 
   public boolean getIsRunning() {

@@ -123,7 +123,7 @@ public class RobotContainer {
     * Constructor for the robot container Called when the Rio is powered on, and is only called once.
     * We use this to configure commands from buttons and default commands
     */
-    PathPlannerTrajectory autoPath = PathPlanner.loadPath("New New Path", new PathConstraints(4, 3));
+    PathPlannerTrajectory autoPath = PathPlanner.loadPath("New Path", new PathConstraints(1, 1));
     public RobotContainer() {
 
         /*
@@ -155,72 +155,17 @@ public class RobotContainer {
         leftStick.bottomFaceButton.whenHeld(new RunCommand(()-> collectorSubsystem.collect(-0.75)))
             .whenReleased(new InstantCommand(()-> collectorSubsystem.collect(0))); 
 
-        /*
-        leftStick.middleFaceButton.whenPressed(new CollectCommand(this, 0.75));
-        leftStick.middleFaceButton.whenPressed(new AutomateBallpathCommand(this));
-
-        leftStick.bottomFaceButton.whenHeld(new CollectCommand(this, -0.75))
-            .whenReleased(new InstantCommand(()-> collectorSubsystem.collect(0))); 
-        */
-
-        // leftStick.leftFaceButton.whenPressed(new InstantCommand(()-> climberSubsystem.resetClimberPos()));
-
-        // leftStick.bottomFaceButton.whenPressed(new ClimberSetpointCommand(this, 0));
-
-        // leftStick.rightFaceButton.whenPressed(new ClimberSetpointCommand(this, 150000));
-
-        // leftStick.leftFaceButton.whenPressed(new TurretSetpointCommand(this, turretSubsystem.degreesToTicks(-90)));
-        // leftStick.rightFaceButton.whenPressed(new TurretSetpointCommand(this, turretSubsystem.degreesToTicks(90)));
-        // leftStick.bottomFaceButton.whenPressed(new TurretSetpointCommand(this, turretSubsystem.degreesToTicks(0)));
-
-        // Right Stick Bindings
-        // rightStick.leftFaceButton.whenPressed(new RunCommand(()-> turretSubsystem.turretVision(), turretSubsystem));
-        // rightStick.bottomFaceButton.whenPressed(new VisionCommand(this));
-
+        
         rightStick.triggerButton.whenHeld(new RunCommand(()-> collectorSubsystem.upperBallPath(.7), collectorSubsystem))
             .whenReleased(new InstantCommand(()-> collectorSubsystem.upperBallPath(0), collectorSubsystem));
 
-        // rightStick.middleFaceButton.whenPressed(new InstantCommand(()-> turretSubsystem.resetEncoder(0), turretSubsystem));
 
-        rightStick.bottomFaceButton.whenPressed(new ShootDistanceCommand(this));
-        rightStick.bottomFaceButton.whenPressed(new InstantCommand(()-> shooterSubsystem.setToggle(!shooterSubsystem.getToggle())));
-
-        rightStick.rightFaceButton.whenPressed(new SpitBallsWithColorCommand(this));
-
-        rightStick.middleFaceButton.whenPressed(new LowPortCommand(this));
-        rightStick.middleFaceButton.whenPressed(new InstantCommand(()-> shooterSubsystem.setToggle(!shooterSubsystem.getToggle())));
-        // rightStick.bottomFaceButton.whenPressed(new ShooterToggleCommand(this));
-        // rightStick.bottomFaceButton.whenPressed(new InstantCommand(()-> shooterSubsystem.flywheelToggle(shooterRPMChooser.getSelected())));
-
-        // rightStick.rightFaceButton.whenPressed(new InstantCommand(()-> shooterSubsystem.resetHood(27)));
+        
 
 
         // Controller Bindings
         driverXboxController.selectButton.whenPressed(new InstantCommand(()-> climberSubsystem.togglePivot()));
-        driverXboxController.selectButton.whenPressed(new toggleClimberCommand(this));
-        // driverXboxController.startButton.whileHeld(new RunCommand(()-> turretSubsystem.turretManual(0.2), turretSubsystem))
-        //     .whenReleased(new InstantCommand(()-> turretSubsystem.turretManual(0), turretSubsystem));
-
-        /*
-        new POVButton(driverXboxController, 90)
-            .whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(turretSubsystem.degreesToTicks(1)), turretSubsystem));
-            // .whenReleased(new VisionCommand(this));
-
-        new POVButton(driverXboxController, 270)
-            .whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(-turretSubsystem.degreesToTicks(1)), turretSubsystem));
-            // .whenReleased(new VisionCommand(this));;
-
-        new POVButton(driverXboxController, 0)
-            .whileHeld(new RunCommand(()-> climberSubsystem.extendClimber(.3), climberSubsystem))
-            .whenReleased(new RunCommand(()-> climberSubsystem.extendClimber(0), climberSubsystem));
-
-        new POVButton(driverXboxController, 180)
-            .whileHeld(new RunCommand(()-> climberSubsystem.extendClimber(-.3), climberSubsystem))
-            .whenReleased(new RunCommand(()-> climberSubsystem.extendClimber(0), climberSubsystem));
-        */
-
-        // driverXboxController.selectButton.whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(-turretSubsystem.degreesToTicks(1)), turretSubsystem));
-        // driverXboxController.startButton.whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(turretSubsystem.degreesToTicks(1)), turretSubsystem));
+        
 
         new POVButton(driverXboxController, 0)
             .whenPressed(new TurretSetpointCommand(this, 0));
@@ -234,32 +179,17 @@ public class RobotContainer {
         new POVButton(driverXboxController, 270)
             .whenPressed(new TurretSetpointCommand(this, turretSubsystem.degreesToTicks(-90)));
 
-        driverXboxController.yButton.whenPressed(new ClimbExtendLeftCommand(this,- ClimberConstants.CLIMBER_LEFT_EXTEND_POSITION));
-        // driverXboxController.yButton.whenPressed(new InstantCommand(()-> climberSubsystem.climberPID(-ClimberConstants.CLIMBER_LEFT_EXTEND_POSITION)));
+        driverXboxController.aButton.onTrue(new InstantCommand(()-> limeLightSubsystem.setPipeline(0)));
+
+        driverXboxController.bButton.onTrue(new InstantCommand(()-> limeLightSubsystem.setPipeline(1)));
+
+        driverXboxController.yButton.onTrue(new InstantCommand(()-> limeLightSubsystem.setPipeline(2)));
 
 
-        driverXboxController.xButton.whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(-turretSubsystem.degreesToTicks(1)), turretSubsystem));
-        driverXboxController.bButton.whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(turretSubsystem.degreesToTicks(1)), turretSubsystem));
 
-        // driverXboxController.yButton.whileHeld(new RunCommand(()-> shooterSubsystem.relativeHoodAngle(0.5)));
-        // driverXboxController.aButton.whileHeld(new RunCommand(()-> shooterSubsystem.relativeHoodAngle(-0.5)));
-
-        // driverXboxController.bButton.whenPressed(new InstantCommand(()-> shooterSubsystem.setHoodAngle(52)));
-        
 
         driverXboxController.leftBumper.whenPressed(new InstantCommand(()-> limeLightSubsystem.toggleVision()));
 
-        new Trigger(()-> (driverXboxController.getRightTrigger() > 0.005))
-            .whenActive(new InstantCommand(()-> climberSubsystem.leftBrakeActuate(true)))
-            .whenInactive(new InstantCommand(()-> climberSubsystem.leftBrakeActuate(false)));
-            // .whenActive(new InstantCommand(()-> climberSubsystem.rightBrakeActuate(true)))
-            // .whenInactive(new InstantCommand(()-> climberSubsystem.rightBrakeActuate(false)));
-
-        new Trigger(()-> (driverXboxController.getLeftTrigger() > 0.005))
-            // .whenActive(new InstantCommand(()-> climberSubsystem.leftBrakeActuate(true)))
-            // .whenInactive(new InstantCommand(()-> climberSubsystem.leftBrakeActuate(false)));
-            .whenActive(new RunCommand(()-> collectorSubsystem.upperBallPath(-.7), collectorSubsystem))
-            .whenInactive(new RunCommand(()-> collectorSubsystem.upperBallPath(0), collectorSubsystem));
         
         
         // driverXboxController.yButton.whenPressed(new hoodToAngleCommand(this, 40));
@@ -276,47 +206,11 @@ public class RobotContainer {
         */
         
 
-        new Trigger(()-> (Math.abs(driverXboxController.getLeftStickY()) > 0.05))
-            .whenActive(new RunCommand(()-> climberSubsystem.extendClimber(driverXboxController.getLeftStickY()/2)))
-            .whenInactive(new InstantCommand(()-> climberSubsystem.extendClimber(0)));
-
 
         drivetrainSubsystem.gyro.calibrate();
 
 
-        /*
-        //TODO 
-        new JoystickButton(driverXboxController, 5)
-        .whenPressed(new InstantCommand(()-> turretSubsystem.turretPID(-25), turretSubsystem))
-        .whenReleased(new InstantCommand(()-> turretSubsystem.turretManual(0), turretSubsystem));
-
-        new JoystickButton(driverXboxController, 6)
-        .whenPressed(new InstantCommand(()-> turretSubsystem.turretPID(25), turretSubsystem))
-        .whenReleased(new InstantCommand(()-> turretSubsystem.turretManual(0), turretSubsystem));
-
-        new JoystickButton(driverXboxController, 2)
-        .whenPressed(new InstantCommand(()-> turretSubsystem.turretManual(.11), turretSubsystem))
-        .whenReleased(new InstantCommand(()-> turretSubsystem.turretManual(0), turretSubsystem));
-
-        new JoystickButton(driverXboxController, 3)
-        .whenPressed(new InstantCommand(()-> turretSubsystem.turretManual(-.11), turretSubsystem))
-        .whenReleased(new InstantCommand(()-> turretSubsystem.turretManual(0), turretSubsystem));
-
-        new JoystickButton(driverXboxController, 4)
-                .whenPressed(new InstantCommand(() -> turretSubsystem.resetEncoder(), turretSubsystem));
-
-        new JoystickButton(driverXboxController, 1)
-                .whenPressed(new VisionCommand(this));
-
-
-        // driverXboxController.aButton.whenPressed(new InstantCommand(()-> drivetrainSubsystem.resetAll(), drivetrainSubsystem));
-        //leftStick.middleFaceButton.whenPressed(new InstantCommand(()-> drivetrainSubsystem.resetGyro(false), drivetrainSubsystem));
         
-        
-        rightStick.middleFaceButton.whenPressed(() -> {
-            new ClimberJumpGrabCommand(this).schedule();
-        });
-        */
 
         
     }
@@ -336,7 +230,7 @@ public class RobotContainer {
         // Default drive command
         drivetrainSubsystem.setDefaultCommand(new DefaultTankDriveCommand(this));
         hotlineBlinkSubsystem.setDefaultCommand(new AllianceColorCommand(this));
-        turretSubsystem.setDefaultCommand(new VisionCommand(this));
+        // turretSubsystem.setDefaultCommand(new VisionCommand(this));
 
         // turretSubsystem.setDefaultCommand(new VisionCommand(this));
         //drivetrainSubsystem.setDefaultCommand(new DefaultArcadeDriveCommand(this));

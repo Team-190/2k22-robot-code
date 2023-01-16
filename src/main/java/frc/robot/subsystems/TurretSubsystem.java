@@ -68,6 +68,9 @@ public class TurretSubsystem extends PIDSubsystem {
       turretMotor.configForwardSoftLimitThreshold(degreesToTicks(190));
       turretMotor.configReverseSoftLimitThreshold(degreesToTicks(-190));
 
+      turretMotor.disable();
+      turretMotor.stopMotor();
+
       
       
       tab.addNumber("LimelightAngleTicks", () -> degreesToTicks(limeLightSubsystem.degreesAskew()));

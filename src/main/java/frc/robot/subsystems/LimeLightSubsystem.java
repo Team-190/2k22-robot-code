@@ -23,6 +23,8 @@ public class LimeLightSubsystem extends SubsystemBase {
   NetworkTableEntry ty;
   NetworkTableEntry ta;
   NetworkTableEntry ledMode;
+  NetworkTableEntry camMode;
+  NetworkTableEntry pipeline;
   public boolean enableVision = true;
 
   //read values periodically
@@ -39,6 +41,8 @@ public class LimeLightSubsystem extends SubsystemBase {
     ty = table.getEntry("ty");
     ta = table.getEntry("ta");
     ledMode = table.getEntry("ledMode");
+    camMode = table.getEntry("camMode");
+    pipeline = table.getEntry("pipeline");
   }
 
   @Override
@@ -133,6 +137,18 @@ public class LimeLightSubsystem extends SubsystemBase {
    */
   public void lightOff() {
     ledMode.setNumber(1);
+  }
+
+  public void setPipeline(int pipeline) {
+    this.pipeline.setNumber(pipeline);
+  }
+
+  /**
+   * Sets the limelight camera mode
+   * @param mode True for driver camera False for vision processing
+   */
+  public void setCamMode(boolean mode) {
+    camMode.setNumber((mode ? 1 : 0));
   }
 
 }
