@@ -7,6 +7,10 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoException;
@@ -92,7 +96,7 @@ public class RobotContainer {
     
     // Compressor
     public final Compressor compressor = new Compressor(1, PneumaticsModuleType.CTREPCM);
-    public boolean compressorEnabled = compressor.enabled();
+    public boolean compressorEnabled = compressor.isEnabled();
     public boolean compressorPressureSwitch = compressor.getPressureSwitchValue();
     public double compressorCurrent = compressor.getCurrent();
 
@@ -119,6 +123,7 @@ public class RobotContainer {
     * Constructor for the robot container Called when the Rio is powered on, and is only called once.
     * We use this to configure commands from buttons and default commands
     */
+    PathPlannerTrajectory autoPath = PathPlanner.loadPath("New New Path", new PathConstraints(4, 3));
     public RobotContainer() {
 
         /*
@@ -323,7 +328,8 @@ public class RobotContainer {
     */
     public Command getAutonomousCommand() {
         // return null;
-        return autoModeChooser.getSelected();
+        //return autoModeChooser.getSelected();
+        return drivetrainSubsystem.followTrajectoryCommand(autoPath, compressorEnabled);
     }
 
     public void setDefaultCommands() {
