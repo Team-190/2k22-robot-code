@@ -89,6 +89,8 @@ public class Robot extends TimedRobot {
         if (defaultAutonomousCommand != null) {
             defaultAutonomousCommand.schedule();
         }
+
+        robotContainer.drivetrainSubsystem.resetAll();
     }
 
     /** This function is called periodically during autonomous. */

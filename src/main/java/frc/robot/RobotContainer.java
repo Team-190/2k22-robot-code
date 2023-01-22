@@ -123,7 +123,7 @@ public class RobotContainer {
     * Constructor for the robot container Called when the Rio is powered on, and is only called once.
     * We use this to configure commands from buttons and default commands
     */
-    PathPlannerTrajectory autoPath = PathPlanner.loadPath("New Path", new PathConstraints(1, 1));
+    PathPlannerTrajectory autoPath = PathPlanner.loadPath("New New Path", new PathConstraints(1, 1));
     public RobotContainer() {
 
         /*
@@ -228,8 +228,46 @@ public class RobotContainer {
 
     public void setDefaultCommands() {
         // Default drive command
-        drivetrainSubsystem.setDefaultCommand(new DefaultTankDriveCommand(this));
+        // drivetrainSubsystem.setDefaultCommand(new DefaultTankDriveCommand(this));
+
+        // Tank Joystick
+        // drivetrainSubsystem.setDefaultCommand(
+        //     new RunCommand(
+        //         ()-> drivetrainSubsystem.westCoastDrive(leftStick.getAxis(AttackThreeAxis.Y), rightStick.getAxis(AttackThreeAxis.Y), true), drivetrainSubsystem
+        //     )
+        // );
+
+        // Tank Controller
+        // drivetrainSubsystem.setDefaultCommand(
+        //     new RunCommand(
+        //         ()-> drivetrainSubsystem.westCoastDrive(driverXboxController.getLeftStickY(), driverXboxController.getRightStickY(), true), drivetrainSubsystem
+        //     )
+        // );
+
+        // Arcade Joystick
+        // drivetrainSubsystem.setDefaultCommand(
+        //     new RunCommand(
+        //         ()-> drivetrainSubsystem.arcadeDrive(leftStick.getAxis(AttackThreeAxis.Y), rightStick.getAxis(AttackThreeAxis.X), true), drivetrainSubsystem
+        //     )
+        // );
+
+        // Arcade Controller
+        drivetrainSubsystem.setDefaultCommand(
+            new RunCommand(
+                ()-> drivetrainSubsystem.arcadeDrive(driverXboxController.getLeftStickY(), driverXboxController.getRightStickX(), false), drivetrainSubsystem
+            )
+        );
+
+        // Single Arcade Controller
+        // drivetrainSubsystem.setDefaultCommand(
+        //     new RunCommand(
+        //         ()-> drivetrainSubsystem.arcadeDrive(driverXboxController.getLeftStickY(), driverXboxController.getLeftStickX(), true), drivetrainSubsystem
+        //     )
+        // );
+
         hotlineBlinkSubsystem.setDefaultCommand(new AllianceColorCommand(this));
+
+
         // turretSubsystem.setDefaultCommand(new VisionCommand(this));
 
         // turretSubsystem.setDefaultCommand(new VisionCommand(this));

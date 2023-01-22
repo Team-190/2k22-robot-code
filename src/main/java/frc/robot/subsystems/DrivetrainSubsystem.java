@@ -4,35 +4,37 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPRamseteCommand;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.DrivetrainConstants;
 
 public class DrivetrainSubsystem extends PIDSubsystem {
 
     public final WPI_TalonFX leftLeader = new WPI_TalonFX(DrivetrainConstants.LEFT_LEADER_CHANNEL);
-    private final WPI_TalonFX leftFollower =
-            new WPI_TalonFX(DrivetrainConstants.LEFT_FOLLOWER_CHANNEL);
+    private final WPI_TalonFX leftFollower = new WPI_TalonFX(DrivetrainConstants.LEFT_FOLLOWER_CHANNEL);
 
     public final WPI_TalonFX rightLeader = new WPI_TalonFX(DrivetrainConstants.RIGHT_LEADER_CHANNEL);
-    private final WPI_TalonFX rightFollower =
-            new WPI_TalonFX(DrivetrainConstants.RIGHT_FOLLOWER_CHANNEL);
+    private final WPI_TalonFX rightFollower = new WPI_TalonFX(DrivetrainConstants.RIGHT_FOLLOWER_CHANNEL);
 
     private final MotorControllerGroup leftSide = new MotorControllerGroup(leftLeader, leftFollower);
     private final MotorControllerGroup rightSide = new MotorControllerGroup(rightLeader, rightFollower);
@@ -42,17 +44,16 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     // Objects for PID tracking
     // private final AHRS navx = new AHRS(SPI.Port.kMXP);
     public final ADXRS450_Gyro gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
-    private final DifferentialDriveOdometry odometry =
-            new DifferentialDriveOdometry(Rotation2d.fromDegrees(0), 0 , 0);
+    private final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(0), 0, 0);
     private double angleOffset = 0;
 
     /**
-    * Construct an instance of the Drivetrain
-    *
-    * @param kP The P value for the PIDF
-    * @param ki The I value for the PIDF
-    * @param kD The D value for the PIDF
-    */
+     * Construct an instance of the Drivetrain
+     *
+     * @param kP The P value for the PIDF
+     * @param ki The I value for the PIDF
+     * @param kD The D value for the PIDF
+     */
     public DrivetrainSubsystem(double kP, double ki, double kD) {
 
         super(new PIDController(kP, ki, kD));
@@ -119,29 +120,36 @@ public class DrivetrainSubsystem extends PIDSubsystem {
 
     @Override
     public void periodic() {
-        
-        // SmartDashboard.putNumber("Left Drive Encoder", leftLeader.getSelectedSensorPosition());
-        // SmartDashboard.putNumber("Left Follower Drive Encoder", leftFollower.getSelectedSensorPosition());
-        // SmartDashboard.putNumber("Right Drive Encoder", rightLeader.getSelectedSensorPosition());
-        // SmartDashboard.putNumber("Right Follower Drive Encoder", rightFollower.getSelectedSensorPosition());
-        // SmartDashboard.putNumber("Difference Meters", Math.abs(getDistanceMeters(leftLeader)-getDistanceMeters(rightLeader)));
-        // SmartDashboard.putNumber("Get left wheel speed", leftLeader.getSelectedSensorVelocity());
-        // SmartDashboard.putNumber("Get right wheel speed", rightLeader.getSelectedSensorVelocity());
-        // SmartDashboard.putNumber("gyro raw yaw", gyro.getAngle());
-        // SmartDashboard.putNumber("gyro yaw", getYawDegrees());
-        // SmartDashboard.putNumber("Meters Left Side Traveled", getDistanceMeters(leftLeader));
-        // SmartDashboard.putNumber("Meters Right Side Traveled", getDistanceMeters(rightLeader));
-        
-        
+
+        SmartDashboard.putNumber("Left Drive Encoder", leftLeader.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Left Follower Drive Encoder", leftFollower.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Right Drive Encoder", rightLeader.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Right Follower Drive Encoder", rightFollower.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Difference Meters",
+                Math.abs(getDistanceMeters(leftLeader) - getDistanceMeters(rightLeader)));
+        SmartDashboard.putNumber("Get left wheel speed", leftLeader.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("Get right wheel speed", rightLeader.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("gyro raw yaw", gyro.getAngle());
+        SmartDashboard.putNumber("gyro yaw", getYawDegrees());
+        SmartDashboard.putNumber("Meters Left Side Traveled", getDistanceMeters(leftLeader));
+        SmartDashboard.putNumber("Meters Right Side Traveled", getDistanceMeters(rightLeader));
+
+        NetworkTableEntry m_xEntry = NetworkTableInstance.getDefault().getTable("troubleshooting").getEntry("X");
+        NetworkTableEntry m_yEntry = NetworkTableInstance.getDefault().getTable("troubleshooting").getEntry("Y");
+
+        odometry.update(Rotation2d.fromDegrees(getYawDegrees()), getDistanceMeters(leftLeader),
+                getDistanceMeters(rightLeader));
+        var translation = odometry.getPoseMeters().getTranslation();
+        m_xEntry.setNumber(translation.getX());
+        m_yEntry.setNumber(translation.getY());
 
         // Update the Odometry
-        odometry.update(
-            Rotation2d.fromDegrees(getYawDegrees()),
-            getDistanceMeters(leftLeader),
-            getDistanceMeters(rightLeader)
-        );
-        
-        
+        // odometry.update(
+        // Rotation2d.fromDegrees(getYawDegrees()),
+        // getDistanceMeters(leftLeader),
+        // getDistanceMeters(rightLeader)
+        // );
+
     }
 
     /**
@@ -160,12 +168,9 @@ public class DrivetrainSubsystem extends PIDSubsystem {
      */
     public DifferentialDriveWheelSpeeds getWheelSpeeds() {
         return new DifferentialDriveWheelSpeeds(
-            leftLeader.getSelectedSensorVelocity() * DrivetrainConstants.METERS_PER_COUNT * 10,
-            rightLeader.getSelectedSensorVelocity() * DrivetrainConstants.METERS_PER_COUNT * 10
-        );
+                leftLeader.getSelectedSensorVelocity() * DrivetrainConstants.METERS_PER_COUNT * 10,
+                rightLeader.getSelectedSensorVelocity() * DrivetrainConstants.METERS_PER_COUNT * 10);
     }
-
-    
 
     /**
      * Gets the chassis's yaw (orientation of the robot)
@@ -173,34 +178,158 @@ public class DrivetrainSubsystem extends PIDSubsystem {
      * @return yaw in degrees (-180 to 180 degrees)
      */
     public double getYawDegrees() {
-        double angle = ((Math.abs(gyro.getAngle())) + angleOffset) % 360;
-        if (angle <= 180.0)
-            return -angle;
-        return -(angle - 360);
+        // double angle = ((Math.abs(gyro.getAngle())) + angleOffset) % 360;
+        double angle = (gyro.getAngle() + angleOffset);// % 360;
+        int angleSign = 0;
+        if (angle != 0) {
+            angleSign = (int) (angle / Math.abs(angle));
+        }
+        double modAngle = Math.abs(angle) % 360;
+
+
+        if (angleSign > 0) {
+            if (modAngle <= 180) {
+                modAngle *= -1;
+            } else {
+                modAngle = 360 - modAngle;
+            }
+        }
+        else if (angleSign < 0) {
+            if (modAngle <= 180) {
+                
+                //modAngle -= 180;
+                //modAngle *= -1;
+            }
+            else {
+                //modAngle -= 180;
+                modAngle = 360 - modAngle;
+                modAngle *= -1;
+            }
+        }
+
+        return modAngle;
+        /*
+         * if (angle >= 0 && angle%360 <= 180.0) {
+         * angle = angle %360;
+         * return -angle;
+         * }
+         * else if (angle <= 0 && angle%360 <= 180.0) {
+         * angle = -(angle%360);
+         * return -angle;
+         * } else if (angle <= 0) {
+         * angle = -(angle %360);
+         * return -(angle - 360);
+         * } else {
+         * angle = angle %360;
+         * return -(angle - 360);
+         * }
+         */
+
+        // if (angle >= 0) {
+        //     angle = angle % 360;
+        //     if (angle <= 180) {
+        //         return -angle;
+        //     } else {
+        //         return -(angle - 360);
+        //     }
+        // } else {
+        //     angle = (angle % 360);
+        //     if (angle <= 180) {
+        //         return angle;
+        //     }
+        //     else {
+        //         return (angle - 360);
+        //     }
+
+        // }
+
     }
-    
+
     public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
-        return new SequentialCommandGroup(
-            new InstantCommand(() -> {
-              // Reset odometry for the first path you run during auto
-              if(isFirstPath){
-                  this.resetOdometry(traj.getInitialPose());
-              }
-            }),
-            new PPRamseteCommand(
-                traj, 
+
+        RamseteController ramseteController = new RamseteController();
+        ramseteController.setEnabled(true);
+
+        var table = NetworkTableInstance.getDefault().getTable("troubleshooting");
+        var leftReference = table.getEntry("left_reference");
+        var leftMeasurement = table.getEntry("left_measurement");
+        var rightReference = table.getEntry("right_reference");
+        var rightMeasurement = table.getEntry("right_measurement");
+
+        var leftController = new PIDController(0, 0, 0);
+        var rightController = new PIDController(0, 0, 0);
+
+        RamseteCommand ramseteCommand = new RamseteCommand(
+                traj,
                 this::getPose, // Pose supplier
-                new RamseteController(),
+                ramseteController,
                 DrivetrainConstants.DRIVE_FEED_FORWARD,
                 DrivetrainConstants.DRIVE_KINEMATICS, // DifferentialDriveKinematics
-                this::getWheelSpeeds, // DifferentialDriveWheelSpeeds supplier
-                new PIDController(0, 0, 0), // Left controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+                this::getWheelSpeeds,
+                new PIDController(0, 0, 0), // Left controller. Tune these values for your robot. Leaving them 0 will
+                                            // only use feedforwards.
                 new PIDController(0, 0, 0), // Right controller (usually the same values as left controller)
-                this::tankDriveVolts, // Voltage biconsumer
-                true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
-                this // Requires this drive subsystem
-            )
+                // RamseteCommand passes volts to the callback
+                (leftVolts, rightVolts) -> {
+                    tankDriveVolts(leftVolts, rightVolts);
+
+                    leftMeasurement.setNumber(getWheelSpeeds().leftMetersPerSecond);
+                    leftReference.setNumber(leftController.getSetpoint());
+
+                    rightMeasurement.setNumber(getWheelSpeeds().rightMetersPerSecond);
+                    rightReference.setNumber(rightController.getSetpoint());
+                },
+                this);
+
+        return new SequentialCommandGroup(
+                new InstantCommand(() -> {
+                    // Reset odometry for the first path you run during auto
+                    if (isFirstPath) {
+                        this.resetOdometry(traj.getInitialPose());
+                    }
+                }),
+                // new PPRamseteCommand(
+                // traj,
+                // this::getPose, // Pose supplier
+                // ramseteController,
+                // DrivetrainConstants.DRIVE_FEED_FORWARD,
+                // DrivetrainConstants.DRIVE_KINEMATICS, // DifferentialDriveKinematics
+                // this::getWheelSpeeds, // DifferentialDriveWheelSpeeds supplier
+                // new PIDController(0, 0, 0), // Left controller. Tune these values for your
+                // robot. Leaving them 0 will only use feedforwards.
+                // new PIDController(0, 0, 0), // Right controller (usually the same values as
+                // left controller)
+                // this::tankDriveVolts, // Voltage biconsumer
+                // true, // Should the path be automatically mirrored depending on alliance
+                // color. Optional, defaults to true
+                // this // Requires this drive subsystem
+                // )
+
+                new PPRamseteCommand(
+                        traj,
+                        this::getPose, // Pose supplier
+                        ramseteController,
+                        DrivetrainConstants.DRIVE_FEED_FORWARD,
+                        DrivetrainConstants.DRIVE_KINEMATICS, // DifferentialDriveKinematics
+                        this::getWheelSpeeds,
+                        new PIDController(0, 0, 0), // Left controller. Tune these values for your robot. Leaving them 0
+                                                    // will only use feedforwards.
+                        new PIDController(0, 0, 0), // Right controller (usually the same values as left controller)
+                        // RamseteCommand passes volts to the callback
+                        (leftVolts, rightVolts) -> {
+                            tankDriveVolts(leftVolts, rightVolts);
+
+                            leftMeasurement.setNumber(getWheelSpeeds().leftMetersPerSecond);
+                            leftReference.setNumber(leftController.getSetpoint());
+
+                            rightMeasurement.setNumber(getWheelSpeeds().rightMetersPerSecond);
+                            rightReference.setNumber(rightController.getSetpoint());
+                        },
+                        true,
+                        this)
+
         );
+
     }
 
     /**
@@ -233,16 +362,15 @@ public class DrivetrainSubsystem extends PIDSubsystem {
         rightFollower.setSelectedSensorPosition(0);
     }
 
-
     /**
      * Resets the Yaw position of the gyro and sets an offset
+     * 
      * @param forwards True if robot is going forwards, false if backwards
      */
     public void resetGyro(boolean forwards) {
         gyro.reset();
         angleOffset = forwards ? 0 : 180; // No offset if true, 180 offset if false
     }
-
 
     /**
      * Resets odometry to specified pose
@@ -251,7 +379,7 @@ public class DrivetrainSubsystem extends PIDSubsystem {
      */
     private void resetOdometry(Pose2d pose) {
         resetEncoders();
-        odometry.resetPosition(Rotation2d.fromDegrees(getYawDegrees()), 0 , 0, pose);
+        odometry.resetPosition(Rotation2d.fromDegrees(getYawDegrees()), 0, 0, pose);
     }
 
     /**
@@ -263,14 +391,14 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     }
 
     /**
-    * Configures PIDF, not used by Trajectories
-    *
-    * @param motorController The motor controller to configure
-    * @param P proportional value
-    * @param I integral value
-    * @param D derivative value
-    * @param F feed forward value
-    */
+     * Configures PIDF, not used by Trajectories
+     *
+     * @param motorController The motor controller to configure
+     * @param P               proportional value
+     * @param I               integral value
+     * @param D               derivative value
+     * @param F               feed forward value
+     */
     public void configPIDF(WPI_TalonFX motorController, double P, double I, double D, double F) {
         motorController.config_kP(DrivetrainConstants.SLOT_ID, P);
         motorController.config_kI(DrivetrainConstants.SLOT_ID, I);
@@ -279,41 +407,43 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     }
 
     /**
-    * Drive in Arcade mode
-    *
-    * @param throttle The Speed to go at
-    * @param rotation The Rotation rate
-    * @param square Whether to square the inputs
-    */
+     * Drive in Arcade mode
+     *
+     * @param throttle The Speed to go at
+     * @param rotation The Rotation rate
+     * @param square   Whether to square the inputs
+     */
     public void arcadeDrive(double throttle, double rotation, boolean square) {
-        // differentialDrive.arcadeDrive(throttle, rotation, square);
+        differentialDrive.arcadeDrive(throttle, -rotation, square);
     }
 
     /**
-    * Drive in WestCoast (Tank Drive mode)
-    *
-    * @param leftStick The Speed of the left side of the robot
-    * @param rightStick The Speed of the right side of the robot
-    * @param square Whether to square the inputs
-    */
+     * Drive in WestCoast (Tank Drive mode)
+     *
+     * @param leftStick  The Speed of the left side of the robot
+     * @param rightStick The Speed of the right side of the robot
+     * @param square     Whether to square the inputs
+     */
     public void westCoastDrive(double leftStick, double rightStick, boolean square) {
-        //differentialDrive.tankDrive(Math.copySign(Math.pow(leftStick, power), leftStick), Math.copySign(Math.pow(leftStick, power), leftStick));
+        // differentialDrive.tankDrive(Math.copySign(Math.pow(leftStick, power),
+        // leftStick), Math.copySign(Math.pow(leftStick, power), leftStick));
         differentialDrive.tankDrive(leftStick, rightStick, square);
     }
 
     /**
-    * Drive in Curvature Drive (Ask Zach Boyer for an explanation)
-    *
-    * @param throttle The Speed to go at
-    * @param radius The turning radius
-    * @param quickTurn True to enable turn-in-place, False to disable
-    */
+     * Drive in Curvature Drive (Ask Zach Boyer for an explanation)
+     *
+     * @param throttle  The Speed to go at
+     * @param radius    The turning radius
+     * @param quickTurn True to enable turn-in-place, False to disable
+     */
     public void curvatureDrive(double throttle, double radius, boolean quickTurn) {
         differentialDrive.curvatureDrive(throttle, radius, quickTurn);
     }
 
     /**
      * Gets the magnitude of the velocity of the robot
+     * 
      * @return the magnitude of the drivetrain
      */
     public double magnitudeVelocity() {
@@ -321,13 +451,15 @@ public class DrivetrainSubsystem extends PIDSubsystem {
         double rightSpeeds = rightLeader.getSelectedSensorVelocity() * DrivetrainConstants.METERS_PER_COUNT * 10;
 
         // Distance from the left wheel to the center of the instantanious turn
-        double lengthToVirtualCenter = (leftSpeeds * DrivetrainConstants.TRACKWIDTH_METERS) / (rightSpeeds - leftSpeeds);
+        double lengthToVirtualCenter = (leftSpeeds * DrivetrainConstants.TRACKWIDTH_METERS)
+                / (rightSpeeds - leftSpeeds);
 
         // The robot's angular velocity
-        double angularVelocity = leftSpeeds/lengthToVirtualCenter;
+        double angularVelocity = leftSpeeds / lengthToVirtualCenter;
 
         // The instantanious velocity of the shooter
-        double magnitudeVelocity = angularVelocity * (lengthToVirtualCenter + (DrivetrainConstants.TRACKWIDTH_METERS/2));
+        double magnitudeVelocity = angularVelocity
+                * (lengthToVirtualCenter + (DrivetrainConstants.TRACKWIDTH_METERS / 2));
 
         return magnitudeVelocity;
     }
@@ -336,7 +468,7 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     /**
      * Controls the left and right sides of the drive directly with voltages.
      *
-     * @param leftVolts the commanded left output
+     * @param leftVolts  the commanded left output
      * @param rightVolts the commanded right output
      */
     public void tankDriveVolts(double leftVolts, double rightVolts) {
@@ -348,19 +480,19 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     }
 
     @Override
-    protected void useOutput(double output, double setpoint) {}
+    protected void useOutput(double output, double setpoint) {
+    }
 
     @Override
     protected double getMeasurement() {
         return 0;
     }
 
-
     /**
-    * Get the position of the robot relative to the starting position
-    *
-    * @return the position of the robot
-    */
+     * Get the position of the robot relative to the starting position
+     *
+     * @return the position of the robot
+     */
     public Pose2d getPose() {
         return odometry.getPoseMeters();
     }
