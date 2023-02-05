@@ -15,6 +15,7 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoException;
 import edu.wpi.first.cscore.VideoSource;
+import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsControlModule;
@@ -27,20 +28,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.ClimberConstants;
 import frc.robot.commands.Turret.TurretSetpointCommand;
-import frc.robot.commands.Turret.VisionCommand;
 import frc.robot.commands.auto.threeBallAutoStraight.threeBallAutoStraight;
 import frc.robot.commands.auto.twoBallAuto.twoBallAuto;
-import frc.robot.commands.climber.ClimbExtendLeftCommand;
-import frc.robot.commands.climber.toggleClimberCommand;
 import frc.robot.commands.collector.AutomateBallpathCommand;
-import frc.robot.commands.drivetrain.DefaultTankDriveCommand;
 import frc.robot.commands.hotlineblink.AllianceColorCommand;
-import frc.robot.commands.hotlineblink.SpitBallsWithColorCommand;
-import frc.robot.commands.shooter.LowPortCommand;
-import frc.robot.commands.shooter.ShootDistanceCommand;
 import frc.robot.input.AttackThree;
 import frc.robot.input.XboxOneController;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -123,7 +115,7 @@ public class RobotContainer {
     * Constructor for the robot container Called when the Rio is powered on, and is only called once.
     * We use this to configure commands from buttons and default commands
     */
-    PathPlannerTrajectory autoPath = PathPlanner.loadPath("New New Path", new PathConstraints(1, 1));
+    PathPlannerTrajectory autoPath = PathPlanner.loadPath("SimpleFowardBack", new PathConstraints(1, 1));
     public RobotContainer() {
 
         /*
@@ -284,7 +276,6 @@ public class RobotContainer {
             climberSubsystem.leftPivotActuate(false);
             climberSubsystem.rightPivotActuate(false);
         }
-
     }
 
     /**
