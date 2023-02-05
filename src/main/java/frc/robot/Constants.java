@@ -49,6 +49,10 @@ public final class Constants {
             TANK,
             MCFLY // Curvature
         }
+        public enum DRIVE_INPUT {
+            JOYSTICKS,
+            CONTROLLER
+        }
 
         // CAN Ids
         public static final int LEFT_LEADER_CHANNEL = 2;

@@ -28,20 +28,16 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.ClimberConstants;
+import frc.robot.Constants.DrivetrainConstants.DRIVE_INPUT;
+import frc.robot.Constants.DrivetrainConstants.DRIVE_STYLE;
 import frc.robot.commands.Turret.TurretSetpointCommand;
-import frc.robot.commands.Turret.VisionCommand;
 import frc.robot.commands.auto.threeBallAutoStraight.threeBallAutoStraight;
 import frc.robot.commands.auto.twoBallAuto.twoBallAuto;
-import frc.robot.commands.climber.ClimbExtendLeftCommand;
-import frc.robot.commands.climber.toggleClimberCommand;
 import frc.robot.commands.collector.AutomateBallpathCommand;
-import frc.robot.commands.drivetrain.DefaultTankDriveCommand;
+import frc.robot.commands.drivetrain.DefaultDriveCommand;
 import frc.robot.commands.hotlineblink.AllianceColorCommand;
-import frc.robot.commands.hotlineblink.SpitBallsWithColorCommand;
-import frc.robot.commands.shooter.LowPortCommand;
-import frc.robot.commands.shooter.ShootDistanceCommand;
 import frc.robot.input.AttackThree;
+import frc.robot.input.AttackThree.AttackThreeAxis;
 import frc.robot.input.XboxOneController;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.CollectorSubsystem;
@@ -62,6 +58,9 @@ public class RobotContainer {
     // Choosers
     // public final SendableChooser<Integer> shooterRPMChooser = new SendableChooser<>();
     public final SendableChooser<Command> autoModeChooser = new SendableChooser<>();
+    public final SendableChooser<DRIVE_STYLE> driveStyleChooser = new SendableChooser<>();
+    public final SendableChooser<DRIVE_INPUT> driveInputChooser = new SendableChooser<>();
+    public final SendableChooser<Boolean> squareChooser = new SendableChooser<>();
     // public final SendableChooser<Integer> topRPMChooser = new SendableChooser<>();
 
     // Cameras
@@ -126,6 +125,22 @@ public class RobotContainer {
     PathPlannerTrajectory autoPath = PathPlanner.loadPath("New New Path", new PathConstraints(1, 1));
     public RobotContainer() {
 
+
+        driveStyleChooser.addOption("Tank", DRIVE_STYLE.TANK);
+        driveStyleChooser.addOption("Arcade", DRIVE_STYLE.ARCADE);
+        driveStyleChooser.addOption("Curvature", DRIVE_STYLE.MCFLY);
+        driveStyleChooser.setDefaultOption("Tank", DRIVE_STYLE.TANK);
+        SmartDashboard.putData("DriveStyleChooser", driveStyleChooser);
+        driveInputChooser.addOption("Joysticks", DRIVE_INPUT.JOYSTICKS);
+        driveInputChooser.addOption("Controller", DRIVE_INPUT.CONTROLLER);
+        driveInputChooser.setDefaultOption("Joysticks", DRIVE_INPUT.JOYSTICKS);
+        SmartDashboard.putData("DriveInputChooser", driveInputChooser);
+        squareChooser.addOption("Squared", true);
+        squareChooser.addOption("Unsquared", false);
+        squareChooser.setDefaultOption("Unsquared", false);
+        SmartDashboard.putData("Square Inputs?", squareChooser);
+        SmartDashboard.putData("AutoModeChooser", autoModeChooser);
+
         /*
         for (int i = 1500; i < 6001; i += 50) {
             shooterRPMChooser.addOption(""+i+ " RPM", i);
@@ -186,7 +201,7 @@ public class RobotContainer {
         driverXboxController.yButton.onTrue(new InstantCommand(()-> limeLightSubsystem.setPipeline(2)));
 
 
-
+        new Trigger(() -> (driverXboxController.getLeftTrigger() > 0.25)).onTrue(new InstantCommand(()-> collectorSubsystem.toggleCollector(.75), collectorSubsystem));
 
         driverXboxController.leftBumper.whenPressed(new InstantCommand(()-> limeLightSubsystem.toggleVision()));
 
@@ -229,6 +244,7 @@ public class RobotContainer {
     public void setDefaultCommands() {
         // Default drive command
         // drivetrainSubsystem.setDefaultCommand(new DefaultTankDriveCommand(this));
+        drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(this));
 
         // Tank Joystick
         // drivetrainSubsystem.setDefaultCommand(
@@ -252,11 +268,11 @@ public class RobotContainer {
         // );
 
         // Arcade Controller
-        drivetrainSubsystem.setDefaultCommand(
-            new RunCommand(
-                ()-> drivetrainSubsystem.arcadeDrive(driverXboxController.getLeftStickY(), driverXboxController.getRightStickX(), false), drivetrainSubsystem
-            )
-        );
+        //drivetrainSubsystem.setDefaultCommand(
+        //    new RunCommand(
+        //        ()-> drivetrainSubsystem.arcadeDrive(driverXboxController.getLeftStickY(), driverXboxController.getRightStickX(), false), drivetrainSubsystem
+        //    )
+        //);
 
         // Single Arcade Controller
         // drivetrainSubsystem.setDefaultCommand(
