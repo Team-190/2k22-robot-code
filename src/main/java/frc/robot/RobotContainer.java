@@ -27,21 +27,16 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.ClimberConstants;
 import frc.robot.commands.Turret.TurretSetpointCommand;
-import frc.robot.commands.Turret.VisionCommand;
 import frc.robot.commands.auto.threeBallAutoStraight.threeBallAutoStraight;
 import frc.robot.commands.auto.twoBallAuto.twoBallAuto;
-import frc.robot.commands.climber.ClimbExtendLeftCommand;
-import frc.robot.commands.climber.toggleClimberCommand;
 import frc.robot.commands.collector.AutomateBallpathCommand;
-import frc.robot.commands.drivetrain.DefaultTankDriveCommand;
 import frc.robot.commands.hotlineblink.AllianceColorCommand;
 import frc.robot.commands.hotlineblink.SpitBallsWithColorCommand;
 import frc.robot.commands.shooter.LowPortCommand;
 import frc.robot.commands.shooter.ShootDistanceCommand;
 import frc.robot.input.AttackThree;
+import frc.robot.input.AttackThree.AttackThreeAxis;
 import frc.robot.input.XboxOneController;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.CollectorSubsystem;
@@ -185,11 +180,9 @@ public class RobotContainer {
         new POVButton(driverXboxController, 270)
             .whenPressed(new TurretSetpointCommand(this, turretSubsystem.degreesToTicks(-90)));
 
-        driverXboxController.aButton.onTrue(new InstantCommand(()-> limeLightSubsystem.setPipeline(0)));
-
-        driverXboxController.bButton.onTrue(new InstantCommand(()-> limeLightSubsystem.setPipeline(1)));
-
-        driverXboxController.yButton.onTrue(new InstantCommand(()-> limeLightSubsystem.setPipeline(2)));
+        driverXboxController.xButton.whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(-turretSubsystem.degreesToTicks(1)), turretSubsystem));
+        driverXboxController.bButton.whenHeld(new RunCommand(()-> turretSubsystem.relativeTurretPID(turretSubsystem.degreesToTicks(1)), turretSubsystem));
+    
 
 
 
@@ -237,11 +230,11 @@ public class RobotContainer {
         // drivetrainSubsystem.setDefaultCommand(new DefaultTankDriveCommand(this));
 
         // Tank Joystick
-        // drivetrainSubsystem.setDefaultCommand(
-        //     new RunCommand(
-        //         ()-> drivetrainSubsystem.westCoastDrive(leftStick.getAxis(AttackThreeAxis.Y), rightStick.getAxis(AttackThreeAxis.Y), true), drivetrainSubsystem
-        //     )
-        // );
+        drivetrainSubsystem.setDefaultCommand(
+            new RunCommand(
+                ()-> drivetrainSubsystem.westCoastDrive(leftStick.getAxis(AttackThreeAxis.Y), rightStick.getAxis(AttackThreeAxis.Y), true), drivetrainSubsystem
+            )
+        );
 
         // Tank Controller
         // drivetrainSubsystem.setDefaultCommand(
@@ -258,11 +251,11 @@ public class RobotContainer {
         // );
 
         // Arcade Controller
-        drivetrainSubsystem.setDefaultCommand(
-            new RunCommand(
-                ()-> drivetrainSubsystem.arcadeDrive(driverXboxController.getLeftStickY(), driverXboxController.getRightStickX(), false), drivetrainSubsystem
-            )
-        );
+        // drivetrainSubsystem.setDefaultCommand(
+        //     new RunCommand(
+        //         ()-> drivetrainSubsystem.arcadeDrive(driverXboxController.getLeftStickY(), driverXboxController.getRightStickX(), false), drivetrainSubsystem
+        //     )
+        // );
 
         // Single Arcade Controller
         // drivetrainSubsystem.setDefaultCommand(

@@ -18,7 +18,7 @@ public class ShootDistanceCommand extends CommandBase {
   LimeLightSubsystem limeLightSubsystem;
   HotlineBlinkSubsystem hotlineBlinkSubsystem;
   double distance;
-  double minDistance = 90;
+  double minDistance = 200;
   boolean toggle = false;
 
   /** Creates a new ShootDistanceCommand. */
