@@ -161,7 +161,13 @@ public class RobotContainer {
 
 
         
+        rightStick.bottomFaceButton.whenPressed(new ShootDistanceCommand(this));
+        rightStick.bottomFaceButton.whenPressed(new InstantCommand(()-> shooterSubsystem.setToggle(!shooterSubsystem.getToggle())));
 
+        rightStick.rightFaceButton.whenPressed(new SpitBallsWithColorCommand(this));
+
+        rightStick.middleFaceButton.whenPressed(new LowPortCommand(this));
+        rightStick.middleFaceButton.whenPressed(new InstantCommand(()-> shooterSubsystem.setToggle(!shooterSubsystem.getToggle())));
 
         // Controller Bindings
         driverXboxController.selectButton.whenPressed(new InstantCommand(()-> climberSubsystem.togglePivot()));

@@ -26,7 +26,7 @@ public final class Constants {
     public static final class CollectorConstants {
         // CAN Ids
         public static final int UPPERBALLPATH_CHANNEL = 6;
-        public static final int COLLECTOR_CHANNEL = 5;
+        public static final int COLLECTOR_CHANNEL = 9;
 
         // DIO Ports
         public static final int PHOTOELECTRIC_SENSOR_ID = 0;
