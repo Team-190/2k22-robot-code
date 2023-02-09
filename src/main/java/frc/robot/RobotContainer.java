@@ -115,7 +115,7 @@ public class RobotContainer {
     * Constructor for the robot container Called when the Rio is powered on, and is only called once.
     * We use this to configure commands from buttons and default commands
     */
-    PathPlannerTrajectory autoPath = PathPlanner.loadPath("SimpleFowardBack", new PathConstraints(1, 1));
+    PathPlannerTrajectory autoPath = PathPlanner.loadPath("forward", new PathConstraints(1, 1));
     public RobotContainer() {
 
         /*
@@ -199,7 +199,7 @@ public class RobotContainer {
         
 
 
-        drivetrainSubsystem.gyro.calibrate();
+        drivetrainSubsystem.navx.calibrate();
 
 
         

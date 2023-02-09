@@ -1,9 +1,12 @@
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
+
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPRamseteCommand;
 
@@ -12,12 +15,15 @@ import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -42,8 +48,8 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     public final DifferentialDrive differentialDrive = new DifferentialDrive(leftSide, rightSide);
 
     // Objects for PID tracking
-    // private final AHRS navx = new AHRS(SPI.Port.kMXP);
-    public final ADXRS450_Gyro gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
+    public final AHRS navx = new AHRS(SPI.Port.kMXP);
+    //public final ADXRS450_Gyro gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
     // public final AHRS gyro = new AHRS(SPI.Port.kMXP);
     // public final AHRS gyro = new AHRS(SerialPort.Port.kMXP); 
     private final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(0), 0, 0);
@@ -133,15 +139,15 @@ public class DrivetrainSubsystem extends PIDSubsystem {
                 Math.abs(getDistanceMeters(leftLeader) - getDistanceMeters(rightLeader)));
         SmartDashboard.putNumber("Get left wheel speed", leftLeader.getSelectedSensorVelocity());
         SmartDashboard.putNumber("Get right wheel speed", rightLeader.getSelectedSensorVelocity());
-        SmartDashboard.putNumber("gyro rotation2d", gyro.getRotation2d().getDegrees());
-        SmartDashboard.putNumber("gyro yaw", getYawDegrees());
+        //SmartDashboard.putNumber("gyro rotation2d", gyro.getRotation2d().getDegrees());
+       
         SmartDashboard.putNumber("Meters Left Side Traveled", getDistanceMeters(leftLeader));
         SmartDashboard.putNumber("Meters Right Side Traveled", getDistanceMeters(rightLeader));
 
         NetworkTableEntry m_xEntry = NetworkTableInstance.getDefault().getTable("troubleshooting").getEntry("X");
         NetworkTableEntry m_yEntry = NetworkTableInstance.getDefault().getTable("troubleshooting").getEntry("Y");
 
-        odometry.update( gyro.getRotation2d(), getDistanceMeters(leftLeader),
+        odometry.update( navx.getRotation2d(), getDistanceMeters(leftLeader),
                 getDistanceMeters(rightLeader));
         var translation = odometry.getPoseMeters().getTranslation();
         m_xEntry.setNumber(translation.getX());
@@ -182,78 +188,28 @@ public class DrivetrainSubsystem extends PIDSubsystem {
             rightLeader.getSelectedSensorVelocity() * DrivetrainConstants.METERS_PER_COUNT * 10);
     }
 
-    /**
-     * Gets the chassis's yaw (orientation of the robot)
-     *
-     * @return yaw in degrees (-180 to 180 degrees)
-     */
-    public double getYawDegrees() {
-        // double angle = ((Math.abs(gyro.getAngle())) + angleOffset) % 360;
-        double angle = (gyro.getAngle() + angleOffset);// % 360;
-        int angleSign = 0;
-        if (angle != 0) {
-            angleSign = (int) (angle / Math.abs(angle));
-        }
-        double modAngle = Math.abs(angle) % 360;
+    public void generateTrajectory() {
 
+        // 2018 cross scale auto waypoints.
+        var forward = new Pose2d(Units.feetToMeters(0), Units.feetToMeters(3),
+            Rotation2d.fromDegrees(0));
+        var back = new Pose2d(Units.feetToMeters(0), Units.feetToMeters(3),
+            Rotation2d.fromDegrees(180));
+    
+        var interiorWaypoints = new ArrayList<Translation2d>();
+        // interiorWaypoints.add(new Translation2d(Units.feetToMeters(0), Units.feetToMeters(2)));
+        // interiorWaypoints.add(new Translation2d(Units.feetToMeters(21.04), Units.feetToMeters(18.23)));
 
-        if (angleSign > 0) {
-            if (modAngle <= 180) {
-                modAngle *= -1;
-            } else {
-                modAngle = 360 - modAngle;
-            }
-        }
-        else if (angleSign < 0) {
-            if (modAngle <= 180) {
-                
-                //modAngle -= 180;
-                //modAngle *= -1;
-            }
-            else {
-                //modAngle -= 180;
-                modAngle = 360 - modAngle;
-                modAngle *= -1;
-            }
-        }
-
-        return modAngle;
-        /*
-         * if (angle >= 0 && angle%360 <= 180.0) {
-         * angle = angle %360;
-         * return -angle;
-         * }
-         * else if (angle <= 0 && angle%360 <= 180.0) {
-         * angle = -(angle%360);
-         * return -angle;
-         * } else if (angle <= 0) {
-         * angle = -(angle %360);
-         * return -(angle - 360);
-         * } else {
-         * angle = angle %360;
-         * return -(angle - 360);
-         * }
-         */
-
-        // if (angle >= 0) {
-        //     angle = angle % 360;
-        //     if (angle <= 180) {
-        //         return -angle;
-        //     } else {
-        //         return -(angle - 360);
-        //     }
-        // } else {
-        //     angle = (angle % 360);
-        //     if (angle <= 180) {
-        //         return angle;
-        //     }
-        //     else {
-        //         return (angle - 360);
-        //     }
-
-        // }
-
-    }
+        TrajectoryConfig config = new TrajectoryConfig(Units.feetToMeters(12), Units.feetToMeters(12));
+        config.setReversed(false);
+    
+        var trajectory = TrajectoryGenerator.generateTrajectory(
+            forward,
+            interiorWaypoints,
+            back,  
+            config);
+            
+      }
 
     public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
             // Create a voltage constraint to ensure we don't accelerate too fast
@@ -292,6 +248,8 @@ public class DrivetrainSubsystem extends PIDSubsystem {
         //     this.resetOdometry(traj.getInitialPose());
 
         //     ramseteCommand.andThen(() -> this.tankDriveVolts(0, 0));
+     RamseteController ramsete = new RamseteController();
+     ramsete.setEnabled(false);
 
         return new SequentialCommandGroup(
                 new InstantCommand(() -> {
@@ -303,7 +261,8 @@ public class DrivetrainSubsystem extends PIDSubsystem {
                 new PPRamseteCommand(
                     traj,
                     this::getPose,
-                    new RamseteController(DrivetrainConstants.RAMSETE_B, DrivetrainConstants.RAMSETE_ZETA),
+                    //new RamseteController(DrivetrainConstants.RAMSETE_B, DrivetrainConstants.RAMSETE_ZETA),
+                    ramsete,
                     new SimpleMotorFeedforward(
                             DrivetrainConstants.S_VOLTS,
                             DrivetrainConstants.V_VOLT_SECONDS_PER_METER,
@@ -446,7 +405,7 @@ public class DrivetrainSubsystem extends PIDSubsystem {
      * @param forwards True if robot is going forwards, false if backwards
      */
     public void resetGyro(boolean forwards) {
-        gyro.reset();
+        navx.reset();
         angleOffset = forwards ? 0 : 180; // No offset if true, 180 offset if false
     }
 
@@ -458,7 +417,7 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     private void resetOdometry(Pose2d pose) {
         resetEncoders();
         //odometry.resetPosition(Rotation2d.fromDegrees(getYawDegrees()), 0, 0, pose);
-        odometry.resetPosition(gyro.getRotation2d(), 0, 0, pose);
+        odometry.resetPosition(navx.getRotation2d(), 0, 0, pose);
     }
 
     /**
@@ -467,7 +426,7 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     public void resetAll() {
         resetGyro(true);
         //resetOdometry(new Pose2d(0, 0, Rotation2d.fromDegrees(getYawDegrees())));
-        resetOdometry(new Pose2d(0, 0, gyro.getRotation2d()));
+        resetOdometry(new Pose2d(0, 0, navx.getRotation2d()));
     }
 
     /**
