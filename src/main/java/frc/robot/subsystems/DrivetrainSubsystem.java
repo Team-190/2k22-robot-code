@@ -52,7 +52,8 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     //public final ADXRS450_Gyro gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
     // public final AHRS gyro = new AHRS(SPI.Port.kMXP);
     // public final AHRS gyro = new AHRS(SerialPort.Port.kMXP); 
-    private final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(0), 0, 0);
+    // private final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(0), 0, 0);
+    private final DifferentialDriveOdometry odometry;
     private double angleOffset = 0;
 
     /**
@@ -124,7 +125,11 @@ public class DrivetrainSubsystem extends PIDSubsystem {
         }
 
         // Reset Drive Odometry, Encoders, and Gyro
-        resetAll();
+        // resetAll();
+        odometry =
+        new DifferentialDriveOdometry(
+            Rotation2d.fromDegrees(navx.getAngle()), getDistanceMeters(leftLeader),
+            getDistanceMeters(rightLeader));
         setSetpoint(0);
     }
 
@@ -140,14 +145,16 @@ public class DrivetrainSubsystem extends PIDSubsystem {
         SmartDashboard.putNumber("Get left wheel speed", leftLeader.getSelectedSensorVelocity());
         SmartDashboard.putNumber("Get right wheel speed", rightLeader.getSelectedSensorVelocity());
         //SmartDashboard.putNumber("gyro rotation2d", gyro.getRotation2d().getDegrees());
+        SmartDashboard.putNumber("Get NavX Rotation", navx.getAngle());
        
         SmartDashboard.putNumber("Meters Left Side Traveled", getDistanceMeters(leftLeader));
         SmartDashboard.putNumber("Meters Right Side Traveled", getDistanceMeters(rightLeader));
+        SmartDashboard.putString("Pose", this.getPose().toString());
 
         NetworkTableEntry m_xEntry = NetworkTableInstance.getDefault().getTable("troubleshooting").getEntry("X");
         NetworkTableEntry m_yEntry = NetworkTableInstance.getDefault().getTable("troubleshooting").getEntry("Y");
 
-        odometry.update( navx.getRotation2d(), getDistanceMeters(leftLeader),
+        odometry.update( Rotation2d.fromDegrees(navx.getAngle()), getDistanceMeters(leftLeader),
                 getDistanceMeters(rightLeader));
         var translation = odometry.getPoseMeters().getTranslation();
         m_xEntry.setNumber(translation.getX());
@@ -269,15 +276,18 @@ public class DrivetrainSubsystem extends PIDSubsystem {
                             DrivetrainConstants.A_VOLT_SECONDS_SQUARED_PER_METER),
                     new DifferentialDriveKinematics(DrivetrainConstants.TRACKWIDTH_METERS),
                     this::getWheelSpeeds,
-                    new PIDController(DrivetrainConstants.AUTO_P, 0, 0),
-                    new PIDController(DrivetrainConstants.AUTO_P, 0, 0),
+                    // new PIDController(DrivetrainConstants.AUTO_P, 0, 0),
+                    // new PIDController(DrivetrainConstants.AUTO_P, 0, 0),
+                    new PIDController(0, 0, 0),
+                    new PIDController(0, 0, 0),
                     // RamseteCommand passes volts to the callback
                     this::tankDriveVolts,
-                    this),
-                    new InstantCommand(() -> {
-                        this.resetOdometry(traj.getInitialPose());
-                        this.tankDriveVolts(0, 0);
-                    })
+                    this)
+                    // ,
+                    // new InstantCommand(() -> {
+                    //     this.resetOdometry(traj.getInitialPose());
+                    //     this.tankDriveVolts(0, 0);
+                    // })
             );
                 
 
@@ -417,7 +427,7 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     private void resetOdometry(Pose2d pose) {
         resetEncoders();
         //odometry.resetPosition(Rotation2d.fromDegrees(getYawDegrees()), 0, 0, pose);
-        odometry.resetPosition(navx.getRotation2d(), 0, 0, pose);
+        odometry.resetPosition(Rotation2d.fromDegrees(navx.getAngle()), 0, 0, pose);
     }
 
     /**
@@ -425,8 +435,8 @@ public class DrivetrainSubsystem extends PIDSubsystem {
      */
     public void resetAll() {
         resetGyro(true);
-        //resetOdometry(new Pose2d(0, 0, Rotation2d.fromDegrees(getYawDegrees())));
-        resetOdometry(new Pose2d(0, 0, navx.getRotation2d()));
+        resetOdometry(new Pose2d(0, 0, Rotation2d.fromDegrees(navx.getAngle())));
+        // resetOdometry(new Pose2d(0, 0, navx.getRotation2d()));
     }
 
     /**

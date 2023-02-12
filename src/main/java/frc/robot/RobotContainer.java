@@ -215,7 +215,7 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         // return null;
         //return autoModeChooser.getSelected();
-        return drivetrainSubsystem.followTrajectoryCommand(autoPath, compressorEnabled);
+        return drivetrainSubsystem.followTrajectoryCommand(autoPath, true);
     }
 
     public void setDefaultCommands() {
