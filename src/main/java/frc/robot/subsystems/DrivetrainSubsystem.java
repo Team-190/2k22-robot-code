@@ -262,7 +262,8 @@ public class DrivetrainSubsystem extends PIDSubsystem {
                 new InstantCommand(() -> {
                     // Reset odometry for the first path you run during auto
                     if (isFirstPath) {
-                        this.resetOdometry(traj.getInitialPose());
+                        // this.resetOdometry(traj.getInitialPose());
+                        resetOdometry(new Pose2d(3, 3, Rotation2d.fromDegrees(navx.getAngle())));
                     }
                 }),
                 new PPRamseteCommand(
