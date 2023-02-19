@@ -29,12 +29,15 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.Turret.TurretSetpointCommand;
+import frc.robot.commands.auto.PathPlannerFollowCommand;
 import frc.robot.commands.auto.threeBallAutoStraight.threeBallAutoStraight;
 import frc.robot.commands.auto.twoBallAuto.twoBallAuto;
 import frc.robot.commands.collector.AutomateBallpathCommand;
+import frc.robot.commands.collector.CollectCommand;
 import frc.robot.commands.hotlineblink.AllianceColorCommand;
 import frc.robot.input.AttackThree;
 import frc.robot.input.XboxOneController;
+import frc.robot.input.AttackThree.AttackThreeAxis;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.CollectorSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -115,9 +118,8 @@ public class RobotContainer {
     * Constructor for the robot container Called when the Rio is powered on, and is only called once.
     * We use this to configure commands from buttons and default commands
     */
-    PathPlannerTrajectory autoPath = PathPlanner.loadPath("forward", new PathConstraints(1, 1));
+    PathPlannerTrajectory autoPath = PathPlanner.loadPath("Test_Path", new PathConstraints(2, 1));
     public RobotContainer() {
-
         /*
         for (int i = 1500; i < 6001; i += 50) {
             shooterRPMChooser.addOption(""+i+ " RPM", i);
@@ -128,6 +130,10 @@ public class RobotContainer {
 
 
         SmartDashboard.putData("AutoModeChooser", autoModeChooser);
+        SmartDashboard.putBoolean("Command Run", false);
+        SmartDashboard.putString("CollectCommand", "Not Scheduled");
+
+
 
         // SmartDashboard.putData("Set Flywheel RPM", shooterRPMChooser);
 
@@ -200,10 +206,6 @@ public class RobotContainer {
 
 
         drivetrainSubsystem.navx.calibrate();
-
-
-        
-
         
     }
 
@@ -213,9 +215,8 @@ public class RobotContainer {
     * @return the command to run in autonomous
     */
     public Command getAutonomousCommand() {
-        // return null;
-        //return autoModeChooser.getSelected();
-        return drivetrainSubsystem.followTrajectoryCommand(autoPath, true);
+        return new PathPlannerFollowCommand(this, true, "LOOP");
+        ///return drivetrainSubsystem.followTrajectoryCommand(autoPath, true);
     }
 
     public void setDefaultCommands() {
@@ -223,11 +224,11 @@ public class RobotContainer {
         // drivetrainSubsystem.setDefaultCommand(new DefaultTankDriveCommand(this));
 
         // Tank Joystick
-        // drivetrainSubsystem.setDefaultCommand(
-        //     new RunCommand(
-        //         ()-> drivetrainSubsystem.westCoastDrive(leftStick.getAxis(AttackThreeAxis.Y), rightStick.getAxis(AttackThreeAxis.Y), true), drivetrainSubsystem
-        //     )
-        // );
+        drivetrainSubsystem.setDefaultCommand(
+            new RunCommand(
+                ()-> drivetrainSubsystem.westCoastDrive(leftStick.getAxis(AttackThreeAxis.Y), rightStick.getAxis(AttackThreeAxis.Y), true), drivetrainSubsystem
+            )
+        );
 
         // Tank Controller
         // drivetrainSubsystem.setDefaultCommand(
@@ -244,11 +245,11 @@ public class RobotContainer {
         // );
 
         // Arcade Controller
-        drivetrainSubsystem.setDefaultCommand(
-            new RunCommand(
-                ()-> drivetrainSubsystem.arcadeDrive(driverXboxController.getLeftStickY(), driverXboxController.getRightStickX(), false), drivetrainSubsystem
-            )
-        );
+        // drivetrainSubsystem.setDefaultCommand(
+        //     new RunCommand(
+        //         ()-> drivetrainSubsystem.arcadeDrive(driverXboxController.getLeftStickY(), driverXboxController.getRightStickX(), false), drivetrainSubsystem
+        //     )
+        // );
 
         // Single Arcade Controller
         // drivetrainSubsystem.setDefaultCommand(

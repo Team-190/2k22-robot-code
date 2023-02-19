@@ -4,6 +4,8 @@
 
 package frc.robot.commands.collector;
 
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.CollectorSubsystem;
@@ -14,7 +16,8 @@ public class CollectCommand extends CommandBase {
   /** Creates a new CollectCommand. */
   public CollectCommand(RobotContainer robotContainer, double speed) {
     // Use addRequirements() here to declare subsystem dependencies.
-
+    SmartDashboard.putString("CollectCommand", "Created");
+    this.speed = speed;
     collectorSubsystem = robotContainer.collectorSubsystem;
     addRequirements(collectorSubsystem);
   }
@@ -22,6 +25,7 @@ public class CollectCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    SmartDashboard.putString("CollectCommand", "Scheduled");
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -34,7 +38,7 @@ public class CollectCommand extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-
+    collectorSubsystem.collect(0);
   }
 
   // Returns true when the command should end.

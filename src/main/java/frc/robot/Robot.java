@@ -90,7 +90,7 @@ public class Robot extends TimedRobot {
             defaultAutonomousCommand.schedule();
         }
 
-        robotContainer.drivetrainSubsystem.resetAll();
+        //robotContainer.drivetrainSubsystem.resetAll();
     }
 
     /** This function is called periodically during autonomous. */
