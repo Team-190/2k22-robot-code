@@ -8,7 +8,10 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.commands.PPRamseteCommand;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -33,6 +36,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.commands.collector.CollectCommand;
 
@@ -58,6 +62,8 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     private final DifferentialDriveOdometry odometry;
     private double angleOffset = 0;
     HashMap<String, Command> eventMap;
+    private RobotContainer robotContainer;
+    private LimeLightSubsystem limeLight;
 
     /**
      * Construct an instance of the Drivetrain
@@ -66,10 +72,12 @@ public class DrivetrainSubsystem extends PIDSubsystem {
      * @param ki The I value for the PIDF
      * @param kD The D value for the PIDF
      */
-    public DrivetrainSubsystem(double kP, double ki, double kD) {
-
+    public DrivetrainSubsystem(double kP, double ki, double kD, RobotContainer container) {
+        
         super(new PIDController(kP, ki, kD));
 
+        robotContainer = container;
+        limeLight = robotContainer.limeLightSubsystem;
         // Reset configuration to defaults
         leftLeader.configFactoryDefault();
         leftFollower.configFactoryDefault();
@@ -152,7 +160,7 @@ public class DrivetrainSubsystem extends PIDSubsystem {
        
         SmartDashboard.putNumber("Meters Left Side Traveled", getDistanceMeters(leftLeader));
         SmartDashboard.putNumber("Meters Right Side Traveled", getDistanceMeters(rightLeader));
-        SmartDashboard.putString("Pose", this.getPose().toString());
+        SmartDashboard.putString("Pose", getPose().toString());
 
        
        
@@ -224,47 +232,40 @@ public class DrivetrainSubsystem extends PIDSubsystem {
             
       }
 
-    public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
+    public Command goToPoint(double x, double y, double rotationDegrees, PathConstraints constraints) {
             // Create a voltage constraint to ensure we don't accelerate too fast
-     RamseteController ramsete = new RamseteController();
-     ramsete.setEnabled(true);
+            SmartDashboard.putString("goTo", "Run");
+        setOdometryAprilTag();
+        PathPlannerTrajectory traj = PathPlanner.generatePath(constraints, 
+        new PathPoint(odometry.getPoseMeters().getTranslation(), Rotation2d.fromDegrees(navx.getAngle())),
+        new PathPoint(new Translation2d(x,y), new Rotation2d(rotationDegrees)));
 
+        RamseteController ramsete = new RamseteController();
+        ramsete.setEnabled(true);
         return new SequentialCommandGroup(
-                new InstantCommand(() -> {
-                    // Reset odometry for the first path you run during auto
-                    if (isFirstPath) {
-                        this.resetOdometry(traj.getInitialPose());
-                    }
-                }),
-                new PPRamseteCommand(
-                    traj,
-                    this::getPose,
-                    //new RamseteController(DrivetrainConstants.RAMSETE_B, DrivetrainConstants.RAMSETE_ZETA),
-                    ramsete,
-                    new SimpleMotorFeedforward(
-                            DrivetrainConstants.S_VOLTS,
-                            DrivetrainConstants.V_VOLT_SECONDS_PER_METER,
-                            DrivetrainConstants.A_VOLT_SECONDS_SQUARED_PER_METER),
-                    new DifferentialDriveKinematics(DrivetrainConstants.TRACKWIDTH_METERS),
-                    this::getWheelSpeeds,
-                    // new PIDController(DrivetrainConstants.AUTO_P, 0, 0),
-                    // new PIDController(DrivetrainConstants.AUTO_P, 0, 0),
-                    new PIDController(DrivetrainConstants.AUTO_P, 0, 0),
-                    new PIDController(DrivetrainConstants.AUTO_P, 0, 0),
-                    // RamseteCommand passes volts to the callback
-                    this::tankDriveVolts,
-                    this)
-                    // ,
-                    // new InstantCommand(() -> {
-                    //     this.resetOdometry(traj.getInitialPose());
-                    //     this.tankDriveVolts(0, 0);
-                    // })
-            );
+                // new PPRamseteCommand(
+                //     traj,
+                //     this::getPose,
+                //     //new RamseteController(DrivetrainConstants.RAMSETE_B, DrivetrainConstants.RAMSETE_ZETA),
+                //     ramsete,
+                //     new SimpleMotorFeedforward(
+                //             DrivetrainConstants.S_VOLTS,
+                //             DrivetrainConstants.V_VOLT_SECONDS_PER_METER,
+                //             DrivetrainConstants.A_VOLT_SECONDS_SQUARED_PER_METER),
+                //     new DifferentialDriveKinematics(DrivetrainConstants.TRACKWIDTH_METERS),
+                //     this::getWheelSpeeds,
+                //     // new PIDController(DrivetrainConstants.AUTO_P, 0, 0),
+                //     // new PIDController(DrivetrainConstants.AUTO_P, 0, 0),
+                //     new PIDController(DrivetrainConstants.AUTO_P, 0, 0),
+                //     new PIDController(DrivetrainConstants.AUTO_P, 0, 0),
+                //     // RamseteCommand passes volts to the callback
+                //     this::tankDriveVolts,
+                //     this)
+                    );
     }
     public void CollectCommand() {
         SmartDashboard.putBoolean("Command Run", true);
     }
-
     /**
      * Sets drive motors to brake
      */
@@ -314,6 +315,14 @@ public class DrivetrainSubsystem extends PIDSubsystem {
         resetEncoders();
         //odometry.resetPosition(Rotation2d.fromDegrees(getYawDegrees()), 0, 0, pose);
         odometry.resetPosition(Rotation2d.fromDegrees(navx.getAngle()), 0, 0, pose);
+    }
+    
+    public void setOdometryAprilTag() {
+        double[] xy = limeLight.getAprilTagPose();
+        if (xy == null) return;
+        odometry.resetPosition(Rotation2d.fromDegrees(navx.getAngle()), 
+        getDistanceMeters(leftLeader), getDistanceMeters(rightLeader), 
+        new Pose2d(new Translation2d(xy[0], xy[1]), Rotation2d.fromDegrees(navx.getAngle())));
     }
 
     /**

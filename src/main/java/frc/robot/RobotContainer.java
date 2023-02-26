@@ -65,16 +65,18 @@ public class RobotContainer {
     /*
     * Subsystems
     */
-    public final DrivetrainSubsystem drivetrainSubsystem =
-            new DrivetrainSubsystem(
-                    Constants.DrivetrainConstants.P,
-                    Constants.DrivetrainConstants.I,
-                    Constants.DrivetrainConstants.D);
+   
     public final CollectorSubsystem collectorSubsystem = new CollectorSubsystem();
 
     public final LimeLightSubsystem limeLightSubsystem =
             new LimeLightSubsystem();
 
+     public final DrivetrainSubsystem drivetrainSubsystem =
+            new DrivetrainSubsystem(
+                    Constants.DrivetrainConstants.P,
+                    Constants.DrivetrainConstants.I,
+                    Constants.DrivetrainConstants.D,
+                    this);        
     public final TurretSubsystem turretSubsystem =
             new TurretSubsystem(
                 Constants.TurretConstants.P,
@@ -132,6 +134,10 @@ public class RobotContainer {
         SmartDashboard.putData("AutoModeChooser", autoModeChooser);
         SmartDashboard.putBoolean("Command Run", false);
         SmartDashboard.putString("CollectCommand", "Not Scheduled");
+        SmartDashboard.putNumber("goToX", 0);
+        SmartDashboard.putNumber("goToY", 0);
+        SmartDashboard.putNumber("goToRotation", 0);
+        SmartDashboard.putString("goTo", "Not Run");
 
 
 
@@ -183,10 +189,15 @@ public class RobotContainer {
 
         driverXboxController.yButton.onTrue(new InstantCommand(()-> limeLightSubsystem.setPipeline(2)));
 
+        driverXboxController.xButton.onTrue(drivetrainSubsystem.goToPoint(
+            SmartDashboard.getNumber("goToX", 0), 
+            SmartDashboard.getNumber("goToY", 0), 
+            SmartDashboard.getNumber("goToRotation", 0), 
+            new PathConstraints(1, 1)));
 
 
 
-        driverXboxController.leftBumper.whenPressed(new InstantCommand(()-> limeLightSubsystem.toggleVision()));
+        //driverXboxController.leftBumper.whenPressed(new InstantCommand(()-> limeLightSubsystem.toggleVision()));
 
         
         
@@ -215,7 +226,7 @@ public class RobotContainer {
     * @return the command to run in autonomous
     */
     public Command getAutonomousCommand() {
-        return new PathPlannerFollowCommand(this, true, "LOOP");
+        return new PathPlannerFollowCommand(this, true, "LOOP2");
         ///return drivetrainSubsystem.followTrajectoryCommand(autoPath, true);
     }
 

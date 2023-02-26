@@ -4,28 +4,27 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LimeLightSubsystem extends SubsystemBase {
-
-  /**
-   * Limelight documentation website:
-   * https://docs.limelightvision.io/en/latest/networktables_api.html
-   */
-
-  NetworkTable table;
-  public NetworkTableEntry tv; // Whether the limelight has any valid targets (0 or 1)
-  public NetworkTableEntry tx; // Horizontal Offset From Crosshair To Target (LL2: -29.8 to 29.8 degrees)
-  NetworkTableEntry ty;
-  NetworkTableEntry ta;
-  NetworkTableEntry ledMode;
-  NetworkTableEntry camMode;
-  NetworkTableEntry pipeline;
-  public boolean enableVision = true;
+  NetworkTable limeLightTable; 
+    public NetworkTableEntry targetX; 
+    public NetworkTableEntry targetY; 
+    public NetworkTableEntry targetV;
+    NetworkTableEntry targetArea; 
+    NetworkTableEntry targetFound;
+    NetworkTableEntry ledMode;
+    NetworkTableEntry pipeline;
+    NetworkTableEntry botpose;
+    NetworkTableEntry ta;
+    NetworkTableEntry camMode;
+    public boolean enableVision = true;
 
   //read values periodically
   double x;
@@ -33,55 +32,90 @@ public class LimeLightSubsystem extends SubsystemBase {
   double v;
   double area;
 
-  /** Creates a new LimeLightSubsystem. */
+  /** Creates a new ExampleSubsystem. */
   public LimeLightSubsystem() {
-    table = NetworkTableInstance.getDefault().getTable("limelight");
-    tv = table.getEntry("tv");
-    tx = table.getEntry("tx");
-    ty = table.getEntry("ty");
-    ta = table.getEntry("ta");
-    ledMode = table.getEntry("ledMode");
-    camMode = table.getEntry("camMode");
-    pipeline = table.getEntry("pipeline");
+    limeLightTable = NetworkTableInstance.getDefault().getTable("limelight");
+    targetX = limeLightTable.getEntry("tx");
+    targetY = limeLightTable.getEntry("ty");
+    targetV = limeLightTable.getEntry("tv");
+    ta = limeLightTable.getEntry("ta");
+    targetArea = limeLightTable.getEntry("ta");
+    targetFound = limeLightTable.getEntry("tv");
+    ledMode = limeLightTable.getEntry("ledMode");
+    pipeline = limeLightTable.getEntry("pipeline");
+    ledMode.setNumber(3);
+    botpose = limeLightTable.getEntry("botpose");
+  }
+
+  /**
+   * Example command factory method.
+   *
+   * @return a command
+   */
+  public CommandBase exampleMethodCommand() {
+    // Inline construction of command goes here.
+    // Subsystem::RunOnce implicitly requires `this` subsystem.
+    return runOnce(
+        () -> {
+          /* one-time action goes here */
+        });
+  }
+
+  /**
+   * An example method querying a boolean state of the subsystem (for example, a digital sensor).
+   *
+   * @return value of some boolean subsystem state, such as a digital sensor.
+   */
+  public boolean foundTarget() {
+    // Query some boolean state, such as a digital sensor.
+    return limeLightTable.getEntry("tv").getBoolean(false);
+  }
+
+  public void setPipeline(int pipeLine) {
+    this.pipeline.setNumber(pipeLine);
+  }
+
+  public double[] getAprilTagPose() {
+    double[] pose = botpose.getDoubleArray(new double[6]);
+    double[] xy = new double[2];
+    if (pose.length == 0) {
+      pose = new double[6];
+    }
+      xy[0] = pose[0];
+      xy[1] = pose[1];
+    return xy;
   }
 
   @Override
   public void periodic() {
-    x = tx.getDouble(0.0);
-    y = ty.getDouble(0.0);
-    v = tv.getDouble(0.0);
+    // This method will be called once per scheduler run
+    //read values periodically
+    x = targetX.getDouble(0.0);
+    y = targetY.getDouble(0.0);
+    area = targetArea.getDouble(0.0);
+    double[] pose = botpose.getDoubleArray(new double[6]);
 
-    // post to smart dashboard periodically
-    // SmartDashboard.putNumber("LimelightX", x);
-    // SmartDashboard.putNumber("LimelightY", y);
-    // SmartDashboard.putNumber("LimelightV", v);
-    // SmartDashboard.putNumber("LimelightArea", area);
-    // SmartDashboard.putBoolean("Limelight Has Target", targetFound());
-    // SmartDashboard.putNumber("Limlight degrees askew", degreesAskew());
-    SmartDashboard.putNumber("Distance to Target", getDistanceToTarget());
-    SmartDashboard.putBoolean("Limlight On", getVision());
+    //post to smart dashboard periodically
+    SmartDashboard.putNumber("LimelightX", x);
+    SmartDashboard.putNumber("LimelightY", y);
+    SmartDashboard.putNumber("LimelightArea", area);
+    SmartDashboard.putNumberArray("LimelightTID", getTID().getDoubleArray(new double[6]));
+    SmartDashboard.putBoolean("targetExists", foundTarget());
+    SmartDashboard.putNumberArray("botpose", pose);
   }
 
-  /**
-   * Returns if limelight target is found
-   * @return true if target found else false
-   */
+  public NetworkTableEntry getTID() {
+    return limeLightTable.getEntry("tid");
+  } 
+
   public boolean targetFound() {
     return v == 1.0;
   }
 
-  /**
-   * Degrees the limelight is off from the target
-   * @return number of degrees the limelight is off from the target
-   */
   public double degreesAskew(){
-      return x;
+    return x;
   }
 
-  /**
-   * Gets the distance to target TODO: do this
-   * @return distance to target (inches)
-   */
   public double getDistanceToTarget() {
     double limelightHeight = 22.5;
     double limelightMountAngleDegrees = 28; // Angle from horizontal
@@ -96,16 +130,6 @@ public class LimeLightSubsystem extends SubsystemBase {
     //return (heightToGoal - limelightHeight)/Math.tan(Math.toRadians(limelightMountAngleDegrees + y));
   }
 
-  /**
-   * Turns the light on
-   */
-  public void lightOn() {
-    ledMode.setNumber(3);
-  }
-
-  /**
-   * Toggles the vision 
-   */
   public void toggleVision() {
     if (!getVision()) {
       lightOn();
@@ -113,42 +137,30 @@ public class LimeLightSubsystem extends SubsystemBase {
       lightOff();
     }
     enableVision = getVision();
-  }
+    }
 
-  /**
-   * Sets the limelight to be on or off
-   * @param on true for LED on false for off
-   */
-  public void setVision(boolean on) {
-    ledMode.setNumber((on ? 3 : 1));
-  }
+    public void setVision(boolean on) {
+      ledMode.setNumber((on ? 3 : 1));
+    }
+    
+    public void lightOff() {
+      ledMode.setNumber(1);
+    }
 
-  /**
-   * Sees if vision is enabled
-   * @return True if vision is inabled else false
-   */
-  public boolean getVision() {
-    // return enableVision;
-    return ledMode.getNumber(1).intValue() == 3;
-  }
 
-  /**
-   * Turns the light off
-   */
-  public void lightOff() {
-    ledMode.setNumber(1);
+    public boolean getVision() {
+      // return enableVision;
+      return ledMode.getNumber(1).intValue() == 3;
+    }
+  public void lightOn() {
+    ledMode.setNumber(3);
   }
-
-  public void setPipeline(int pipeline) {
-    this.pipeline.setNumber(pipeline);
-  }
-
-  /**
-   * Sets the limelight camera mode
-   * @param mode True for driver camera False for vision processing
-   */
+  
   public void setCamMode(boolean mode) {
     camMode.setNumber((mode ? 1 : 0));
   }
-
+  @Override
+  public void simulationPeriodic() {
+    // This method will be called once per scheduler run during simulation
+  }
 }
