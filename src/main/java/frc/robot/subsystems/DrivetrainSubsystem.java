@@ -242,26 +242,22 @@ public class DrivetrainSubsystem extends PIDSubsystem {
 
         RamseteController ramsete = new RamseteController();
         ramsete.setEnabled(true);
-        return new SequentialCommandGroup(
-                // new PPRamseteCommand(
-                //     traj,
-                //     this::getPose,
-                //     //new RamseteController(DrivetrainConstants.RAMSETE_B, DrivetrainConstants.RAMSETE_ZETA),
-                //     ramsete,
-                //     new SimpleMotorFeedforward(
-                //             DrivetrainConstants.S_VOLTS,
-                //             DrivetrainConstants.V_VOLT_SECONDS_PER_METER,
-                //             DrivetrainConstants.A_VOLT_SECONDS_SQUARED_PER_METER),
-                //     new DifferentialDriveKinematics(DrivetrainConstants.TRACKWIDTH_METERS),
-                //     this::getWheelSpeeds,
-                //     // new PIDController(DrivetrainConstants.AUTO_P, 0, 0),
-                //     // new PIDController(DrivetrainConstants.AUTO_P, 0, 0),
-                //     new PIDController(DrivetrainConstants.AUTO_P, 0, 0),
-                //     new PIDController(DrivetrainConstants.AUTO_P, 0, 0),
-                //     // RamseteCommand passes volts to the callback
-                //     this::tankDriveVolts,
-                //     this)
-                    );
+        return new PPRamseteCommand(
+                    traj,
+                    this::getPose,
+                    //new RamseteController(DrivetrainConstants.RAMSETE_B, DrivetrainConstants.RAMSETE_ZETA),
+                    ramsete,
+                    new SimpleMotorFeedforward(
+                            DrivetrainConstants.S_VOLTS,
+                            DrivetrainConstants.V_VOLT_SECONDS_PER_METER,
+                            DrivetrainConstants.A_VOLT_SECONDS_SQUARED_PER_METER),
+                    new DifferentialDriveKinematics(DrivetrainConstants.TRACKWIDTH_METERS),
+                    this::getWheelSpeeds,
+                    new PIDController(DrivetrainConstants.AUTO_P, 0, 0),
+                    new PIDController(DrivetrainConstants.AUTO_P, 0, 0),
+                    // RamseteCommand passes volts to the callback
+                    this::tankDriveVolts,
+                    this);
     }
     public void CollectCommand() {
         SmartDashboard.putBoolean("Command Run", true);
@@ -318,11 +314,17 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     }
     
     public void setOdometryAprilTag() {
-        double[] xy = limeLight.getAprilTagPose();
-        if (xy == null) return;
-        odometry.resetPosition(Rotation2d.fromDegrees(navx.getAngle()), 
-        getDistanceMeters(leftLeader), getDistanceMeters(rightLeader), 
-        new Pose2d(new Translation2d(xy[0], xy[1]), Rotation2d.fromDegrees(navx.getAngle())));
+        //double[] xyYaw = limeLight.getAprilTagPose();
+        //if (xyYaw == null) return;
+        // odometry.resetPosition(Rotation2d.fromDegrees(xyYaw[2]), 
+        // getDistanceMeters(leftLeader), getDistanceMeters(rightLeader), 
+        // new Pose2d(new Translation2d(xyYaw[0], xyYaw[1]), Rotation2d.fromDegrees(xyYaw[2])));
+        
+        // navx.reset();
+        // odometry.resetPosition(Rotation2d.fromDegrees(0), 
+        //  getDistanceMeters(leftLeader), getDistanceMeters(rightLeader), 
+        //  new Pose2d(new Translation2d(0, 0), Rotation2d.fromDegrees(0)));
+        resetAll();
     }
 
     /**

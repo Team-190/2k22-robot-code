@@ -77,13 +77,14 @@ public class LimeLightSubsystem extends SubsystemBase {
 
   public double[] getAprilTagPose() {
     double[] pose = botpose.getDoubleArray(new double[6]);
-    double[] xy = new double[2];
+    double[] xyYaw = new double[3];
     if (pose.length == 0) {
       pose = new double[6];
     }
-      xy[0] = pose[0];
-      xy[1] = pose[1];
-    return xy;
+      xyYaw[0] = pose[0];
+      xyYaw[1] = pose[1];
+      xyYaw[2] = pose[5];
+    return xyYaw;
   }
 
   @Override

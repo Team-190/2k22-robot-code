@@ -27,6 +27,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SelectCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.Turret.TurretSetpointCommand;
 import frc.robot.commands.auto.PathPlannerFollowCommand;
@@ -34,6 +36,7 @@ import frc.robot.commands.auto.threeBallAutoStraight.threeBallAutoStraight;
 import frc.robot.commands.auto.twoBallAuto.twoBallAuto;
 import frc.robot.commands.collector.AutomateBallpathCommand;
 import frc.robot.commands.collector.CollectCommand;
+import frc.robot.commands.drivetrain.OnTheFlyPath;
 import frc.robot.commands.hotlineblink.AllianceColorCommand;
 import frc.robot.input.AttackThree;
 import frc.robot.input.XboxOneController;
@@ -189,11 +192,8 @@ public class RobotContainer {
 
         driverXboxController.yButton.onTrue(new InstantCommand(()-> limeLightSubsystem.setPipeline(2)));
 
-        driverXboxController.xButton.onTrue(drivetrainSubsystem.goToPoint(
-            SmartDashboard.getNumber("goToX", 0), 
-            SmartDashboard.getNumber("goToY", 0), 
-            SmartDashboard.getNumber("goToRotation", 0), 
-            new PathConstraints(1, 1)));
+         rightStick.leftFaceButton.onTrue(new OnTheFlyPath(this, 
+             new PathConstraints(1, 1)));
 
 
 
@@ -226,8 +226,10 @@ public class RobotContainer {
     * @return the command to run in autonomous
     */
     public Command getAutonomousCommand() {
-        return new PathPlannerFollowCommand(this, true, "LOOP2");
-        ///return drivetrainSubsystem.followTrajectoryCommand(autoPath, true);
+        //return new PathPlannerFollowCommand(this, true, "LOOP2");
+        //return drivetrainSubsystem.followTrajectoryCommand(autoPath, true);
+        return new OnTheFlyPath(this,
+                 new PathConstraints(1, 1));
     }
 
     public void setDefaultCommands() {
@@ -235,11 +237,11 @@ public class RobotContainer {
         // drivetrainSubsystem.setDefaultCommand(new DefaultTankDriveCommand(this));
 
         // Tank Joystick
-        drivetrainSubsystem.setDefaultCommand(
-            new RunCommand(
-                ()-> drivetrainSubsystem.westCoastDrive(leftStick.getAxis(AttackThreeAxis.Y), rightStick.getAxis(AttackThreeAxis.Y), true), drivetrainSubsystem
-            )
-        );
+        // drivetrainSubsystem.setDefaultCommand(
+        //     new RunCommand(
+        //         ()-> drivetrainSubsystem.westCoastDrive(leftStick.getAxis(AttackThreeAxis.Y), rightStick.getAxis(AttackThreeAxis.Y), true), drivetrainSubsystem
+        //     )
+        // );
 
         // Tank Controller
         // drivetrainSubsystem.setDefaultCommand(
