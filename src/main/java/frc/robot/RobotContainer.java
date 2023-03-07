@@ -237,11 +237,11 @@ public class RobotContainer {
         // drivetrainSubsystem.setDefaultCommand(new DefaultTankDriveCommand(this));
 
         // Tank Joystick
-        // drivetrainSubsystem.setDefaultCommand(
-        //     new RunCommand(
-        //         ()-> drivetrainSubsystem.westCoastDrive(leftStick.getAxis(AttackThreeAxis.Y), rightStick.getAxis(AttackThreeAxis.Y), true), drivetrainSubsystem
-        //     )
-        // );
+         drivetrainSubsystem.setDefaultCommand(
+             new RunCommand(
+                 ()-> drivetrainSubsystem.westCoastDrive(leftStick.getAxis(AttackThreeAxis.Y), rightStick.getAxis(AttackThreeAxis.Y), true), drivetrainSubsystem
+             )
+         );
 
         // Tank Controller
         // drivetrainSubsystem.setDefaultCommand(
@@ -283,13 +283,13 @@ public class RobotContainer {
     }
 
     public void periodic() {
-        if (!climberSubsystem.getTogglePivot() && turretSubsystem.getPivotTolerance()) {
-            climberSubsystem.leftPivotActuate(true);
-            climberSubsystem.rightPivotActuate(true);
-        } else if (!climberSubsystem.getTogglePivot()) {
-            climberSubsystem.leftPivotActuate(false);
-            climberSubsystem.rightPivotActuate(false);
-        }
+        // if (!climberSubsystem.getTogglePivot() && turretSubsystem.getPivotTolerance()) {
+        //     climberSubsystem.leftPivotActuate(true);
+        //     climberSubsystem.rightPivotActuate(true);
+        // } else if (!climberSubsystem.getTogglePivot()) {
+        //     climberSubsystem.leftPivotActuate(false);
+        //     climberSubsystem.rightPivotActuate(false);
+        // }
     }
 
     /**
@@ -299,13 +299,13 @@ public class RobotContainer {
     try {
 
       // Intake
-      camera1 = CameraServer.startAutomaticCapture();
-      camera1.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
-      camera1.setResolution(176, 144);
-      camera1.setFPS(15); // Can go up to 30
-      camera1.setBrightness(25);
-      camera1.setExposureManual(10);
-      camera1.setWhiteBalanceManual(10);
+    //   camera1 = CameraServer.startAutomaticCapture();
+    //   camera1.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
+    //   camera1.setResolution(176, 144);
+    //   camera1.setFPS(15); // Can go up to 30
+    //   camera1.setBrightness(25);
+    //   camera1.setExposureManual(10);
+    //   camera1.setWhiteBalanceManual(10);
       
       /*
       // intake

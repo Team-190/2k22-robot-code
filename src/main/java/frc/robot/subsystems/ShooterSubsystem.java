@@ -106,12 +106,12 @@ public class ShooterSubsystem extends SubsystemBase {
     // SmartDashboard.putBoolean("Hood Limit", getHoodLimit());
     SmartDashboard.putBoolean("ShooterRunning", getIsRunning());
 
-    if (getHoodLimit()&&!reset) {
-      resetHood(27);
-      reset = true;
-    } else if (!getHoodLimit()) {
-      reset = false;
-    }
+    // if (getHoodLimit()&&!reset) {
+    //   resetHood(27);
+    //   reset = true;
+    // } else if (!getHoodLimit()) {
+    //   reset = false;
+    // }
 
     // SmartDashboard.putNumber("Turret Encoder Error", shooterMotor.getClosedLoopError());
 

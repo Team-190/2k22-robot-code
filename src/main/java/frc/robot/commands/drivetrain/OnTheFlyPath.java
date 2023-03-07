@@ -35,14 +35,13 @@ public class OnTheFlyPath extends SequentialCommandGroup {
   DrivetrainSubsystem drivetrainSubsystem;
   PathPlannerTrajectory traj;
   RamseteController ramsete;
-  double x;
+  double x = 0;
   double y;
   double rotationDegrees;
   public OnTheFlyPath(RobotContainer container, PathConstraints constraints) {
     // Use addRequirements() here to declare subsystem dependencies.
     robotContainer = container;
     drivetrainSubsystem = container.drivetrainSubsystem;
-
     ramsete = new RamseteController();
     ramsete.setEnabled(true);
     
@@ -50,13 +49,16 @@ public class OnTheFlyPath extends SequentialCommandGroup {
 
     addCommands(new InstantCommand(() -> {
         SmartDashboard.putString("goTo", "Run");
+        setX(SmartDashboard.getNumber("goToX", 0));
         drivetrainSubsystem.setOdometryAprilTag();
       }),
       new ParallelCommandGroup(new InstantCommand(() -> SmartDashboard.putString("goTo", "Attempting Run")),
       new PPRamseteCommand(
         PathPlanner.generatePath(constraints, 
         new PathPoint(drivetrainSubsystem.getPose().getTranslation(), Rotation2d.fromDegrees(drivetrainSubsystem.navx.getAngle())),
-        new PathPoint(new Translation2d(SmartDashboard.getNumber("goToX", 0),SmartDashboard.getNumber("goToY", 0)), new Rotation2d(SmartDashboard.getNumber("goToRotation", 0)))),
+        //new PathPoint(new Translation2d(SmartDashboard.getNumber("goToX", 0),SmartDashboard.getNumber("goToY", 0)), new Rotation2d(SmartDashboard.getNumber("goToRotation", 0)))),
+        new PathPoint(new Translation2d(x,0), new Rotation2d(0))),
+
                     drivetrainSubsystem::getPose,
                     //new RamseteController(DrivetrainConstants.RAMSETE_B, DrivetrainConstants.RAMSETE_ZETA),
                     ramsete,
@@ -73,5 +75,9 @@ public class OnTheFlyPath extends SequentialCommandGroup {
                     drivetrainSubsystem))
 
     );
+  }
+
+  void setX(double x) {
+    this.x = x;
   }
 }
