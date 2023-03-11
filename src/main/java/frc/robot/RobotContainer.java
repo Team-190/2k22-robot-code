@@ -15,7 +15,6 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoException;
 import edu.wpi.first.cscore.VideoSource;
-import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsControlModule;
@@ -27,20 +26,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SelectCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.Turret.TurretSetpointCommand;
-import frc.robot.commands.auto.PathPlannerFollowCommand;
 import frc.robot.commands.auto.threeBallAutoStraight.threeBallAutoStraight;
 import frc.robot.commands.auto.twoBallAuto.twoBallAuto;
 import frc.robot.commands.collector.AutomateBallpathCommand;
-import frc.robot.commands.collector.CollectCommand;
+import frc.robot.commands.drivetrain.DefaultTankDriveCommand;
 import frc.robot.commands.drivetrain.OnTheFlyPath;
 import frc.robot.commands.hotlineblink.AllianceColorCommand;
 import frc.robot.input.AttackThree;
 import frc.robot.input.XboxOneController;
-import frc.robot.input.AttackThree.AttackThreeAxis;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.CollectorSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -104,6 +99,10 @@ public class RobotContainer {
 
     public final PneumaticHub pneumaticHub = new PneumaticHub(1);
     public final PneumaticsControlModule pcm = new PneumaticsControlModule();
+
+    public double getX = 0;
+    public double getY = 0;
+    public double getRot = 0;
 
 
     /*
@@ -234,7 +233,7 @@ public class RobotContainer {
 
     public void setDefaultCommands() {
         // Default drive command
-        // drivetrainSubsystem.setDefaultCommand(new DefaultTankDriveCommand(this));
+        drivetrainSubsystem.setDefaultCommand(new DefaultTankDriveCommand(this));
 
         // Tank Joystick
         // drivetrainSubsystem.setDefaultCommand(
@@ -290,6 +289,10 @@ public class RobotContainer {
             climberSubsystem.leftPivotActuate(false);
             climberSubsystem.rightPivotActuate(false);
         }
+
+        getX = SmartDashboard.getNumber("goToX", 0);
+        getY = SmartDashboard.getNumber("goToY", 0);
+        getRot = SmartDashboard.getNumber("goToRotation", 0);
     }
 
     /**

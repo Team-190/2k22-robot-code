@@ -45,6 +45,10 @@ public class OnTheFlyPath extends SequentialCommandGroup {
 
     ramsete = new RamseteController();
     ramsete.setEnabled(true);
+    x = SmartDashboard.getNumber("goToX", 0);
+    y = SmartDashboard.getNumber("goToY", 0);
+    rotationDegrees = SmartDashboard.getNumber("goToRotation", 0);
+
     
     addRequirements(drivetrainSubsystem);
 
@@ -56,7 +60,7 @@ public class OnTheFlyPath extends SequentialCommandGroup {
       new PPRamseteCommand(
         PathPlanner.generatePath(constraints, 
         new PathPoint(drivetrainSubsystem.getPose().getTranslation(), Rotation2d.fromDegrees(drivetrainSubsystem.navx.getAngle())),
-        new PathPoint(new Translation2d(SmartDashboard.getNumber("goToX", 0),SmartDashboard.getNumber("goToY", 0)), new Rotation2d(SmartDashboard.getNumber("goToRotation", 0)))),
+        new PathPoint(new Translation2d(x,y), new Rotation2d(rotationDegrees))),
                     drivetrainSubsystem::getPose,
                     //new RamseteController(DrivetrainConstants.RAMSETE_B, DrivetrainConstants.RAMSETE_ZETA),
                     ramsete,
