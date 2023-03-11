@@ -36,6 +36,7 @@ import frc.robot.commands.drivetrain.OnTheFlyPath;
 import frc.robot.commands.hotlineblink.AllianceColorCommand;
 import frc.robot.input.AttackThree;
 import frc.robot.input.XboxOneController;
+import frc.robot.input.AttackThree.AttackThreeAxis;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.CollectorSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -238,7 +239,7 @@ public class RobotContainer {
         // Tank Joystick
          drivetrainSubsystem.setDefaultCommand(
              new RunCommand(
-                 ()-> drivetrainSubsystem.westCoastDrive(leftStick.getAxis(AttackThreeAxis.Y), rightStick.getAxis(AttackThreeAxis.Y), true), drivetrainSubsystem
+                 ()-> drivetrainSubsystem.westCoastDrive(leftStick.getAxis(AttackThreeAxis.X), rightStick.getAxis(AttackThreeAxis.Y), true), drivetrainSubsystem
              )
          );
 
