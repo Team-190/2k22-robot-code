@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -33,12 +34,9 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.RobotContainer;
 import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.commands.collector.CollectCommand;
+import frc.robot.RobotContainer;
 
 public class DrivetrainSubsystem extends PIDSubsystem {
 
@@ -48,8 +46,8 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     public final WPI_TalonFX rightLeader = new WPI_TalonFX(DrivetrainConstants.RIGHT_LEADER_CHANNEL);
     private final WPI_TalonFX rightFollower = new WPI_TalonFX(DrivetrainConstants.RIGHT_FOLLOWER_CHANNEL);
 
-    private final MotorControllerGroup leftSide = new MotorControllerGroup(leftLeader, leftFollower);
-    private final MotorControllerGroup rightSide = new MotorControllerGroup(rightLeader, rightFollower);
+    public final MotorControllerGroup leftSide = new MotorControllerGroup(leftLeader, leftFollower);
+    public final MotorControllerGroup rightSide = new MotorControllerGroup(rightLeader, rightFollower);
 
     public final DifferentialDrive differentialDrive = new DifferentialDrive(leftSide, rightSide);
 
@@ -442,5 +440,67 @@ public class DrivetrainSubsystem extends PIDSubsystem {
      */
     public Pose2d getPose() {
         return odometry.getPoseMeters();
+    }
+
+    public void seekTarget(LimeLightSubsystem limeLightSubsystem, double threshold){
+        double tx = limeLightSubsystem.degreesAskew();
+        double kp = 0.05;
+        double minTurn = 0.08;
+        double steering_adjust = 0.0;
+        boolean targetFound = limeLightSubsystem.targetFound();
+        if(!targetFound)
+            steering_adjust=0.5;
+        else{
+            if(Math.abs(tx)>threshold){
+                if(tx < 0){
+                    steering_adjust = kp * tx - minTurn;
+                } else {
+                    steering_adjust = kp * tx + minTurn;
+                }
+            }
+        }
+        leftLeader.set(ControlMode.PercentOutput, minThresholdSignedValue(steering_adjust, .5));
+        rightLeader.set(ControlMode.PercentOutput, -minThresholdSignedValue(steering_adjust, .5));
+    }
+
+    public void goToDistance(double distance, LimeLightSubsystem limeLightSubsystem) {
+        double kDist = 0.01;
+        double currentDistance = limeLightSubsystem.getAprilTagDistance();
+        double desiredDistance = distance;
+        double distanceError = currentDistance -desiredDistance;
+        double drivingAdjust = minThresholdSignedValue(kDist * distanceError, .5);
+        SmartDashboard.putNumber("drivingAdjust", drivingAdjust);
+        westCoastDrive(drivingAdjust, drivingAdjust, false);
+    }
+
+    public void goAim(double distance, double rotThreshold, double distThreshold, LimeLightSubsystem limeLightSubsystem){
+        double kDist = 0.01;
+        double kp = 0.01;
+        double minTurn = 0.05;
+        double minDist = 0.07;
+        double tx = limeLightSubsystem.degreesAskew();
+        double distance_adjust = 0.0;
+        double distanceError = limeLightSubsystem.getAprilTagDistance() - distance;
+        if(Math.abs(distanceError) > distThreshold){
+            if(distanceError<0){
+                distance_adjust = kDist * distanceError - minDist;
+            } else {
+                distance_adjust = kDist * distanceError + minDist;
+            }
+        }
+        double steering_adjust = 0;
+        if(Math.abs(tx)>rotThreshold){
+            if(tx < 0){
+                steering_adjust = kp * tx - minTurn;
+            } else {
+                steering_adjust = kp * tx + minTurn;
+            }
+        }
+        distance_adjust = minThresholdSignedValue(distance_adjust, .5);
+        westCoastDrive(steering_adjust+distance_adjust, -steering_adjust+distance_adjust, false);
+    }
+
+    private double minThresholdSignedValue(double value, double threshold){
+        return Math.signum(value) * Math.min(Math.abs(value), threshold);
     }
 }

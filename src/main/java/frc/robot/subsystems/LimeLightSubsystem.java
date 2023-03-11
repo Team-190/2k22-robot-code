@@ -93,6 +93,7 @@ public class LimeLightSubsystem extends SubsystemBase {
     //read values periodically
     x = targetX.getDouble(0.0);
     y = targetY.getDouble(0.0);
+    v = targetV.getDouble(0.0);
     area = targetArea.getDouble(0.0);
     double[] pose = botpose.getDoubleArray(new double[6]);
 
@@ -101,7 +102,7 @@ public class LimeLightSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("LimelightY", y);
     SmartDashboard.putNumber("LimelightArea", area);
     SmartDashboard.putNumberArray("LimelightTID", getTID().getDoubleArray(new double[6]));
-    SmartDashboard.putBoolean("targetExists", foundTarget());
+    SmartDashboard.putNumber("targetExists", v);
     SmartDashboard.putNumberArray("botpose", pose);
     SmartDashboard.putNumber("tagDistance", getAprilTagDistance());
   }

@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
@@ -21,6 +22,7 @@ import edu.wpi.first.wpilibj.PneumaticsControlModule;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -190,10 +192,17 @@ public class RobotContainer {
 
         driverXboxController.bButton.onTrue(new InstantCommand(()-> limeLightSubsystem.setPipeline(1)));
 
-        driverXboxController.yButton.onTrue(new InstantCommand(()-> limeLightSubsystem.setPipeline(2)));
+        // driverXboxController.yButton.onTrue(new InstantCommand(()-> limeLightSubsystem.setPipeline(2)));
 
          rightStick.leftFaceButton.onTrue(new OnTheFlyPath(this, 
              new PathConstraints(1, 1)));
+
+        driverXboxController.xButton.whileTrue(new RunCommand(()-> drivetrainSubsystem.seekTarget(limeLightSubsystem, .25)));
+
+        // driverXboxController.yButton.whileTrue(new RunCommand(()-> drivetrainSubsystem.goToDistance(60, limeLightSubsystem)));
+        driverXboxController.yButton.whileTrue(new RunCommand(()-> drivetrainSubsystem.goAim(60, 1, 1, limeLightSubsystem)));
+
+
 
 
 
@@ -258,11 +267,11 @@ public class RobotContainer {
         // );
 
         // Arcade Controller
-        // drivetrainSubsystem.setDefaultCommand(
-        //     new RunCommand(
-        //         ()-> drivetrainSubsystem.arcadeDrive(driverXboxController.getLeftStickY(), driverXboxController.getRightStickX(), false), drivetrainSubsystem
-        //     )
-        // );
+        drivetrainSubsystem.setDefaultCommand(
+            new RunCommand(
+                ()-> drivetrainSubsystem.arcadeDrive(driverXboxController.getLeftStickY(), driverXboxController.getRightStickX(), false), drivetrainSubsystem
+            )
+        );
 
         // Single Arcade Controller
         // drivetrainSubsystem.setDefaultCommand(
@@ -290,6 +299,7 @@ public class RobotContainer {
             climberSubsystem.leftPivotActuate(false);
             climberSubsystem.rightPivotActuate(false);
         }
+
 
         getX = SmartDashboard.getNumber("goToX", 0);
         getY = SmartDashboard.getNumber("goToY", 0);
