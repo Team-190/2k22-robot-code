@@ -170,6 +170,7 @@ public class DrivetrainSubsystem extends PIDSubsystem {
 
         odometry.update( Rotation2d.fromDegrees(navx.getAngle()), getDistanceMeters(leftLeader),
                 getDistanceMeters(rightLeader));
+        setOdometryAprilTag();
         var translation = odometry.getPoseMeters().getTranslation();
         m_xEntry.setNumber(translation.getX());
         m_yEntry.setNumber(translation.getY());
@@ -314,17 +315,17 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     }
     
     public void setOdometryAprilTag() {
-        //double[] xyYaw = limeLight.getAprilTagPose();
-        //if (xyYaw == null) return;
-        // odometry.resetPosition(Rotation2d.fromDegrees(xyYaw[2]), 
-        // getDistanceMeters(leftLeader), getDistanceMeters(rightLeader), 
-        // new Pose2d(new Translation2d(xyYaw[0], xyYaw[1]), Rotation2d.fromDegrees(xyYaw[2])));
+        double[] xyYaw = limeLight.getAprilTagPose();
+        if (xyYaw == null) return;
+        odometry.resetPosition(Rotation2d.fromDegrees(xyYaw[2]), 
+        getDistanceMeters(leftLeader), getDistanceMeters(rightLeader), 
+        new Pose2d(new Translation2d(xyYaw[0], xyYaw[1]), Rotation2d.fromDegrees(xyYaw[2])));
         
         // navx.reset();
         // odometry.resetPosition(Rotation2d.fromDegrees(0), 
         //  getDistanceMeters(leftLeader), getDistanceMeters(rightLeader), 
         //  new Pose2d(new Translation2d(0, 0), Rotation2d.fromDegrees(0)));
-        resetAll();
+        //resetAll();
     }
 
     /**

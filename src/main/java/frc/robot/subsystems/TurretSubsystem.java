@@ -276,14 +276,14 @@ public class TurretSubsystem extends PIDSubsystem {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Turret Encoder Position", turretMotor.getSelectedSensorPosition());
-    SmartDashboard.putNumber("Turret Encoder Error", turretMotor.getClosedLoopError());
-    SmartDashboard.putNumber("Turret PID Target", turretMotor.getClosedLoopTarget());
+    //SmartDashboard.putNumber("Turret Encoder Position", turretMotor.getSelectedSensorPosition());
+    //SmartDashboard.putNumber("Turret Encoder Error", turretMotor.getClosedLoopError());
+    //SmartDashboard.putNumber("Turret PID Target", turretMotor.getClosedLoopTarget());
     // SmartDashboard.putBoolean("Turret Limit", getTurretLimit());
 
-    if (getTurretLimit()) {
+    //if (getTurretLimit()) {
       // turretMotor.configClearPositionOnLimitR(true, 20);
-    }
+    //}
 
   }
 }

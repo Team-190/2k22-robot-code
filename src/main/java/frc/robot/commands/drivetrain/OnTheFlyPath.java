@@ -35,14 +35,13 @@ public class OnTheFlyPath extends SequentialCommandGroup {
   DrivetrainSubsystem drivetrainSubsystem;
   PathPlannerTrajectory traj;
   RamseteController ramsete;
-  double x;
+  double x = 0;
   double y;
   double rotationDegrees;
   public OnTheFlyPath(RobotContainer container, PathConstraints constraints) {
     // Use addRequirements() here to declare subsystem dependencies.
     robotContainer = container;
     drivetrainSubsystem = container.drivetrainSubsystem;
-
     ramsete = new RamseteController();
     ramsete.setEnabled(true);
     x = SmartDashboard.getNumber("goToX", 0);
@@ -54,6 +53,7 @@ public class OnTheFlyPath extends SequentialCommandGroup {
 
     addCommands(new InstantCommand(() -> {
         SmartDashboard.putString("goTo", "Run");
+        setX(SmartDashboard.getNumber("goToX", 0));
         drivetrainSubsystem.setOdometryAprilTag();
       }),
       new ParallelCommandGroup(new InstantCommand(() -> SmartDashboard.putString("goTo", "Attempting Run")),
@@ -77,5 +77,9 @@ public class OnTheFlyPath extends SequentialCommandGroup {
                     drivetrainSubsystem))
 
     );
+  }
+
+  void setX(double x) {
+    this.x = x;
   }
 }

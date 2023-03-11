@@ -38,7 +38,6 @@ public class LimeLightSubsystem extends SubsystemBase {
     targetX = limeLightTable.getEntry("tx");
     targetY = limeLightTable.getEntry("ty");
     targetV = limeLightTable.getEntry("tv");
-    ta = limeLightTable.getEntry("ta");
     targetArea = limeLightTable.getEntry("ta");
     targetFound = limeLightTable.getEntry("tv");
     ledMode = limeLightTable.getEntry("ledMode");
@@ -78,12 +77,13 @@ public class LimeLightSubsystem extends SubsystemBase {
   public double[] getAprilTagPose() {
     double[] pose = botpose.getDoubleArray(new double[6]);
     double[] xyYaw = new double[3];
-    if (pose.length == 0) {
-      pose = new double[6];
+    if (pose.length == 0) return null;
+    if (targetArea.getDouble(0) < 0.4) {
+      return null;
     }
-      xyYaw[0] = pose[0];
-      xyYaw[1] = pose[1];
-      xyYaw[2] = pose[5];
+    xyYaw[0] = pose[0];
+    xyYaw[1] = pose[1];
+    xyYaw[2] = pose[5];
     return xyYaw;
   }
 
