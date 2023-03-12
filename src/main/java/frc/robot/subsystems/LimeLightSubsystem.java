@@ -22,6 +22,8 @@ public class LimeLightSubsystem extends SubsystemBase {
     NetworkTableEntry ledMode;
     NetworkTableEntry pipeline;
     NetworkTableEntry botpose;
+    NetworkTableEntry botpose_red;
+    NetworkTableEntry botpose_blue;
     NetworkTableEntry ta;
     NetworkTableEntry camMode;
     public boolean enableVision = true;
@@ -87,6 +89,21 @@ public class LimeLightSubsystem extends SubsystemBase {
     return xyYaw;
   }
 
+  public double[] translateBlue(double[] xyYaw) {
+    double[] result = xyYaw;
+    result[0] += 8.25;
+    result[1] += 4.00;
+    return result;
+  }
+
+  public double[] translateRed(double[] xyYaw) {
+    double[] result = xyYaw;
+    result[0] = 8.25 - result[0];
+    result[1] += 4.00;
+    result[2] += 180;
+    return result;
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -103,6 +120,11 @@ public class LimeLightSubsystem extends SubsystemBase {
     SmartDashboard.putNumberArray("LimelightTID", getTID().getDoubleArray(new double[6]));
     SmartDashboard.putBoolean("targetExists", foundTarget());
     SmartDashboard.putNumberArray("botpose", pose);
+    if (getAprilTagPose() == null) return;
+    SmartDashboard.putNumberArray("botpose_blue", translateBlue(getAprilTagPose()));
+    SmartDashboard.putNumberArray("botpose_red", translateRed(getAprilTagPose()));
+    
+    
   }
 
   public NetworkTableEntry getTID() {

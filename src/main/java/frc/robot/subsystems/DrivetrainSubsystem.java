@@ -317,9 +317,10 @@ public class DrivetrainSubsystem extends PIDSubsystem {
     public void setOdometryAprilTag() {
         double[] xyYaw = limeLight.getAprilTagPose();
         if (xyYaw == null) return;
-        odometry.resetPosition(Rotation2d.fromDegrees(xyYaw[2]), 
+        xyYaw = limeLight.translateBlue(xyYaw);
+        odometry.resetPosition(Rotation2d.fromDegrees(navx.getAngle()), 
         getDistanceMeters(leftLeader), getDistanceMeters(rightLeader), 
-        new Pose2d(new Translation2d(xyYaw[0], xyYaw[1]), Rotation2d.fromDegrees(xyYaw[2])));
+        new Pose2d(new Translation2d(xyYaw[0], xyYaw[1]), Rotation2d.fromDegrees(navx.getAngle())));
         
         // navx.reset();
         // odometry.resetPosition(Rotation2d.fromDegrees(0), 

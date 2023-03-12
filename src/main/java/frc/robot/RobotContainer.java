@@ -10,12 +10,12 @@ package frc.robot;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPoint;
 
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoException;
-import edu.wpi.first.cscore.VideoSource;
-import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsControlModule;
@@ -27,20 +27,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SelectCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.Turret.TurretSetpointCommand;
-import frc.robot.commands.auto.PathPlannerFollowCommand;
 import frc.robot.commands.auto.threeBallAutoStraight.threeBallAutoStraight;
 import frc.robot.commands.auto.twoBallAuto.twoBallAuto;
 import frc.robot.commands.collector.AutomateBallpathCommand;
-import frc.robot.commands.collector.CollectCommand;
-import frc.robot.commands.drivetrain.OnTheFlyPath;
+import frc.robot.commands.drivetrain.OnTheFly;
 import frc.robot.commands.hotlineblink.AllianceColorCommand;
 import frc.robot.input.AttackThree;
-import frc.robot.input.XboxOneController;
 import frc.robot.input.AttackThree.AttackThreeAxis;
+import frc.robot.input.XboxOneController;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.CollectorSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -92,6 +88,9 @@ public class RobotContainer {
     public final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
 
     public final HotlineBlinkSubsystem hotlineBlinkSubsystem = new HotlineBlinkSubsystem();
+
+    public PathPoint initialPoint = new PathPoint(new Translation2d(0,0), Rotation2d.fromDegrees(0));
+
 
     
     // Compressor
@@ -192,8 +191,9 @@ public class RobotContainer {
 
         driverXboxController.yButton.onTrue(new InstantCommand(()-> limeLightSubsystem.setPipeline(2)));
 
-         rightStick.leftFaceButton.onTrue(new OnTheFlyPath(this, 
-             new PathConstraints(1, 1)));
+        rightStick.leftFaceButton.onTrue(new OnTheFly(this, 
+             new PathConstraints(2, 1), "Pos7"));
+        rightStick.rightFaceButton.onTrue(new InstantCommand(() -> drivetrainSubsystem.resetGyro(true)));
 
 
 
@@ -226,10 +226,11 @@ public class RobotContainer {
     * @return the command to run in autonomous
     */
     public Command getAutonomousCommand() {
-        //return new PathPlannerFollowCommand(this, true, "LOOP2");
+        // return new PathPlannerFollowCommand(this, true, "Test_Path");
+        //return new PathPlannerFollowCommand(this, false, "Pose7 Auto");
         //return drivetrainSubsystem.followTrajectoryCommand(autoPath, true);
-        return new OnTheFlyPath(this,
-                 new PathConstraints(1, 1));
+         return new OnTheFly(this,
+                 new PathConstraints(1, 1), "Pos7");
     }
 
     public void setDefaultCommands() {
@@ -290,6 +291,7 @@ public class RobotContainer {
         //     climberSubsystem.leftPivotActuate(false);
         //     climberSubsystem.rightPivotActuate(false);
         // }
+        initialPoint = new PathPoint(drivetrainSubsystem.getPose().getTranslation(), Rotation2d.fromDegrees(drivetrainSubsystem.navx.getAngle()));
     }
 
     /**
