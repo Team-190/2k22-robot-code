@@ -14,6 +14,7 @@ import com.pathplanner.lib.PathPoint;
 
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoException;
+import edu.wpi.first.cscore.VideoSource;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Compressor;
@@ -32,6 +33,7 @@ import frc.robot.commands.Turret.TurretSetpointCommand;
 import frc.robot.commands.auto.threeBallAutoStraight.threeBallAutoStraight;
 import frc.robot.commands.auto.twoBallAuto.twoBallAuto;
 import frc.robot.commands.collector.AutomateBallpathCommand;
+import frc.robot.commands.drivetrain.DefaultTankDriveCommand;
 import frc.robot.commands.drivetrain.OnTheFly;
 import frc.robot.commands.hotlineblink.AllianceColorCommand;
 import frc.robot.input.AttackThree;
@@ -103,6 +105,10 @@ public class RobotContainer {
 
     public final PneumaticHub pneumaticHub = new PneumaticHub(1);
     public final PneumaticsControlModule pcm = new PneumaticsControlModule();
+
+    public double getX = 0;
+    public double getY = 0;
+    public double getRot = 0;
 
 
     /*
@@ -235,12 +241,12 @@ public class RobotContainer {
 
     public void setDefaultCommands() {
         // Default drive command
-        // drivetrainSubsystem.setDefaultCommand(new DefaultTankDriveCommand(this));
+        drivetrainSubsystem.setDefaultCommand(new DefaultTankDriveCommand(this));
 
         // Tank Joystick
          drivetrainSubsystem.setDefaultCommand(
              new RunCommand(
-                 ()-> drivetrainSubsystem.westCoastDrive(leftStick.getAxis(AttackThreeAxis.Y), rightStick.getAxis(AttackThreeAxis.Y), true), drivetrainSubsystem
+                 ()-> drivetrainSubsystem.westCoastDrive(leftStick.getAxis(AttackThreeAxis.X), rightStick.getAxis(AttackThreeAxis.Y), true), drivetrainSubsystem
              )
          );
 
