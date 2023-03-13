@@ -241,12 +241,12 @@ public class RobotContainer {
 
     public void setDefaultCommands() {
         // Default drive command
-        drivetrainSubsystem.setDefaultCommand(new DefaultTankDriveCommand(this));
+        //drivetrainSubsystem.setDefaultCommand(new DefaultTankDriveCommand(this));
 
         // Tank Joystick
          drivetrainSubsystem.setDefaultCommand(
              new RunCommand(
-                 ()-> drivetrainSubsystem.westCoastDrive(leftStick.getAxis(AttackThreeAxis.X), rightStick.getAxis(AttackThreeAxis.Y), true), drivetrainSubsystem
+                 ()-> drivetrainSubsystem.westCoastDrive(leftStick.getAxis(AttackThreeAxis.Y), rightStick.getAxis(AttackThreeAxis.Y), true), drivetrainSubsystem
              )
          );
 

@@ -44,12 +44,9 @@ public class OnTheFly extends CommandBase {
 
     addRequirements(drivetrainSubsystem);
 
-    // traj = PathPlanner.generatePath(constraints, 
-    // new PathPoint(new Translation2d(0,0), Rotation2d.fromDegrees(0)),
-    // new PathPoint(new Translation2d(0,0), Rotation2d.fromDegrees(0)));
-
     positions = new HashMap<String, PathPoint>();
-    positions.put("Pos7", new PathPoint(new Translation2d(1.75, 4.5), Rotation2d.fromDegrees(180)));
+    positions.put("Pos7", new PathPoint(new Translation2d(1.9, 4.5), Rotation2d.fromDegrees(180)));
+
   }
 
   // Called when the command is initially scheduled.
@@ -59,16 +56,15 @@ public class OnTheFly extends CommandBase {
     drivetrainSubsystem.setOdometryAprilTag();
 
     traj = PathPlanner.generatePath(constraints, 
-    // initialPoint,
     new PathPoint(drivetrainSubsystem.getPose().getTranslation(), Rotation2d.fromDegrees(drivetrainSubsystem.navx.getAngle())),
-    //new PathPoint(new Translation2d(4.29, 4.69), Rotation2d.fromDegrees(180)),
-    //new PathPoint(new Translation2d(SmartDashboard.getNumber("goToX", 0),SmartDashboard.getNumber("goToY", 0)), new Rotation2d(SmartDashboard.getNumber("goToRotation", 0)))),
     positions.get(position));
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    drivetrainSubsystem.westCoastDrive(0,0,false);
+  }
 
   // Called once the command ends or is interrupted.
   @Override

@@ -170,7 +170,7 @@ public class DrivetrainSubsystem extends PIDSubsystem {
 
         odometry.update( Rotation2d.fromDegrees(navx.getAngle()), getDistanceMeters(leftLeader),
                 getDistanceMeters(rightLeader));
-        setOdometryAprilTag();
+        //setOdometryAprilTag();
         var translation = odometry.getPoseMeters().getTranslation();
         m_xEntry.setNumber(translation.getX());
         m_yEntry.setNumber(translation.getY());
@@ -232,34 +232,6 @@ public class DrivetrainSubsystem extends PIDSubsystem {
             config);
             
       }
-
-    public Command goToPoint(double x, double y, double rotationDegrees, PathConstraints constraints) {
-            // Create a voltage constraint to ensure we don't accelerate too fast
-            SmartDashboard.putString("goTo", "Run");
-        setOdometryAprilTag();
-        PathPlannerTrajectory traj = PathPlanner.generatePath(constraints, 
-        new PathPoint(odometry.getPoseMeters().getTranslation(), Rotation2d.fromDegrees(navx.getAngle())),
-        new PathPoint(new Translation2d(x,y), new Rotation2d(rotationDegrees)));
-
-        RamseteController ramsete = new RamseteController();
-        ramsete.setEnabled(true);
-        return new PPRamseteCommand(
-                    traj,
-                    this::getPose,
-                    //new RamseteController(DrivetrainConstants.RAMSETE_B, DrivetrainConstants.RAMSETE_ZETA),
-                    ramsete,
-                    new SimpleMotorFeedforward(
-                            DrivetrainConstants.S_VOLTS,
-                            DrivetrainConstants.V_VOLT_SECONDS_PER_METER,
-                            DrivetrainConstants.A_VOLT_SECONDS_SQUARED_PER_METER),
-                    new DifferentialDriveKinematics(DrivetrainConstants.TRACKWIDTH_METERS),
-                    this::getWheelSpeeds,
-                    new PIDController(DrivetrainConstants.AUTO_P, 0, 0),
-                    new PIDController(DrivetrainConstants.AUTO_P, 0, 0),
-                    // RamseteCommand passes volts to the callback
-                    this::tankDriveVolts,
-                    this);
-    }
     public void CollectCommand() {
         SmartDashboard.putBoolean("Command Run", true);
     }
