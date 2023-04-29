@@ -47,7 +47,7 @@ public class AttackThree extends Joystick {
      * @return true if pressed else false
      */
     public boolean getTriggerButton() {
-        return triggerButton.get();
+        return triggerButton.getAsBoolean();
     }
 
     /**
@@ -55,7 +55,7 @@ public class AttackThree extends Joystick {
      * @return true if pressed else false
      */
     public boolean getBottomFaceButton() {
-        return bottomFaceButton.get();
+        return bottomFaceButton.getAsBoolean();
     }
 
     /**
@@ -63,7 +63,7 @@ public class AttackThree extends Joystick {
      * @return true if pressed else false
      */
     public boolean getMiddleFaceButton() {
-        return middleFaceButton.get();
+        return middleFaceButton.getAsBoolean();
     }
 
     /**
@@ -71,7 +71,7 @@ public class AttackThree extends Joystick {
      * @return true if pressed else false
      */
     public boolean getLeftFaceButton() {
-        return leftFaceButton.get();
+        return leftFaceButton.getAsBoolean();
     }
 
     /**
@@ -79,7 +79,7 @@ public class AttackThree extends Joystick {
      * @return true if pressed else false
      */
     public boolean getRightFaceButton() {
-        return rightFaceButton.get();
+        return rightFaceButton.getAsBoolean();
     }
 
     /**
@@ -87,7 +87,7 @@ public class AttackThree extends Joystick {
      * @return true if pressed else false
      */
     public boolean getTopLeftButton() {
-        return topLeftButton.get();
+        return topLeftButton.getAsBoolean();
     }
 
     /**
@@ -95,7 +95,7 @@ public class AttackThree extends Joystick {
      * @return true if pressed else false
      */
     public boolean getBottomLeftButton() {
-        return bottomLeftButton.get();
+        return bottomLeftButton.getAsBoolean();
     }
 
     /**
@@ -103,7 +103,7 @@ public class AttackThree extends Joystick {
      * @return true if pressed else false
      */
     public boolean getMiddleLeftButton() {
-        return middleLeftButton.get();
+        return middleLeftButton.getAsBoolean();
     }
 
     /**
@@ -111,7 +111,7 @@ public class AttackThree extends Joystick {
      * @return true if pressed else false
      */
     public boolean getMiddleRightButton() {
-        return middleRightButton.get();
+        return middleRightButton.getAsBoolean();
     }
 
     /**
@@ -119,7 +119,7 @@ public class AttackThree extends Joystick {
      * @return true if pressed else false
      */
     public boolean getBottomRightButton() {
-        return bottomRightButton.get();
+        return bottomRightButton.getAsBoolean();
     }
 
     /**
@@ -127,7 +127,7 @@ public class AttackThree extends Joystick {
      * @return true if pressed else false
      */
     public boolean getTopRightButton() {
-        return topRightButton.get();
+        return topRightButton.getAsBoolean();
     }
 
     /**
@@ -138,6 +138,12 @@ public class AttackThree extends Joystick {
     */
     public double getAxis(AttackThreeAxis axis) {
         double val = getRawAxis(axis.key);
+
+        // Attack 3 Y axis forwards is negative so negate in code
+        if (axis == AttackThreeAxis.Y) {
+            val *= -1;
+        }
+        
         if (Math.abs(val) <= deadband) {
             val = 0.0;
         }

@@ -7,15 +7,12 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.server.PathPlannerServer;
+
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants.DrivetrainConstants.DRIVE_STYLE;
-import frc.robot.commands.drivetrain.DefaultArcadeDriveCommand;
-import frc.robot.commands.drivetrain.DefaultCurvatureDriveCommand;
-import frc.robot.commands.drivetrain.DefaultTankDriveCommand;
 
 /**
 * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -27,22 +24,33 @@ public class Robot extends TimedRobot {
     private Command defaultAutonomousCommand;
 
     private final RobotContainer robotContainer = new RobotContainer();
-    private final SendableChooser<DRIVE_STYLE> driveMethodChooser = new SendableChooser<>();
+    // private final SendableChooser<DRIVE_STYLE> driveMethodChooser = new SendableChooser<>();
 
+    
     /**
     * This function is run when the robot is first started up and should be used for any
-    * initialization code.
+    * initialization code.git
     */
     @Override
     public void robotInit() {
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
 
-        driveMethodChooser.addOption("Arcade", DRIVE_STYLE.ARCADE);
-        driveMethodChooser.addOption("Tank", DRIVE_STYLE.TANK);
-        driveMethodChooser.addOption("Curvature", DRIVE_STYLE.MCFLY);
-        driveMethodChooser.setDefaultOption("Arcade", DRIVE_STYLE.ARCADE);
-        SmartDashboard.putData("Drive Method", driveMethodChooser);
+        // driveMethodChooser.addOption("Tank", DRIVE_STYLE.TANK);
+        // driveMethodChooser.addOption("Curvature", DRIVE_STYLE.MCFLY);
+        // driveMethodChooser.setDefaultOption("Arcade", DRIVE_STYLE.ARCADE);
+        // SmartDashboard.putData("Drive Method", driveMethodChooser);
+
+        // robotContainer.compressor.enableDigital();
+        robotContainer.compressor.enableAnalog(90, 115);
+        robotContainer.limeLightSubsystem.setVision(false);
+        
+        robotContainer.turretSubsystem.resetEncoder(robotContainer.turretSubsystem.degreesToTicks(-180));
+        robotContainer.shooterSubsystem.resetHood(27);
+        robotContainer.setDefaultCommands();
+        robotContainer.climberSubsystem.resetClimberPos();
+        PathPlannerServer.startServer(5811);
+        // robotContainer.turretSubsystem.disable();
     }
 
     /**
@@ -60,11 +68,14 @@ public class Robot extends TimedRobot {
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
         robotContainer.periodic();
+
     }
 
     /** This function is called once each time the robot enters Disabled mode. */
     @Override
-    public void disabledInit() {}
+    public void disabledInit() {
+        
+    }
 
     @Override
     public void disabledPeriodic() {
@@ -76,10 +87,14 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         defaultAutonomousCommand = robotContainer.getAutonomousCommand();
 
+        
+        robotContainer.limeLightSubsystem.setVision(true);
         // schedule the autonomous command (example)
         if (defaultAutonomousCommand != null) {
             defaultAutonomousCommand.schedule();
         }
+
+        //robotContainer.drivetrainSubsystem.resetAll();
     }
 
     /** This function is called periodically during autonomous. */
@@ -95,23 +110,38 @@ public class Robot extends TimedRobot {
         if (defaultAutonomousCommand != null) {
             defaultAutonomousCommand.cancel();
         }
+        // robotContainer.compressor.enableAnalog(90, 120);
+        robotContainer.climberSubsystem.resetClimberPos();
+        // robotContainer.climberSubsystem.leftPivotActuate(true);
+        // robotContainer.climberSubsystem.rightPivotActuate(true);
+        robotContainer.limeLightSubsystem.setVision(false);
 
-        // Check the selected driver control method at TeleopInit once
-        if (driveMethodChooser.getSelected() == DRIVE_STYLE.ARCADE) {
-            robotContainer.drivetrainSubsystem.setDefaultCommand(
-                    new DefaultArcadeDriveCommand(robotContainer));
-        } else if (driveMethodChooser.getSelected() == DRIVE_STYLE.TANK) {
-            robotContainer.drivetrainSubsystem.setDefaultCommand(
-                    new DefaultTankDriveCommand(robotContainer));
-        } else {
-            robotContainer.drivetrainSubsystem.setDefaultCommand(
-                    new DefaultCurvatureDriveCommand(robotContainer));
-        }
+
+        /*
+       // Check the selected driver control method at TeleopInit once
+       if (driveMethodChooser.getSelected() == DRIVE_STYLE.ARCADE) {
+           robotContainer.drivetrainSubsystem.setDefaultCommand(
+                   new DefaultArcadeDriveCommand(robotContainer));
+       } else if (driveMethodChooser.getSelected() == DRIVE_STYLE.TANK) {
+           robotContainer.drivetrainSubsystem.setDefaultCommand(
+                   new DefaultTankDriveCommand(robotContainer));
+       } else {
+           robotContainer.drivetrainSubsystem.setDefaultCommand(
+                   new DefaultCurvatureDriveCommand(robotContainer));
+       }
+       */
+
+      
+       
+
     }
 
     /** This function is called periodically during operator control. */
     @Override
-    public void teleopPeriodic() {}
+    public void teleopPeriodic() {
+        
+    }
+    
 
     @Override
     public void testInit() {

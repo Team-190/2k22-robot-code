@@ -36,7 +36,7 @@ public class XboxOneController extends Joystick {
     * @return boolean True or False
     */
     public boolean getLeftBumper() {
-        return leftBumper.get();
+        return leftBumper.getAsBoolean();
     }
 
     /**
@@ -54,7 +54,8 @@ public class XboxOneController extends Joystick {
     * @return the value of the axis
     */
     public double getLeftStickY() {
-        return this.getRawAxis(1);
+        // Forward axis is negative so negate in code
+        return -this.getRawAxis(1);
     }
 
     /**
@@ -90,7 +91,8 @@ public class XboxOneController extends Joystick {
     * @return the value of the axis
     */
     public double getRightStickY() {
-        return this.getRawAxis(5);
+        // Forward axis is negative so negate in code
+        return -this.getRawAxis(5);
     }
 
     /**
@@ -120,19 +122,5 @@ public class XboxOneController extends Joystick {
     public void setRumble(double leftValue, double rightValue) {
         setRumble(RumbleType.kLeftRumble, leftValue);
         setRumble(RumbleType.kRightRumble, rightValue);
-    }
-
-    public void setRumble(RumbleType type, double value) {
-        if (value < 0) {
-            value = 0;
-        } else if (value > 1) {
-            value = 1;
-        }
-        if (type == RumbleType.kLeftRumble) {
-            m_leftRumble = (short) (value * 65535);
-        } else {
-            m_rightRumble = (short) (value * 65535);
-        }
-        HAL.setJoystickOutputs((byte) getPort(), m_outputs, m_leftRumble, m_rightRumble);
     }
 }
