@@ -38,7 +38,6 @@ import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.commands.collector.CollectCommand;
 
 public class DrivetrainSubsystem extends PIDSubsystem {
 

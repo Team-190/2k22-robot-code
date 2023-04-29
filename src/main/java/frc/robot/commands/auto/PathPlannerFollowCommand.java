@@ -13,9 +13,7 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.RamseteAutoBuilder;
-import com.pathplanner.lib.commands.PPRamseteCommand;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
@@ -25,8 +23,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.RobotContainer;
-import frc.robot.commands.collector.CollectCommand;
-import frc.robot.commands.hotlineblink.BlinkinReadyToShootCommand;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -44,8 +40,6 @@ public class PathPlannerFollowCommand extends SequentialCommandGroup {
     autoGroup = PathPlanner.loadPathGroup(fileName, new PathConstraints(4, 3));
 
     eventMap = new HashMap<String,Command>();
-    eventMap.put("CollectCommand", new CollectCommand(robotContainer, 0.75));
-    eventMap.put("BlinkCommand", new BlinkinReadyToShootCommand(robotContainer));
 
 
     ramsete = new RamseteController();

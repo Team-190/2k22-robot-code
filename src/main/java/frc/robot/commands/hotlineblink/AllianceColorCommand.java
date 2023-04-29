@@ -5,13 +5,11 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.HotlineBlinkSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.HotlineBlinkSubsystem.Hat;
 
 /** Sets LEDs to the color of the robot's alliance */
 public class AllianceColorCommand extends CommandBase {
     private HotlineBlinkSubsystem hotlineBlinkSubsystem;
-    private ShooterSubsystem shooterSubsystem;
     private Alliance alliance;
 
     /** Requires the blinkin */

@@ -46,9 +46,7 @@ public class Robot extends TimedRobot {
         robotContainer.limeLightSubsystem.setVision(false);
         
         robotContainer.turretSubsystem.resetEncoder(robotContainer.turretSubsystem.degreesToTicks(-180));
-        robotContainer.shooterSubsystem.resetHood(27);
         robotContainer.setDefaultCommands();
-        robotContainer.climberSubsystem.resetClimberPos();
         PathPlannerServer.startServer(5811);
         // robotContainer.turretSubsystem.disable();
     }
@@ -111,7 +109,6 @@ public class Robot extends TimedRobot {
             defaultAutonomousCommand.cancel();
         }
         // robotContainer.compressor.enableAnalog(90, 120);
-        robotContainer.climberSubsystem.resetClimberPos();
         // robotContainer.climberSubsystem.leftPivotActuate(true);
         // robotContainer.climberSubsystem.rightPivotActuate(true);
         robotContainer.limeLightSubsystem.setVision(false);
